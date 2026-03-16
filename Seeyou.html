@@ -13,7 +13,6 @@
     --mauve: #8b5e6a;
     --deep: #3d2b35;
     --gold: #c9a96e;
-    --mist: rgba(245,239,230,0.06);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -46,14 +45,81 @@
     100% { transform: translateY(105vh) rotate(360deg) translateX(40px); opacity: 0; }
   }
 
-  /* ── Music Player Button ── */
+  /* ── Intro Overlay ── */
+  #intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: var(--deep);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    cursor: pointer;
+    transition: opacity 0.9s ease;
+  }
+  #intro-overlay.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .intro-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    color: var(--cream);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .intro-title em { color: var(--blush); }
+  .intro-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: #a8887a;
+    text-align: center;
+  }
+  .intro-btn {
+    margin-top: 8px;
+    padding: 14px 40px;
+    border: 1px solid var(--gold);
+    border-radius: 40px;
+    background: transparent;
+    color: var(--gold);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: blink-border 2s ease-in-out infinite;
+  }
+  .intro-btn:hover {
+    background: rgba(201,169,110,0.15);
+    transform: scale(1.04);
+  }
+  @keyframes blink-border {
+    0%,100% { box-shadow: 0 0 0 rgba(201,169,110,0); }
+    50% { box-shadow: 0 0 18px rgba(201,169,110,0.35); }
+  }
+  .intro-dots {
+    display: flex; gap: 8px;
+  }
+  .intro-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--rose);
+    animation: heartbeat 2s ease-in-out infinite;
+  }
+  .intro-dot:nth-child(2) { animation-delay: 0.3s; background: var(--blush); }
+  .intro-dot:nth-child(3) { animation-delay: 0.6s; background: var(--gold); }
+
+  /* ── Music Button ── */
   #music-btn {
     position: fixed;
-    bottom: 28px;
-    right: 28px;
+    bottom: 28px; right: 28px;
     z-index: 9999;
-    width: 52px;
-    height: 52px;
+    width: 52px; height: 52px;
     border-radius: 50%;
     background: rgba(61,43,53,0.85);
     border: 1px solid var(--gold);
@@ -78,110 +144,54 @@
   }
   @keyframes pulse-btn {
     0%,100% { box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
-    50% { box-shadow: 0 4px 32px rgba(201,169,110,0.4); }
+    50% { box-shadow: 0 0 28px rgba(201,169,110,0.45); }
   }
-  #music-label {
-    position: fixed;
-    bottom: 34px;
-    right: 90px;
-    z-index: 9999;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    color: var(--gold);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-  #music-btn:hover ~ #music-label,
-  #music-label.show { opacity: 1; }
 
   /* ── Hero ── */
   #hero {
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    text-align: center;
-    padding: 60px 24px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; text-align: center; padding: 60px 24px;
     background:
       radial-gradient(ellipse 80% 60% at 50% 10%, #6b3a4822 0%, transparent 70%),
       radial-gradient(ellipse 60% 40% at 80% 80%, #c97b6e18 0%, transparent 60%),
       var(--deep);
   }
-
   .hero-eyebrow {
-    font-family: 'Jost', sans-serif;
-    font-weight: 300;
-    font-size: 0.7rem;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--gold);
-    opacity: 0;
-    animation: fadeUp 1s ease 0.3s forwards;
-    margin-bottom: 28px;
+    font-family: 'Jost', sans-serif; font-weight: 300;
+    font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards; margin-bottom: 28px;
   }
-
   .hero-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: clamp(3rem, 9vw, 7.5rem);
-    line-height: 1.05;
-    letter-spacing: -0.01em;
-    color: var(--cream);
-    opacity: 0;
+    font-family: 'Cormorant Garamond', serif; font-weight: 300;
+    font-size: clamp(3rem, 9vw, 7.5rem); line-height: 1.05;
+    color: var(--cream); opacity: 0;
     animation: fadeUp 1.2s ease 0.6s forwards;
   }
-
-  .hero-title em {
-    font-style: italic;
-    color: var(--blush);
-  }
-
+  .hero-title em { font-style: italic; color: var(--blush); }
   .divider-line {
-    width: 1px;
-    height: 80px;
+    width: 1px; height: 80px;
     background: linear-gradient(to bottom, transparent, var(--gold), transparent);
-    margin: 40px auto;
-    opacity: 0;
+    margin: 40px auto; opacity: 0;
     animation: fadeIn 1.5s ease 1.2s forwards;
   }
-
   .hero-sub {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: clamp(1rem, 2.5vw, 1.4rem);
-    color: var(--blush);
-    max-width: 520px;
-    line-height: 1.7;
-    opacity: 0;
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.4rem); color: var(--blush);
+    max-width: 520px; line-height: 1.7; opacity: 0;
     animation: fadeUp 1s ease 1.5s forwards;
   }
-
-  /* ── Scroll hint ── */
   .scroll-hint {
-    position: absolute;
-    bottom: 36px;
-    left: 50%;
+    position: absolute; bottom: 36px; left: 50%;
     transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    opacity: 0;
-    animation: fadeIn 1s ease 2.5s forwards;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0; animation: fadeIn 1s ease 2.5s forwards;
   }
-  .scroll-hint span {
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
+  .scroll-hint span { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
   .scroll-dot {
-    width: 1px;
-    height: 40px;
+    width: 1px; height: 40px;
     background: linear-gradient(to bottom, var(--gold), transparent);
     animation: pulse-line 2s ease-in-out infinite;
   }
@@ -191,277 +201,57 @@
   }
 
   /* ── Sections ── */
-  section {
-    position: relative;
-    z-index: 1;
-    padding: 100px 24px;
-    max-width: 760px;
-    margin: 0 auto;
-  }
-
-  .section-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 32px;
-    display: block;
-  }
+  section { position: relative; z-index: 1; padding: 100px 24px; max-width: 760px; margin: 0 auto; }
+  .section-label { font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--gold); margin-bottom: 32px; display: block; }
 
   /* ── Letter ── */
-  #letter {
-    border-left: 1px solid #c97b6e44;
-    padding-left: 40px;
-  }
-
-  .letter-body {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-    line-height: 1.85;
-    color: #ecddd4;
-    font-weight: 300;
-  }
-
+  #letter { border-left: 1px solid #c97b6e44; padding-left: 40px; }
+  .letter-body { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.1rem, 2.5vw, 1.5rem); line-height: 1.85; color: #ecddd4; font-weight: 300; }
   .letter-body p + p { margin-top: 1.4em; }
+  .letter-body .highlight { font-style: italic; color: var(--blush); }
 
-  .letter-body .highlight {
-    font-style: italic;
-    color: var(--blush);
-  }
-
-  /* ── Memories grid ── */
-  #memories {
-    text-align: center;
-  }
-
-  .memory-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    margin-top: 48px;
-    background: #c97b6e22;
-  }
-
-  .memory-card {
-    background: var(--deep);
-    padding: 0;
-    transition: background 0.4s ease;
-    cursor: default;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
+  /* ── Memories ── */
+  #memories { text-align: center; }
+  .memory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 48px; background: #c97b6e22; }
+  .memory-card { background: var(--deep); transition: background 0.4s ease; overflow: hidden; display: flex; flex-direction: column; }
   .memory-card:hover { background: #4a2d3a; }
-
-  /* ── Photo in memory card ── */
-  .memory-photo {
-    width: 100%;
-    aspect-ratio: 4/3;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .memory-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s ease;
-    filter: saturate(0.8) brightness(0.9);
-  }
-
-  .memory-card:hover .memory-photo img {
-    transform: scale(1.06);
-    filter: saturate(1) brightness(1);
-  }
-
-  .memory-photo-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, transparent 40%, rgba(61,43,53,0.7) 100%);
-    pointer-events: none;
-  }
-
-  .memory-content {
-    padding: 24px 20px 28px;
-    flex: 1;
-  }
-
-  .memory-icon {
-    font-size: 1.3rem;
-    display: block;
-    margin-bottom: 10px;
-  }
-
-  .memory-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 1.1rem;
-    color: var(--blush);
-    margin-bottom: 8px;
-  }
-
-  .memory-text {
-    font-size: 0.78rem;
-    line-height: 1.7;
-    color: #a8887a;
-    letter-spacing: 0.03em;
-  }
+  .memory-photo { width: 100%; aspect-ratio: 4/3; overflow: hidden; position: relative; }
+  .memory-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; filter: saturate(0.8) brightness(0.9); }
+  .memory-card:hover .memory-photo img { transform: scale(1.06); filter: saturate(1) brightness(1); }
+  .memory-photo-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(61,43,53,0.7) 100%); pointer-events: none; }
+  .memory-content { padding: 24px 20px 28px; flex: 1; }
+  .memory-icon { font-size: 1.3rem; display: block; margin-bottom: 10px; }
+  .memory-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; color: var(--blush); margin-bottom: 8px; }
+  .memory-text { font-size: 0.78rem; line-height: 1.7; color: #a8887a; letter-spacing: 0.03em; }
 
   /* ── Quote ── */
-  #quote {
-    text-align: center;
-    padding: 80px 24px 100px;
-    max-width: 680px;
-    margin: 0 auto;
-    position: relative;
-  }
+  #quote { text-align: center; padding: 80px 24px 100px; max-width: 680px; margin: 0 auto; position: relative; }
+  .quote-mark { font-family: 'Cormorant Garamond', serif; font-size: 8rem; line-height: 0; color: var(--rose); opacity: 0.2; position: absolute; top: 60px; left: 20px; font-style: italic; }
+  .quote-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1.4rem, 3.5vw, 2.2rem); line-height: 1.6; color: var(--cream); font-weight: 300; position: relative; z-index: 1; }
+  .quote-author { margin-top: 28px; font-size: 0.7rem; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; }
 
-  .quote-mark {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 8rem;
-    line-height: 0;
-    color: var(--rose);
-    opacity: 0.2;
-    position: absolute;
-    top: 60px;
-    left: 20px;
-    font-style: italic;
-  }
-
-  .quote-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: clamp(1.4rem, 3.5vw, 2.2rem);
-    line-height: 1.6;
-    color: var(--cream);
-    font-weight: 300;
-    position: relative;
-    z-index: 1;
-  }
-
-  .quote-author {
-    margin-top: 28px;
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
-    color: var(--gold);
-    text-transform: uppercase;
-  }
-
-  /* ── Final farewell ── */
-  #farewell {
-    text-align: center;
-    padding: 100px 24px 140px;
-    background:
-      radial-gradient(ellipse 70% 50% at 50% 100%, #6b3a4830 0%, transparent 70%);
-  }
-
-  .farewell-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem, 6vw, 4.5rem);
-    font-weight: 300;
-    color: var(--cream);
-    line-height: 1.2;
-  }
-
-  .farewell-title em {
-    font-style: italic;
-    color: var(--blush);
-  }
-
-  .farewell-message {
-    margin: 32px auto 0;
-    max-width: 480px;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #a8887a;
-  }
-
-  .signature {
-    margin-top: 56px;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 1.8rem;
-    color: var(--gold);
-    letter-spacing: 0.02em;
-  }
-
-  .heart-row {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .heart-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--rose);
-    animation: heartbeat 2s ease-in-out infinite;
-  }
+  /* ── Farewell ── */
+  #farewell { text-align: center; padding: 100px 24px 140px; background: radial-gradient(ellipse 70% 50% at 50% 100%, #6b3a4830 0%, transparent 70%); }
+  .farewell-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 6vw, 4.5rem); font-weight: 300; color: var(--cream); line-height: 1.2; }
+  .farewell-title em { font-style: italic; color: var(--blush); }
+  .farewell-message { margin: 32px auto 0; max-width: 480px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; line-height: 1.8; color: #a8887a; }
+  .signature { margin-top: 56px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.8rem; color: var(--gold); }
+  .heart-row { margin-top: 20px; display: flex; justify-content: center; gap: 8px; }
+  .heart-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--rose); animation: heartbeat 2s ease-in-out infinite; }
   .heart-dot:nth-child(2) { animation-delay: 0.3s; background: var(--blush); }
   .heart-dot:nth-child(3) { animation-delay: 0.6s; background: var(--gold); }
 
-  @keyframes heartbeat {
-    0%,100% { transform: scale(1); opacity: 0.5; }
-    50% { transform: scale(1.6); opacity: 1; }
-  }
+  @keyframes heartbeat { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.6); opacity: 1; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.9s ease, transform 0.9s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .ornament { display: flex; align-items: center; gap: 16px; margin: 0 auto 48px; max-width: 320px; }
+  .ornament-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold)); }
+  .ornament-line:last-child { background: linear-gradient(to left, transparent, var(--gold)); }
+  .ornament-diamond { width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); flex-shrink: 0; }
 
-  /* ── Utilities ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(28px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-
-  .reveal {
-    opacity: 0;
-    transform: translateY(32px);
-    transition: opacity 0.9s ease, transform 0.9s ease;
-  }
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* ── Ornament ── */
-  .ornament {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 0 auto 48px;
-    max-width: 320px;
-  }
-  .ornament-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--gold));
-  }
-  .ornament-line:last-child {
-    background: linear-gradient(to left, transparent, var(--gold));
-  }
-  .ornament-diamond {
-    width: 6px; height: 6px;
-    background: var(--gold);
-    transform: rotate(45deg);
-    flex-shrink: 0;
-  }
-
-  /* ── YouTube iframe hidden ── */
-  #yt-player {
-    position: fixed;
-    top: -9999px;
-    left: -9999px;
-    width: 1px;
-    height: 1px;
-    pointer-events: none;
-    opacity: 0;
-  }
+  #yt-frame { position: fixed; top: -9999px; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
   @media (max-width: 600px) {
     .memory-grid { grid-template-columns: 1fr; }
@@ -470,6 +260,18 @@
 </style>
 </head>
 <body>
+
+<!-- ── Intro Overlay ── -->
+<div id="intro-overlay">
+  <div class="intro-dots">
+    <div class="intro-dot"></div>
+    <div class="intro-dot"></div>
+    <div class="intro-dot"></div>
+  </div>
+  <div class="intro-title">Untuk <em>Wanda,</em><br>dengan sepenuh hati.</div>
+  <p class="intro-sub">sebuah kenangan dari Damar</p>
+  <button class="intro-btn">✦ &nbsp; Buka &nbsp; ✦</button>
+</div>
 
 <!-- Floating petals -->
 <script>
@@ -482,19 +284,17 @@
       p.style.height=(9+Math.random()*10)+'px';
       p.style.animationDuration=(8+Math.random()*14)+'s';
       p.style.animationDelay=(Math.random()*12)+'s';
-      p.style.opacity='0';
       document.body.appendChild(p);
     }
   })();
 </script>
 
-<!-- YouTube IFrame API -->
-<div id="yt-player"></div>
+<!-- YouTube (hidden) -->
+<div id="yt-frame"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <!-- Music Button -->
-<button id="music-btn" title="Musik">♪</button>
-<span id="music-label">musik latar</span>
+<button id="music-btn" title="Play / Pause">♪</button>
 
 <!-- ══ HERO ══ -->
 <section id="hero">
@@ -522,92 +322,34 @@
 <!-- ══ MEMORIES ══ -->
 <section id="memories">
   <div class="ornament reveal">
-    <div class="ornament-line"></div>
-    <div class="ornament-diamond"></div>
-    <div class="ornament-line"></div>
+    <div class="ornament-line"></div><div class="ornament-diamond"></div><div class="ornament-line"></div>
   </div>
   <span class="section-label reveal">— Kenangan yang kita simpan</span>
-
   <div class="memory-grid reveal">
-
-    <!-- 1. Cerita Pagi -->
     <div class="memory-card">
-      <div class="memory-photo">
-        <img src="https://drive.google.com/thumbnail?id=1JiXBQZfqJT3mCk5QhBJkIEY4ef-9XKl1&sz=w600" alt="Cerita Pagi" loading="lazy">
-        <div class="memory-photo-overlay"></div>
-      </div>
-      <div class="memory-content">
-        <span class="memory-icon">🌸</span>
-        <div class="memory-title">Cerita Pagi</div>
-        <div class="memory-text">Percakapan ringan yang membuat hari terasa lebih berwarna dari biasanya.</div>
-      </div>
+      <div class="memory-photo"><img src="https://drive.google.com/thumbnail?id=1JiXBQZfqJT3mCk5QhBJkIEY4ef-9XKl1&sz=w600" alt="Cerita Pagi" loading="lazy"><div class="memory-photo-overlay"></div></div>
+      <div class="memory-content"><span class="memory-icon">🌸</span><div class="memory-title">Cerita Pagi</div><div class="memory-text">Percakapan ringan yang membuat hari terasa lebih berwarna dari biasanya.</div></div>
     </div>
-
-    <!-- 2. Malam yang Panjang -->
     <div class="memory-card">
-      <div class="memory-photo">
-        <img src="https://drive.google.com/thumbnail?id=1QXQKUhR-u_uvtEBNP4bkbmH6Yfw9rupf&sz=w600" alt="Malam yang Panjang" loading="lazy">
-        <div class="memory-photo-overlay"></div>
-      </div>
-      <div class="memory-content">
-        <span class="memory-icon">🌙</span>
-        <div class="memory-title">Malam yang Panjang</div>
-        <div class="memory-text">Ketika waktu terasa berhenti dan hanya kita yang ada di dunia itu.</div>
-      </div>
+      <div class="memory-photo"><img src="https://drive.google.com/thumbnail?id=1QXQKUhR-u_uvtEBNP4bkbmH6Yfw9rupf&sz=w600" alt="Malam yang Panjang" loading="lazy"><div class="memory-photo-overlay"></div></div>
+      <div class="memory-content"><span class="memory-icon">🌙</span><div class="memory-title">Malam yang Panjang</div><div class="memory-text">Ketika waktu terasa berhenti dan hanya kita yang ada di dunia itu.</div></div>
     </div>
-
-    <!-- 3. Momen Kecil -->
     <div class="memory-card">
-      <div class="memory-photo">
-        <img src="https://drive.google.com/thumbnail?id=1Ffa3XDQTrX4NnkDVwCtBp31fBElusS4x&sz=w600" alt="Momen Kecil" loading="lazy">
-        <div class="memory-photo-overlay"></div>
-      </div>
-      <div class="memory-content">
-        <span class="memory-icon">✨</span>
-        <div class="memory-title">Momen Kecil</div>
-        <div class="memory-text">Detail-detail sepele yang diam-diam kusimpan rapat dalam ingatan.</div>
-      </div>
+      <div class="memory-photo"><img src="https://drive.google.com/thumbnail?id=1Ffa3XDQTrX4NnkDVwCtBp31fBElusS4x&sz=w600" alt="Momen Kecil" loading="lazy"><div class="memory-photo-overlay"></div></div>
+      <div class="memory-content"><span class="memory-icon">✨</span><div class="memory-title">Momen Kecil</div><div class="memory-text">Detail-detail sepele yang diam-diam kusimpan rapat dalam ingatan.</div></div>
     </div>
-
-    <!-- 4. Lagu Kita -->
     <div class="memory-card">
-      <div class="memory-photo">
-        <img src="https://drive.google.com/thumbnail?id=19eAu2mizz8skZidMVXCWorYIK19jS1c_&sz=w600" alt="Lagu Kita" loading="lazy">
-        <div class="memory-photo-overlay"></div>
-      </div>
-      <div class="memory-content">
-        <span class="memory-icon">🎵</span>
-        <div class="memory-title">Lagu Kita</div>
-        <div class="memory-text">Setiap kali melodi itu mengalun, wajahmu yang pertama kali muncul.</div>
-      </div>
+      <div class="memory-photo"><img src="https://drive.google.com/thumbnail?id=19eAu2mizz8skZidMVXCWorYIK19jS1c_&sz=w600" alt="Lagu Kita" loading="lazy"><div class="memory-photo-overlay"></div></div>
+      <div class="memory-content"><span class="memory-icon">🎵</span><div class="memory-title">Lagu Kita</div><div class="memory-text">Setiap kali melodi itu mengalun, wajahmu yang pertama kali muncul.</div></div>
     </div>
-
-    <!-- 5. Ketenangan -->
     <div class="memory-card">
-      <div class="memory-photo">
-        <img src="https://drive.google.com/thumbnail?id=1oh2_CgE2EigiUlGIOPP7oj2VEyw5suxZ&sz=w600" alt="Ketenangan" loading="lazy">
-        <div class="memory-photo-overlay"></div>
-      </div>
-      <div class="memory-content">
-        <span class="memory-icon">🌿</span>
-        <div class="memory-title">Ketenangan</div>
-        <div class="memory-text">Betapa nyamannya diam bersamamu, tanpa perlu mengisi setiap keheningan.</div>
-      </div>
+      <div class="memory-photo"><img src="https://drive.google.com/thumbnail?id=1oh2_CgE2EigiUlGIOPP7oj2VEyw5suxZ&sz=w600" alt="Ketenangan" loading="lazy"><div class="memory-photo-overlay"></div></div>
+      <div class="memory-content"><span class="memory-icon">🌿</span><div class="memory-title">Ketenangan</div><div class="memory-text">Betapa nyamannya diam bersamamu, tanpa perlu mengisi setiap keheningan.</div></div>
     </div>
-
-    <!-- 6. Kata-kata Tulus -->
     <div class="memory-card">
-      <div class="memory-photo">
-        <img src="https://drive.google.com/thumbnail?id=1kI6yexk6e-xAfdWe8T-LnituviGkYYoz&sz=w600" alt="Kata-kata Tulus" loading="lazy">
-        <div class="memory-photo-overlay"></div>
-      </div>
-      <div class="memory-content">
-        <span class="memory-icon">💌</span>
-        <div class="memory-title">Kata-kata Tulus</div>
-        <div class="memory-text">Yang kamu ucapkan di saat yang paling tepat, tanpa kamu sadari betapa berartinya.</div>
-      </div>
+      <div class="memory-photo"><img src="https://drive.google.com/thumbnail?id=1kI6yexk6e-xAfdWe8T-LnituviGkYYoz&sz=w600" alt="Kata-kata Tulus" loading="lazy"><div class="memory-photo-overlay"></div></div>
+      <div class="memory-content"><span class="memory-icon">💌</span><div class="memory-title">Kata-kata Tulus</div><div class="memory-text">Yang kamu ucapkan di saat yang paling tepat, tanpa kamu sadari betapa berartinya.</div></div>
     </div>
-
   </div>
 </section>
 
@@ -620,94 +362,72 @@
 
 <!-- ══ FAREWELL ══ -->
 <section id="farewell">
-  <div class="ornament reveal">
-    <div class="ornament-line"></div>
-    <div class="ornament-diamond"></div>
-    <div class="ornament-line"></div>
-  </div>
+  <div class="ornament reveal"><div class="ornament-line"></div><div class="ornament-diamond"></div><div class="ornament-line"></div></div>
   <h2 class="farewell-title reveal">Jadilah <em>bahagia,</em><br>di mana pun kamu berada.</h2>
-  <p class="farewell-message reveal">
-    Ini bukan selamat tinggal yang sedih. Ini adalah ucapan terima kasih yang paling tulus — atas semua yang pernah kamu beri, sadar maupun tidak.
-  </p>
+  <p class="farewell-message reveal">Ini bukan selamat tinggal yang sedih. Ini adalah ucapan terima kasih yang paling tulus — atas semua yang pernah kamu beri, sadar maupun tidak.</p>
   <div class="signature reveal">~ Damar</div>
   <div class="heart-row reveal">
-    <div class="heart-dot"></div>
-    <div class="heart-dot"></div>
-    <div class="heart-dot"></div>
+    <div class="heart-dot"></div><div class="heart-dot"></div><div class="heart-dot"></div>
   </div>
 </section>
 
 <script>
-  // ── Intersection observer for reveal ──
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if(entry.isIntersecting){
-        setTimeout(() => entry.target.classList.add('visible'), 80);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-  reveals.forEach(el => observer.observe(el));
+  // Reveal on scroll
+  document.querySelectorAll('.reveal').forEach(el => {
+    new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => {
+        if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('visible'),80); obs.unobserve(e.target); }
+      });
+    }, {threshold:0.15}).observe(el);
+  });
 
-  // ── YouTube Music Player ──
-  let player;
-  let isPlaying = false;
+  // YouTube Player
   const VIDEO_ID = 'NwFVSclD_uc';
-  const btn = document.getElementById('music-btn');
-  const label = document.getElementById('music-label');
+  let player, isPlaying = false, playerReady = false;
+  const musicBtn = document.getElementById('music-btn');
 
-  function onYouTubeIframeAPIReady() {
-    player = new YT.Player('yt-player', {
+  window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('yt-frame', {
       videoId: VIDEO_ID,
-      playerVars: {
-        autoplay: 1,
-        loop: 1,
-        playlist: VIDEO_ID,
-        controls: 0,
-        disablekb: 1,
-        fs: 0,
-        modestbranding: 1,
-        rel: 0,
-        mute: 0
-      },
+      playerVars: { autoplay:0, loop:1, playlist:VIDEO_ID, controls:0, disablekb:1, fs:0, rel:0, modestbranding:1 },
       events: {
         onReady: function(e) {
-          e.target.setVolume(40);
-          e.target.playVideo();
-          isPlaying = true;
-          btn.classList.add('playing');
-          btn.innerHTML = '♫';
-          label.classList.add('show');
-          setTimeout(() => label.classList.remove('show'), 3000);
+          playerReady = true;
+          e.target.setVolume(45);
         },
         onStateChange: function(e) {
           if(e.data === YT.PlayerState.PLAYING) {
-            isPlaying = true;
-            btn.classList.add('playing');
-            btn.innerHTML = '♫';
+            isPlaying = true; musicBtn.classList.add('playing'); musicBtn.innerHTML = '♫';
           } else if(e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
-            isPlaying = false;
-            btn.classList.remove('playing');
-            btn.innerHTML = '♪';
+            isPlaying = false; musicBtn.classList.remove('playing'); musicBtn.innerHTML = '♪';
           }
         }
       }
     });
+  };
+
+  // Intro overlay — klik tombol Buka untuk mulai musik
+  const overlay = document.getElementById('intro-overlay');
+  const openBtn = overlay.querySelector('.intro-btn');
+
+  function startExperience() {
+    overlay.classList.add('hide');
+    setTimeout(()=>overlay.style.display='none', 950);
+    const tryPlay = () => {
+      if(playerReady) { player.playVideo(); }
+      else { setTimeout(tryPlay, 300); }
+    };
+    tryPlay();
   }
 
-  btn.addEventListener('click', function() {
-    if(!player) return;
-    if(isPlaying) {
-      player.pauseVideo();
-    } else {
-      player.playVideo();
-    }
-  });
+  openBtn.addEventListener('click', function(e) { e.stopPropagation(); startExperience(); });
+  overlay.addEventListener('click', startExperience);
 
-  // Show label on hover
-  btn.addEventListener('mouseenter', () => label.classList.add('show'));
-  btn.addEventListener('mouseleave', () => label.classList.remove('show'));
+  // Tombol play/pause
+  musicBtn.addEventListener('click', function() {
+    if(!player || !playerReady) return;
+    isPlaying ? player.pauseVideo() : player.playVideo();
+  });
 </script>
 </body>
 </html>
