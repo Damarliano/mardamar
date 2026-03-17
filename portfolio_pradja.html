@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pradja Damarliano — NOC · NCC IPHUB Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #050d1a;
+  --bg2:       #081428;
+  --bg3:       #0a1c38;
+  --card:      #0d2044;
+  --border:    rgba(0,168,255,0.15);
+  --blue:      #00a8ff;
+  --blue2:     #0077cc;
+  --cyan:      #00e5ff;
+  --glow:      rgba(0,168,255,0.25);
+  --text:      #e8f4fd;
+  --muted:     #6b8fab;
+  --accent:    #00e5ff;
+  --grid-line: rgba(0,168,255,0.05);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Syne',sans-serif;
+  font-weight:400;
+  overflow-x:hidden;
+  cursor:default;
+}
+
+/* ── Grid background ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--blue2);border-radius:2px;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:9999;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 60px;
+  background:rgba(5,13,26,0.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:'Space Mono',monospace;
+  font-size:0.75rem;
+  color:var(--cyan);
+  letter-spacing:0.15em;
+}
+.nav-links{display:flex;gap:36px;}
+.nav-links a{
+  font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  transition:color 0.25s;
+}
+.nav-links a:hover{color:var(--cyan);}
+
+/* ── HERO ── */
+#hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:flex-start;justify-content:center;
+  padding:120px 60px 80px;
+  position:relative;overflow:hidden;
+  z-index:1;
+}
+
+.hero-tag{
+  font-family:'Space Mono',monospace;
+  font-size:0.7rem;letter-spacing:0.3em;
+  color:var(--cyan);
+  margin-bottom:24px;
+  opacity:0;animation:fadeUp 0.8s ease 0.2s forwards;
+}
+.hero-tag::before{content:'> ';opacity:0.5;}
+
+.hero-name{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(2.8rem,7vw,6rem);
+  font-weight:800;
+  line-height:1.0;
+  letter-spacing:-0.02em;
+  color:var(--text);
+  margin-bottom:8px;
+  opacity:0;animation:fadeUp 0.9s ease 0.4s forwards;
+}
+.hero-name span{
+  color:transparent;
+  -webkit-text-stroke:1.5px var(--blue);
+}
+
+.hero-role{
+  font-family:'Space Mono',monospace;
+  font-size:clamp(0.85rem,2vw,1.1rem);
+  color:var(--blue);
+  letter-spacing:0.08em;
+  margin-bottom:32px;
+  opacity:0;animation:fadeUp 0.9s ease 0.6s forwards;
+}
+.hero-role .sep{color:var(--muted);margin:0 12px;}
+
+.hero-desc{
+  max-width:600px;
+  font-size:1rem;line-height:1.8;
+  color:var(--muted);
+  margin-bottom:48px;
+  opacity:0;animation:fadeUp 0.9s ease 0.8s forwards;
+}
+
+.hero-cta{
+  display:flex;gap:16px;flex-wrap:wrap;
+  opacity:0;animation:fadeUp 0.9s ease 1s forwards;
+}
+.btn-primary{
+  padding:14px 32px;
+  background:var(--blue);
+  color:var(--bg);
+  font-family:'Space Mono',monospace;
+  font-size:0.72rem;letter-spacing:0.15em;
+  text-transform:uppercase;text-decoration:none;
+  border:none;cursor:pointer;
+  clip-path:polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  transition:all 0.25s;
+}
+.btn-primary:hover{background:var(--cyan);transform:translateY(-2px);}
+.btn-outline{
+  padding:14px 32px;
+  background:transparent;
+  color:var(--blue);
+  font-family:'Space Mono',monospace;
+  font-size:0.72rem;letter-spacing:0.15em;
+  text-transform:uppercase;text-decoration:none;
+  border:1px solid var(--blue);cursor:pointer;
+  clip-path:polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  transition:all 0.25s;
+}
+.btn-outline:hover{background:rgba(0,168,255,0.1);transform:translateY(-2px);}
+
+/* Hero visual */
+.hero-visual{
+  position:absolute;right:-80px;top:50%;transform:translateY(-50%);
+  width:520px;height:520px;
+  opacity:0;animation:fadeIn 1.5s ease 0.5s forwards;
+  pointer-events:none;
+}
+.hero-ring{
+  position:absolute;inset:0;
+  border-radius:50%;
+  border:1px solid rgba(0,168,255,0.12);
+  animation:spin 20s linear infinite;
+}
+.hero-ring:nth-child(2){
+  inset:40px;border-color:rgba(0,229,255,0.1);
+  animation-duration:14s;animation-direction:reverse;
+}
+.hero-ring:nth-child(3){inset:80px;border-color:rgba(0,168,255,0.08);animation-duration:30s;}
+.hero-ring::before{
+  content:'';
+  position:absolute;top:-3px;left:50%;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--blue);
+  transform:translateX(-50%);
+  box-shadow:0 0 12px var(--blue);
+}
+.hero-center{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:180px;height:180px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(0,168,255,0.1) 0%, transparent 70%);
+  border:1px solid rgba(0,168,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.2em;
+  color:var(--cyan);text-align:center;line-height:1.6;
+}
+
+/* ── SECTION BASE ── */
+.section{
+  position:relative;z-index:1;
+  padding:100px 60px;
+  max-width:1200px;
+  margin:0 auto;
+}
+.section-header{
+  display:flex;align-items:center;gap:20px;
+  margin-bottom:64px;
+}
+.section-num{
+  font-family:'Space Mono',monospace;
+  font-size:0.7rem;color:var(--cyan);
+  letter-spacing:0.2em;
+}
+.section-title{
+  font-size:clamp(1.6rem,3vw,2.2rem);
+  font-weight:700;letter-spacing:-0.01em;
+}
+.section-line{
+  flex:1;height:1px;
+  background:linear-gradient(to right, var(--border), transparent);
+}
+
+/* ── ABOUT / STATS ── */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2px;
+  background:var(--border);
+  border:1px solid var(--border);
+}
+.stat-box{
+  background:var(--card);
+  padding:40px 28px;
+  text-align:center;
+  transition:background 0.3s;
+}
+.stat-box:hover{background:rgba(0,168,255,0.07);}
+.stat-num{
+  font-family:'Space Mono',monospace;
+  font-size:2.5rem;font-weight:700;
+  color:var(--cyan);
+  display:block;margin-bottom:8px;
+}
+.stat-label{
+  font-size:0.72rem;letter-spacing:0.15em;
+  text-transform:uppercase;color:var(--muted);
+}
+
+/* ── EXPERIENCE ── */
+.exp-list{display:flex;flex-direction:column;gap:2px;}
+.exp-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-left:3px solid var(--blue);
+  padding:40px 44px;
+  transition:border-color 0.3s, background 0.3s;
+  position:relative;overflow:hidden;
+}
+.exp-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(135deg,rgba(0,168,255,0.03) 0%, transparent 60%);
+  pointer-events:none;
+}
+.exp-card:hover{
+  border-color:var(--cyan);
+  background:rgba(0,168,255,0.05);
+}
+.exp-header{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;flex-wrap:wrap;gap:12px;
+  margin-bottom:8px;
+}
+.exp-company{
+  font-size:1.2rem;font-weight:700;
+  color:var(--text);
+}
+.exp-period{
+  font-family:'Space Mono',monospace;
+  font-size:0.7rem;letter-spacing:0.1em;
+  color:var(--cyan);
+  background:rgba(0,229,255,0.08);
+  border:1px solid rgba(0,229,255,0.2);
+  padding:4px 12px;
+  white-space:nowrap;
+}
+.exp-role{
+  font-family:'Space Mono',monospace;
+  font-size:0.78rem;letter-spacing:0.1em;
+  color:var(--blue);margin-bottom:20px;
+}
+.exp-desc{
+  font-size:0.9rem;line-height:1.8;
+  color:var(--muted);margin-bottom:24px;
+}
+.exp-tasks{
+  list-style:none;
+  display:flex;flex-direction:column;gap:8px;
+  margin-bottom:24px;
+}
+.exp-tasks li{
+  font-size:0.85rem;line-height:1.7;
+  color:#8fb3cc;
+  padding-left:20px;position:relative;
+}
+.exp-tasks li::before{
+  content:'▸';
+  position:absolute;left:0;
+  color:var(--blue);font-size:0.7rem;top:3px;
+}
+.tag-list{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{
+  font-family:'Space Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.12em;
+  padding:4px 12px;
+  border:1px solid rgba(0,168,255,0.25);
+  color:var(--blue);
+  background:rgba(0,168,255,0.05);
+}
+
+/* ── SKILLS ── */
+.skills-wrapper{
+  display:grid;grid-template-columns:1fr 1fr;gap:2px;
+  background:var(--border);
+}
+.skill-group{
+  background:var(--card);
+  padding:36px 40px;
+}
+.skill-group-title{
+  font-family:'Space Mono',monospace;
+  font-size:0.7rem;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--cyan);
+  margin-bottom:24px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.skill-item{margin-bottom:18px;}
+.skill-name{
+  font-size:0.82rem;color:var(--text);
+  margin-bottom:6px;
+  display:flex;justify-content:space-between;
+}
+.skill-name span{color:var(--muted);font-size:0.72rem;}
+.skill-bar{
+  height:3px;background:rgba(0,168,255,0.1);
+  position:relative;overflow:hidden;
+}
+.skill-fill{
+  height:100%;
+  background:linear-gradient(to right, var(--blue2), var(--cyan));
+  width:0;
+  transition:width 1.2s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:0 0 8px var(--cyan);
+}
+.skill-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.skill-tag{
+  font-family:'Space Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.1em;
+  padding:6px 14px;
+  border:1px solid var(--border);
+  color:var(--muted);
+  transition:all 0.25s;
+}
+.skill-tag:hover{border-color:var(--blue);color:var(--blue);}
+
+/* ── CERTIFICATIONS ── */
+.cert-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;background:var(--border);
+}
+.cert-card{
+  background:var(--card);
+  padding:28px 28px;
+  transition:background 0.3s, transform 0.2s;
+  position:relative;overflow:hidden;
+  cursor:pointer;
+}
+.cert-card::after{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(to right, var(--blue2), var(--cyan));
+  transform:scaleX(0);
+  transition:transform 0.3s;
+}
+.cert-card:hover{background:rgba(0,168,255,0.1);transform:translateY(-2px);}
+.cert-card:hover::after{transform:scaleX(1);}
+.cert-issuer{
+  font-family:'Space Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.2em;
+  color:var(--cyan);margin-bottom:10px;
+  text-transform:uppercase;
+}
+.cert-name{
+  font-size:0.88rem;font-weight:600;
+  color:var(--text);line-height:1.4;
+  margin-bottom:10px;
+}
+.cert-valid{
+  font-family:'Space Mono',monospace;
+  font-size:0.62rem;color:var(--muted);
+  letter-spacing:0.08em;
+}
+.cert-valid.active{color:#00ff88;}
+.cert-view-hint{
+  margin-top:14px;
+  font-family:'Space Mono',monospace;
+  font-size:0.6rem;letter-spacing:0.12em;
+  color:var(--blue);opacity:0;
+  transition:opacity 0.25s;
+  display:flex;align-items:center;gap:6px;
+}
+.cert-card:hover .cert-view-hint{opacity:1;}
+
+/* ── MODAL ── */
+#cert-modal{
+  display:none;
+  position:fixed;inset:0;
+  z-index:99999;
+  background:rgba(5,13,26,0.96);
+  backdrop-filter:blur(16px);
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+#cert-modal.open{display:flex;}
+.modal-box{
+  position:relative;
+  width:100%;max-width:920px;
+  max-height:92vh;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-top:3px solid var(--cyan);
+  display:flex;flex-direction:column;
+  animation:modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  overflow:hidden;
+}
+@keyframes modalIn{
+  from{opacity:0;transform:scale(0.93) translateY(20px);}
+  to{opacity:1;transform:scale(1) translateY(0);}
+}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;gap:12px;
+}
+.modal-title-wrap{flex:1;min-width:0;}
+.modal-issuer{
+  font-family:'Space Mono',monospace;
+  font-size:0.6rem;letter-spacing:0.2em;
+  color:var(--cyan);text-transform:uppercase;
+  margin-bottom:3px;
+}
+.modal-cert-name{
+  font-size:0.95rem;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.modal-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.modal-open-btn{
+  font-family:'Space Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.08em;
+  padding:7px 14px;
+  border:1px solid var(--blue);
+  color:var(--blue);background:transparent;
+  cursor:pointer;text-decoration:none;
+  transition:all 0.2s;display:flex;align-items:center;gap:5px;
+  white-space:nowrap;
+}
+.modal-open-btn:hover{background:rgba(0,168,255,0.12);color:var(--cyan);border-color:var(--cyan);}
+.modal-close{
+  width:34px;height:34px;
+  background:transparent;
+  border:1px solid rgba(0,168,255,0.25);
+  color:var(--muted);font-size:1.1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;flex-shrink:0;
+}
+.modal-close:hover{border-color:var(--cyan);color:var(--cyan);}
+.modal-body{
+  flex:1;overflow:hidden;
+  position:relative;
+  background:#0a0f1a;
+  min-height:480px;
+}
+.modal-iframe{
+  width:100%;
+  height:100%;
+  min-height:540px;
+  border:none;
+  display:block;
+  position:relative;z-index:1;
+}
+.modal-loading{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:16px;color:var(--muted);
+  font-family:'Space Mono',monospace;font-size:0.72rem;
+  letter-spacing:0.12em;z-index:0;
+}
+.modal-spinner{
+  width:30px;height:30px;
+  border:2px solid rgba(0,168,255,0.15);
+  border-top-color:var(--cyan);
+  border-radius:50%;
+  animation:spin 0.75s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.modal-footer{
+  padding:10px 20px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.modal-nav{display:flex;gap:6px;}
+.modal-nav-btn{
+  font-family:'Space Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.08em;
+  padding:6px 14px;
+  border:1px solid var(--border);
+  color:var(--muted);background:transparent;
+  cursor:pointer;transition:all 0.2s;
+}
+.modal-nav-btn:hover:not(:disabled){border-color:var(--blue);color:var(--blue);}
+.modal-nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.modal-counter{
+  font-family:'Space Mono',monospace;
+  font-size:0.62rem;color:var(--muted);letter-spacing:0.08em;
+}
+
+/* ── EDUCATION ── */
+.edu-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-left:3px solid var(--cyan);
+  padding:36px 44px;
+  display:flex;align-items:center;gap:40px;flex-wrap:wrap;
+}
+.edu-year{
+  font-family:'Space Mono',monospace;
+  font-size:2rem;font-weight:700;
+  color:var(--cyan);opacity:0.3;
+  white-space:nowrap;
+}
+.edu-info{}
+.edu-school{font-size:1.2rem;font-weight:700;margin-bottom:6px;}
+.edu-major{font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--blue);letter-spacing:0.1em;margin-bottom:4px;}
+.edu-detail{font-size:0.82rem;color:var(--muted);}
+
+/* ── CONTACT ── */
+#contact{
+  padding:100px 60px 140px;
+  text-align:center;position:relative;z-index:1;
+}
+.contact-title{
+  font-size:clamp(2rem,5vw,3.5rem);
+  font-weight:800;letter-spacing:-0.02em;
+  margin-bottom:16px;
+}
+.contact-title span{color:var(--cyan);}
+.contact-sub{
+  font-size:0.95rem;color:var(--muted);
+  margin-bottom:56px;max-width:480px;margin-left:auto;margin-right:auto;
+}
+.contact-cards{
+  display:flex;justify-content:center;gap:2px;
+  flex-wrap:wrap;max-width:700px;margin:0 auto 56px;
+  background:var(--border);
+}
+.contact-card{
+  background:var(--card);
+  padding:28px 36px;flex:1;min-width:200px;
+  text-decoration:none;
+  transition:background 0.3s;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.contact-card:hover{background:rgba(0,168,255,0.08);}
+.contact-icon{font-size:1.4rem;}
+.contact-label{font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.2em;color:var(--cyan);text-transform:uppercase;}
+.contact-value{font-size:0.82rem;color:var(--text);}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:28px 60px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:1;
+}
+.footer-copy{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;}
+.footer-status{
+  display:flex;align-items:center;gap:8px;
+  font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--muted);
+}
+.status-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#00ff88;
+  box-shadow:0 0 8px #00ff88;
+  animation:blink-dot 2s ease-in-out infinite;
+}
+@keyframes blink-dot{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+/* ── Animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.8s ease,transform 0.8s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:0.1s;}
+.reveal-delay-2{transition-delay:0.2s;}
+.reveal-delay-3{transition-delay:0.3s;}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  nav{padding:16px 24px;}
+  .nav-links{display:none;}
+  #hero{padding:100px 24px 60px;}
+  .hero-visual{display:none;}
+  .section{padding:80px 24px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .skills-wrapper{grid-template-columns:1fr;}
+  .cert-grid{grid-template-columns:repeat(2,1fr);}
+  footer{padding:20px 24px;flex-direction:column;gap:12px;text-align:center;}
+  #contact{padding:80px 24px 100px;}
+}
+@media(max-width:600px){
+  .cert-grid{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .exp-card{padding:28px 24px;}
+  .skill-group{padding:28px 24px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">PD_PORTFOLIO.exe</div>
+  <div class="nav-links">
+    <a href="#about">Tentang</a>
+    <a href="#experience">Pengalaman</a>
+    <a href="#skills">Keahlian</a>
+    <a href="#certifications">Sertifikasi</a>
+    <a href="#contact">Kontak</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-tag">NOC Engineer · NCC IPHUB · Satellite Communication</p>
+  <h1 class="hero-name">Pradja<br><span>Damarliano</span></h1>
+  <p class="hero-role">
+    Network Operations Center
+    <span class="sep">//</span>
+    NCC IPHUB Engineering
+    <span class="sep">//</span>
+    Jakarta Timur
+  </p>
+  <p class="hero-desc">
+    Profesional di bidang telekomunikasi satelit dengan pengalaman lebih dari 5 tahun dalam operasional jaringan VSAT, monitoring real-time 24/7, dan manajemen IP HUB. Berpengalaman menggunakan modem Newtec, iDirect, dan infrastruktur jaringan satelit skala enterprise.
+  </p>
+  <div class="hero-cta">
+    <a href="#experience" class="btn-primary">Lihat Pengalaman</a>
+    <a href="#contact" class="btn-outline">Hubungi Saya</a>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-ring"></div>
+    <div class="hero-ring"></div>
+    <div class="hero-ring"></div>
+    <div class="hero-center">NOC<br>NCC<br>IPHUB</div>
+  </div>
+</section>
+
+<!-- ABOUT / STATS -->
+<div id="about" class="section">
+  <div class="section-header reveal">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Statistik Karier</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-box reveal reveal-delay-1">
+      <span class="stat-num" data-target="5">0</span>
+      <span class="stat-label">Tahun Pengalaman</span>
+    </div>
+    <div class="stat-box reveal reveal-delay-2">
+      <span class="stat-num" data-target="2">0</span>
+      <span class="stat-label">Perusahaan</span>
+    </div>
+    <div class="stat-box reveal reveal-delay-3">
+      <span class="stat-num" data-target="9">0</span>
+      <span class="stat-label">Sertifikasi</span>
+    </div>
+    <div class="stat-box reveal">
+      <span class="stat-num">24/7</span>
+      <span class="stat-label">Operasional NOC</span>
+    </div>
+  </div>
+</div>
+
+<!-- EXPERIENCE -->
+<div id="experience" class="section">
+  <div class="section-header reveal">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Pengalaman Kerja</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="exp-list">
+
+    <!-- Job 2 - Current -->
+    <div class="exp-card reveal">
+      <div class="exp-header">
+        <div>
+          <div class="exp-company">PT. Bis Data Indonesia</div>
+          <div class="exp-role">NCC IPHUB Engineering &nbsp;·&nbsp; NOC Engineer</div>
+        </div>
+        <div class="exp-period">Sep 2021 — Sekarang</div>
+      </div>
+      <p class="exp-desc">Bertanggung jawab atas operasional dan monitoring sistem IP HUB pada jaringan komunikasi satelit. Memulai karier di divisi NOC dan berkembang ke posisi NCC IPHUB Engineering, mengelola infrastruktur satelit skala enterprise.</p>
+      <ul class="exp-tasks">
+        <li>Mengelola operasional serta monitoring sistem IP HUB untuk memastikan layanan jaringan stabil dan memiliki ketersediaan tinggi.</li>
+        <li>Melakukan konfigurasi, provisioning, dan manajemen perangkat HUB termasuk modem satelit Newtec dan perangkat jaringan pendukung.</li>
+        <li>Monitoring performa jaringan satelit: signal quality, carrier status, bandwidth utilization, latency, dan throughput.</li>
+        <li>Analisis dan troubleshooting gangguan VSAT di sisi HUB, koordinasi dengan NOC, field engineer, dan vendor.</li>
+        <li>Mengelola trafik jaringan satelit untuk efisiensi bandwidth dan stabilitas komunikasi data.</li>
+        <li>Incident handling dan escalation management sesuai SLA operasional.</li>
+      </ul>
+      <div class="tag-list">
+        <span class="tag">Newtec HUB</span>
+        <span class="tag">IP HUB</span>
+        <span class="tag">VSAT Management</span>
+        <span class="tag">NMS</span>
+        <span class="tag">Linux</span>
+        <span class="tag">SSH</span>
+        <span class="tag">TCP/IP</span>
+        <span class="tag">Network Monitoring</span>
+      </div>
+    </div>
+
+    <!-- Job 1 -->
+    <div class="exp-card reveal">
+      <div class="exp-header">
+        <div>
+          <div class="exp-company">PT. Skyreach</div>
+          <div class="exp-role">NOC Engineer — VSAT KU-Band</div>
+        </div>
+        <div class="exp-period">Nov 2019 — Sep 2021</div>
+      </div>
+      <p class="exp-desc">Melakukan monitoring jaringan VSAT secara real-time 24/7 untuk layanan komunikasi satelit, termasuk jaringan BAKTI Kominfo dan konektivitas kapal laut menggunakan modem iDirect dan Newtec.</p>
+      <ul class="exp-tasks">
+        <li>Monitoring jaringan VSAT real-time 24/7 untuk layanan BAKTI Kominfo dan konektivitas kapal laut.</li>
+        <li>Analisis dan troubleshooting gangguan berdasarkan parameter signal quality, carrier status, bandwidth utilization, latency, dan throughput.</li>
+        <li>Incident handling dan escalation management, koordinasi dengan tim engineering, field engineer, dan vendor.</li>
+        <li>Menangani laporan, permintaan layanan, serta keluhan pelanggan secara responsif dan profesional.</li>
+        <li>Analisis log sistem dan performa jaringan untuk deteksi dini potensi gangguan.</li>
+      </ul>
+      <div class="tag-list">
+        <span class="tag">iDirect Modem</span>
+        <span class="tag">Newtec Modem</span>
+        <span class="tag">Mikrotik</span>
+        <span class="tag">VSAT KU-Band</span>
+        <span class="tag">NMS</span>
+        <span class="tag">BAKTI Kominfo</span>
+        <span class="tag">Maritime VSAT</span>
+        <span class="tag">TCP/IP</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SKILLS -->
+<div id="skills" class="section">
+  <div class="section-header reveal">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Keahlian Teknis</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="skills-wrapper">
+    <div class="skill-group reveal">
+      <div class="skill-group-title">// Core Technical Skills</div>
+      <div class="skill-item">
+        <div class="skill-name">VSAT Network Monitoring <span>Expert</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="92"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">IP HUB Operation & Management <span>Advanced</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Network Troubleshooting <span>Expert</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Satellite Communication System <span>Advanced</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">TCP/IP Networking <span>Advanced</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="82"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Incident & Escalation Management <span>Expert</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+      </div>
+    </div>
+
+    <div class="skill-group reveal reveal-delay-1">
+      <div class="skill-group-title">// Tools & Technologies</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Modem Newtec</span>
+        <span class="skill-tag">Modem iDirect</span>
+        <span class="skill-tag">Mikrotik Router</span>
+        <span class="skill-tag">HUB Newtec</span>
+        <span class="skill-tag">NMS</span>
+        <span class="skill-tag">Linux</span>
+        <span class="skill-tag">SSH / Console</span>
+        <span class="skill-tag">Remote Management</span>
+        <span class="skill-tag">Network Diagnostic</span>
+        <span class="skill-tag">Wireshark</span>
+        <span class="skill-tag">Bandwidth Monitor</span>
+        <span class="skill-tag">Carrier Monitoring</span>
+        <span class="skill-tag">Signal Analysis</span>
+        <span class="skill-tag">VMware / VirtualBox</span>
+        <span class="skill-tag">Cisco Basic</span>
+        <span class="skill-tag">Cyber Security Basic</span>
+      </div>
+    </div>
+
+    <div class="skill-group reveal reveal-delay-2" style="grid-column:1/-1;">
+      <div class="skill-group-title">// Professional Strengths</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Analytical Problem Solving</span>
+        <span class="skill-tag">24/7 NOC Operations</span>
+        <span class="skill-tag">Fast Incident Response</span>
+        <span class="skill-tag">Vendor Coordination</span>
+        <span class="skill-tag">SLA Achievement</span>
+        <span class="skill-tag">Network Architecture Understanding</span>
+        <span class="skill-tag">Technical Communication</span>
+        <span class="skill-tag">HUB Satellite Management</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CERTIFICATIONS -->
+<div id="certifications" class="section">
+  <div class="section-header reveal">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Sertifikasi</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="cert-grid">
+    <div class="cert-card reveal reveal-delay-1" onclick="openCert(0)">
+      <div class="cert-issuer">Kacific</div>
+      <div class="cert-name">Kacific Global Certification</div>
+      <div class="cert-valid active">✦ Berlaku s/d 26 Oktober 2026</div>
+      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
+    </div>
+    <div class="cert-card reveal reveal-delay-2" onclick="openCert(1)">
+      <div class="cert-issuer">ID Network</div>
+      <div class="cert-name">Jaringan Komputer Dasar</div>
+      <div class="cert-valid active">✦ Berlaku s/d 29 September 2026</div>
+      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
+    </div>
+    <div class="cert-card reveal reveal-delay-3" onclick="openCert(2)">
+      <div class="cert-issuer">ID Network</div>
+      <div class="cert-name">Cisco Dasar</div>
+      <div class="cert-valid active">✦ Berlaku s/d 28 September 2026</div>
+      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
+    </div>
+    <div class="cert-card reveal reveal-delay-1" onclick="openCert(3)">
+      <div class="cert-issuer">ID Network</div>
+      <div class="cert-name">Linux Dasar</div>
+      <div class="cert-valid active">✦ Berlaku s/d 29 September 2026</div>
+      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
+    </div>
+    <div class="cert-card reveal reveal-delay-2" onclick="openCert(4)">
+      <div class="cert-issuer">Coding Studio</div>
+      <div class="cert-name">Fundamental Penetration Testing</div>
+      <div class="cert-valid">Sertifikasi Keahlian</div>
+      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
+    </div>
+    <div class="cert-card reveal reveal-delay-3" onclick="openCert(5)">
+      <div class="cert-issuer">Coding Studio</div>
+      <div class="cert-name">Fundamental Algoritma</div>
+      <div class="cert-valid">Sertifikasi Keahlian</div>
+      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
+    </div>
+    <div class="cert-card reveal reveal-delay-1" onclick="openCert(6)">
+      <div class="cert-issuer">Coding Studio</div>
+      <div class="cert-name">Fundamental Command Linux</div>
+      <div class="cert-valid">Sertifikasi Keahlian</div>
+      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
+    </div>
+    <div class="cert-card reveal reveal-delay-2" onclick="openCert(7)">
+      <div class="cert-issuer">Coding Studio</div>
+      <div class="cert-name">Fundamental Jaringan Komputer</div>
+      <div class="cert-valid">Sertifikasi Keahlian</div>
+      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
+    </div>
+    <div class="cert-card reveal reveal-delay-3" onclick="openCert(8)">
+      <div class="cert-issuer">Coding Studio</div>
+      <div class="cert-name">Fundamental Cyber Security</div>
+      <div class="cert-valid">Sertifikasi Keahlian</div>
+      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CERT MODAL ══ -->
+<div id="cert-modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-issuer" id="modal-issuer">—</div>
+        <div class="modal-cert-name" id="modal-cert-name">—</div>
+      </div>
+      <div class="modal-actions">
+        <a id="modal-open-btn" href="#" target="_blank" class="modal-open-btn">↗ Buka di Tab Baru</a>
+        <button class="modal-close" onclick="closeCert()" aria-label="Tutup">✕</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-loading" id="modal-loading">
+        <div class="modal-spinner"></div>
+        <span>Memuat sertifikat...</span>
+      </div>
+      <iframe id="modal-iframe" class="modal-iframe" src="" allowfullscreen
+        onload="document.getElementById('modal-loading').style.display='none'"></iframe>
+    </div>
+    <div class="modal-footer">
+      <div class="modal-nav">
+        <button class="modal-nav-btn" id="btn-prev" onclick="navCert(-1)">← Sebelumnya</button>
+        <button class="modal-nav-btn" id="btn-next" onclick="navCert(1)">Berikutnya →</button>
+      </div>
+      <span class="modal-counter" id="modal-counter">1 / 9</span>
+    </div>
+  </div>
+</div>
+
+<!-- EDUCATION -->
+<div id="education" class="section">
+  <div class="section-header reveal">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Pendidikan</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="edu-card reveal">
+    <div class="edu-year">2019</div>
+    <div class="edu-info">
+      <div class="edu-school">SMK Ristek Kikin</div>
+      <div class="edu-major">Sekolah Menengah Kejuruan · Jakarta Timur</div>
+      <div class="edu-detail">Lulus 2019 — Bidang Teknologi & Rekayasa</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <h2 class="contact-title reveal">Mari <span>Terhubung</span></h2>
+  <p class="contact-sub reveal">Terbuka untuk peluang baru, kolaborasi, atau sekadar diskusi seputar jaringan satelit dan telekomunikasi.</p>
+  <div class="contact-cards reveal">
+    <a href="/cdn-cgi/l/email-protection#49393b282d23283028213028787e092e24282025672a2624" class="contact-card">
+      <span class="contact-icon">✉</span>
+      <span class="contact-label">Email</span>
+      <span class="contact-value"><span class="__cf_email__" data-cfemail="7f0f0d1e1b151e061e17061e4e483f18121e1613511c1012">[email&#160;protected]</span></span>
+    </a>
+    <a href="tel:089636569015" class="contact-card">
+      <span class="contact-icon">☎</span>
+      <span class="contact-label">Telepon</span>
+      <span class="contact-value">0896 3656 9015</span>
+    </a>
+    <a href="https://www.linkedin.com/in/pradja-damarliano-y-p-w-063a11277" target="_blank" class="contact-card">
+      <span class="contact-icon">in</span>
+      <span class="contact-label">LinkedIn</span>
+      <span class="contact-value">pradja-damarliano</span>
+    </a>
+  </div>
+  <a href="/cdn-cgi/l/email-protection#e8989a898c82899189809189d9dfa88f85898184c68b8785" class="btn-primary" style="display:inline-block;margin-top:8px;">Kirim Pesan</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-copy">© 2025 Pradja Damarliano Yahya Putra Wijaya — All rights reserved</span>
+  <span class="footer-status">
+    <span class="status-dot"></span>
+    Available for opportunities
+  </span>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── Cert Modal ──
+const CERTS = [
+  { issuer: "Kacific", name: "Kacific Global Certification",          id: "1iXlfjgzKSaJTTJHm5qaWQKY4Nxp6J8k1" },
+  { issuer: "ID Network", name: "Jaringan Komputer Dasar",            id: "1l5HFqaLVPxVKXtKSzQznVf5XNNZ9sWnA" },
+  { issuer: "ID Network", name: "Cisco Dasar",                        id: "1l5HFqaLVPxVKXtKSzQznVf5XNNZ9sWnA" },
+  { issuer: "ID Network", name: "Linux Dasar",                        id: "1l77ybUy2s7MbrBTPXKIGr_D1OM1CVkrf" },
+  { issuer: "Coding Studio", name: "Fundamental Penetration Testing", id: "1C8OtGjOeh-a_YxkQulAMZzjzE_8wGPXD" },
+  { issuer: "Coding Studio", name: "Fundamental Algoritma",           id: "1OArvwmuhpnGu8-pVfLWGf-ApiVpTArGm" },
+  { issuer: "Coding Studio", name: "Fundamental Command Linux",       id: "1NS-L9LHFqiU_IEA4mnSzr9Aw4rsAGC_p" },
+  { issuer: "Coding Studio", name: "Fundamental Jaringan Komputer",  id: "1eEaZYpV2UQDg3KE2Hj4JcxLHZOAtgBPm" },
+  { issuer: "Coding Studio", name: "Fundamental Cyber Security",      id: "1MCEKrS6-Vvr-Y72ysaJgTiAlf-v4mGTO" }
+];
+
+let currentCert = 0;
+
+function drivePreviewUrl(fileId) {
+  return `https://drive.google.com/file/d/${fileId}/preview`;
+}
+function driveDirectUrl(fileId) {
+  return `https://drive.google.com/file/d/${fileId}/view`;
+}
+
+function openCert(idx) {
+  currentCert = idx;
+  renderModal();
+  document.getElementById('cert-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCert() {
+  document.getElementById('cert-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('modal-iframe').src = '';
+  document.getElementById('modal-loading').style.display = 'flex';
+}
+
+function renderModal() {
+  const c = CERTS[currentCert];
+  document.getElementById('modal-issuer').textContent = c.issuer;
+  document.getElementById('modal-cert-name').textContent = c.name;
+  document.getElementById('modal-open-btn').href = driveDirectUrl(c.id);
+  document.getElementById('modal-counter').textContent = (currentCert + 1) + ' / ' + CERTS.length;
+  document.getElementById('modal-loading').style.display = 'flex';
+  document.getElementById('modal-iframe').src = drivePreviewUrl(c.id);
+  document.getElementById('btn-prev').disabled = currentCert === 0;
+  document.getElementById('btn-next').disabled = currentCert === CERTS.length - 1;
+}
+
+function navCert(dir) {
+  const next = currentCert + dir;
+  if(next >= 0 && next < CERTS.length) {
+    currentCert = next;
+    renderModal();
+  }
+}
+
+// Close on backdrop click
+document.getElementById('cert-modal').addEventListener('click', function(e) {
+  if(e.target === this) closeCert();
+});
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+  if(e.key === 'Escape') closeCert();
+  if(e.key === 'ArrowRight') navCert(1);
+  if(e.key === 'ArrowLeft') navCert(-1);
+});
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      revealObserver.unobserve(e.target);
+    }
+  });
+},{threshold:0.1});
+revealEls.forEach(el => revealObserver.observe(el));
+
+// Counter animation
+function animateCounter(el) {
+  const target = parseInt(el.getAttribute('data-target'));
+  if(!target) return;
+  let current = 0;
+  const step = target / 40;
+  const timer = setInterval(() => {
+    current += step;
+    if(current >= target){
+      el.textContent = target + '+';
+      clearInterval(timer);
+    } else {
+      el.textContent = Math.floor(current);
+    }
+  }, 40);
+}
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      animateCounter(e.target);
+      counterObserver.unobserve(e.target);
+    }
+  });
+},{threshold:0.5});
+document.querySelectorAll('.stat-num[data-target]').forEach(el => counterObserver.observe(el));
+
+// Skill bar animation
+const skillObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.skill-fill').forEach(bar => {
+  
