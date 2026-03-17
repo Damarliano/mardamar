@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yeti Herawati Travel – Umroh & Haji</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #9A7A2C;
+    --deep: #0D0D1A;
+    --deep2: #14142A;
+    --deep3: #1E1E38;
+    --cream: #F5EDD6;
+    --cream2: #EDE0C0;
+    --white: #FDFAF2;
+    --text-muted: #A09880;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--deep);
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    overflow-x: hidden;
+  }
+
+  /* ===== NOISE TEXTURE OVERLAY ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.3;
+  }
+
+  /* ===== NAVBAR ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 900;
+    padding: 24px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(13,13,26,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(2px);
+    transition: all 0.4s ease;
+  }
+
+  nav.scrolled {
+    background: rgba(13,13,26,0.97);
+    padding: 16px 60px;
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+
+  .nav-logo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nav-logo-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .nav-logo-sub {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--cream2);
+    text-decoration: none;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 4px;
+    transition: color 0.3s;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: var(--gold);
+    transition: width 0.3s ease;
+  }
+
+  .nav-links a:hover { color: var(--gold-light); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-cta {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 10px 28px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .nav-cta:hover {
+    background: var(--gold);
+    color: var(--deep);
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 80%, rgba(201,168,76,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 20% 50%, rgba(100,60,200,0.06) 0%, transparent 60%),
+      linear-gradient(175deg, #0D0D1A 0%, #141430 50%, #0A0A18 100%);
+  }
+
+  /* Kaaba silhouette */
+  .hero-kaaba {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 900px;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+
+  .hero-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    opacity: var(--op, 0.6);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: var(--op, 0.6); transform: scale(1); }
+    50% { opacity: 0.1; transform: scale(0.5); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 0 40px;
+    max-width: 900px;
+    animation: fadeUp 1.2s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    animation: fadeUp 1s ease 0.2s both;
+  }
+
+  .hero-badge::before, .hero-badge::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+
+  .hero-arabic {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(24px, 4vw, 44px);
+    color: var(--gold-light);
+    margin-bottom: 16px;
+    letter-spacing: 6px;
+    animation: fadeUp 1s ease 0.3s both;
+    direction: rtl;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 9vw, 110px);
+    font-weight: 700;
+    line-height: 0.9;
+    color: var(--white);
+    margin-bottom: 10px;
+    animation: fadeUp 1s ease 0.4s both;
+  }
+
+  .hero-title span {
+    display: block;
+    color: var(--gold-light);
+    font-style: italic;
+  }
+
+  .hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(16px, 2vw, 22px);
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 56px;
+    animation: fadeUp 1s ease 0.5s both;
+    font-style: italic;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 1s ease 0.6s both;
+  }
+
+  .btn-primary {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 18px 48px;
+    background: var(--gold);
+    color: var(--deep);
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-primary:hover::before { left: 100%; }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 20px 40px rgba(201,168,76,0.3); }
+
+  .btn-secondary {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 18px 48px;
+    background: transparent;
+    color: var(--cream);
+    border: 1px solid rgba(201,168,76,0.4);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--gold);
+    color: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: fadeUp 1s ease 1s both;
+    cursor: pointer;
+  }
+
+  .hero-scroll span {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ===== STATS STRIP ===== */
+  .stats-strip {
+    background: var(--deep2);
+    border-top: 1px solid rgba(201,168,76,0.1);
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    padding: 40px 60px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px;
+    border-right: 1px solid rgba(201,168,76,0.1);
+    text-align: center;
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-number sup {
+    font-size: 24px;
+    vertical-align: super;
+  }
+
+  .stat-label {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* ===== SECTION BASE ===== */
+  section { padding: 120px 60px; }
+
+  .section-tag {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-tag::before {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 24px;
+  }
+
+  .section-title em {
+    color: var(--gold-light);
+    font-style: italic;
+  }
+
+  .section-desc {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--text-muted);
+    line-height: 1.8;
+    max-width: 540px;
+    font-style: italic;
+  }
+
+  /* ===== ABOUT ===== */
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: center;
+    background: var(--deep2);
+  }
+
+  .about-visual {
+    position: relative;
+    height: 600px;
+  }
+
+  .about-img-main {
+    position: absolute;
+    top: 0; left: 0;
+    width: 80%;
+    height: 85%;
+    background: linear-gradient(135deg, var(--deep3) 0%, rgba(30,30,60,0.8) 100%);
+    border: 1px solid rgba(201,168,76,0.2);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .about-mosque-icon {
+    width: 60%;
+    opacity: 0.4;
+  }
+
+  .about-img-accent {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 55%;
+    height: 55%;
+    background: linear-gradient(135deg, rgba(201,168,76,0.1) 0%, rgba(201,168,76,0.05) 100%);
+    border: 1px solid rgba(201,168,76,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .about-img-accent .big-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .about-img-accent .big-label {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    text-align: center;
+  }
+
+  .about-gold-line {
+    position: absolute;
+    top: 40%;
+    right: -20px;
+    width: 1px;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+  }
+
+  .about-text { display: flex; flex-direction: column; gap: 28px; }
+
+  .about-feature {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 24px;
+    border: 1px solid rgba(201,168,76,0.1);
+    background: rgba(201,168,76,0.03);
+    transition: all 0.3s ease;
+  }
+
+  .about-feature:hover {
+    border-color: rgba(201,168,76,0.3);
+    background: rgba(201,168,76,0.06);
+    transform: translateX(8px);
+  }
+
+  .feature-icon {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+  }
+
+  .feature-text h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .feature-text p {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ===== PACKAGES ===== */
+  .packages {
+    background: var(--deep);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .packages::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .packages-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 70px;
+  }
+
+  .packages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: rgba(201,168,76,0.1);
+  }
+
+  .pkg-card {
+    background: var(--deep2);
+    padding: 48px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    cursor: pointer;
+  }
+
+  .pkg-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-dark));
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+  }
+
+  .pkg-card:hover::before { transform: scaleX(1); }
+
+  .pkg-card:hover {
+    background: var(--deep3);
+    transform: translateY(-6px);
+  }
+
+  .pkg-card.featured {
+    background: linear-gradient(160deg, rgba(201,168,76,0.12) 0%, var(--deep2) 60%);
+    border-top: 3px solid var(--gold);
+  }
+
+  .pkg-badge {
+    display: inline-block;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    background: var(--gold);
+    color: var(--deep);
+    font-weight: 700;
+    margin-bottom: 28px;
+  }
+
+  .pkg-type {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .pkg-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+
+  .pkg-duration {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 28px;
+  }
+
+  .pkg-price {
+    margin-bottom: 32px;
+  }
+
+  .pkg-price .from {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .pkg-price .amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .pkg-price .currency {
+    font-size: 18px;
+    font-weight: 400;
+    margin-right: 4px;
+  }
+
+  .pkg-price .per {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .pkg-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .pkg-features li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    color: var(--cream2);
+    font-style: italic;
+  }
+
+  .pkg-features li::before {
+    content: '✦';
+    color: var(--gold);
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  .pkg-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    text-align: center;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--cream);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .pkg-btn:hover, .pkg-card.featured .pkg-btn {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--deep);
+    font-weight: 700;
+  }
+
+  /* ===== DESTINATIONS / ZIARA ===== */
+  .ziara {
+    background: var(--deep2);
+    position: relative;
+  }
+
+  .ziara-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    grid-template-rows: 280px 280px;
+    gap: 2px;
+    background: rgba(201,168,76,0.08);
+    margin-top: 60px;
+  }
+
+  .ziara-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--deep3);
+    display: flex;
+    align-items: flex-end;
+    padding: 32px;
+  }
+
+  .ziara-card:first-child {
+    grid-row: span 2;
+  }
+
+  .ziara-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .ziara-bg svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.15;
+    transform: scale(1.1);
+    transition: transform 0.6s ease, opacity 0.3s ease;
+  }
+
+  .ziara-card:hover .ziara-bg svg {
+    transform: scale(1.2);
+    opacity: 0.25;
+  }
+
+  .ziara-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(13,13,26,0.9) 0%, transparent 60%);
+  }
+
+  .ziara-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .ziara-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .ziara-card:first-child .ziara-name {
+    font-size: 36px;
+  }
+
+  .ziara-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .ziara-tag {
+    display: inline-block;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  /* ===== TESTIMONIALS ===== */
+  .testimonials {
+    background: var(--deep);
+    text-align: center;
+  }
+
+  .testimonials .section-tag, .testimonials .section-title { text-align: center; }
+  .testimonials .section-tag { justify-content: center; }
+  .testimonials .section-tag::before { display: none; }
+
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: rgba(201,168,76,0.08);
+    margin-top: 60px;
+  }
+
+  .testi-card {
+    background: var(--deep2);
+    padding: 48px 36px;
+    text-align: left;
+    transition: background 0.3s ease;
+  }
+
+  .testi-card:hover { background: var(--deep3); }
+
+  .testi-stars {
+    color: var(--gold);
+    font-size: 16px;
+    letter-spacing: 4px;
+    margin-bottom: 24px;
+  }
+
+  .testi-quote {
+    font-size: 17px;
+    font-style: italic;
+    color: var(--cream);
+    line-height: 1.8;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .testi-quote::before {
+    content: '\201C';
+    font-family: 'Playfair Display', serif;
+    font-size: 80px;
+    color: rgba(201,168,76,0.15);
+    position: absolute;
+    top: -20px; left: -10px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .testi-author {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .testi-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--deep);
+    flex-shrink: 0;
+  }
+
+  .testi-info .name {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--cream);
+  }
+
+  .testi-info .city {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* ===== CTA ===== */
+  .cta-section {
+    background: linear-gradient(135deg, var(--deep2) 0%, var(--deep3) 100%);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding: 100px 60px;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(201,168,76,0.08) 0%, transparent 70%);
+  }
+
+  .cta-arabic {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 36px;
+    color: rgba(201,168,76,0.3);
+    letter-spacing: 8px;
+    direction: rtl;
+    margin-bottom: 24px;
+  }
+
+  .cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 20px;
+    line-height: 1.1;
+  }
+
+  .cta-title em { color: var(--gold-light); font-style: italic; }
+
+  .cta-sub {
+    font-size: 18px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 48px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  .cta-form {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+    gap: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cta-input {
+    flex: 1;
+    padding: 18px 24px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-right: none;
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .cta-input::placeholder { color: var(--text-muted); font-style: italic; }
+  .cta-input:focus { border-color: var(--gold); }
+
+  .cta-submit {
+    padding: 18px 36px;
+    background: var(--gold);
+    border: none;
+    color: var(--deep);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .cta-submit:hover { background: var(--gold-light); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: #080810;
+    padding: 80px 60px 40px;
+    border-top: 1px solid rgba(201,168,76,0.15);
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+  }
+
+  .footer-brand .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 8px;
+  }
+
+  .footer-brand .brand-sub {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  .footer-brand p {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    font-style: italic;
+    margin-bottom: 28px;
+    max-width: 300px;
+  }
+
+  .footer-social {
+    display: flex;
+    gap: 12px;
+  }
+
+  .social-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(201,168,76,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .social-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+
+  .footer-col h5 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+
+  .footer-col a {
+    font-size: 15px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-style: italic;
+    transition: color 0.3s ease;
+  }
+
+  .footer-col a:hover { color: var(--cream); }
+
+  .footer-contact-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .contact-icon {
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(201,168,76,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    color: var(--gold);
+  }
+
+  .contact-text {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(201,168,76,0.1);
+    padding-top: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-bottom p {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 12px;
+    color: rgba(160,152,128,0.5);
+    letter-spacing: 1px;
+  }
+
+  .footer-bottom .gold { color: var(--gold); }
+
+  /* ===== WHATSAPP FLOAT ===== */
+  .wa-float {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 800;
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(37,211,102,0.4);
+    cursor: pointer;
+    text-decoration: none;
+    animation: pulse-wa 2s ease-in-out infinite;
+    transition: transform 0.3s ease;
+  }
+
+  .wa-float:hover { transform: scale(1.1); }
+
+  @keyframes pulse-wa {
+    0%, 100% { box-shadow: 0 8px 32px rgba(37,211,102,0.4); }
+    50% { box-shadow: 0 8px 48px rgba(37,211,102,0.7); }
+  }
+
+  .wa-float svg { width: 28px; height: 28px; fill: white; }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    nav.scrolled { padding: 14px 24px; }
+    .nav-links { display: none; }
+
+    section { padding: 80px 24px; }
+    .stats-strip { grid-template-columns: repeat(2, 1fr); padding: 40px 24px; }
+    .about { grid-template-columns: 1fr; gap: 48px; }
+    .about-visual { height: 300px; }
+    .packages-grid, .testi-grid { grid-template-columns: 1fr; }
+    .packages-header { flex-direction: column; gap: 24px; align-items: flex-start; }
+    .ziara-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+    .ziara-card:first-child { grid-row: auto; min-height: 280px; }
+    .ziara-card { min-height: 200px; }
+    .footer-top { grid-template-columns: 1fr; gap: 40px; }
+    .footer-bottom { flex-direction: column; text-align: center; }
+    .cta-form { flex-direction: column; }
+    .cta-input { border-right: 1px solid rgba(201,168,76,0.3); border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <div class="nav-logo-main">Yeti Herawati</div>
+    <div class="nav-logo-sub">Travel Umroh & Haji</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about">Tentang</a></li>
+    <li><a href="#packages">Paket</a></li>
+    <li><a href="#destinations">Ziarah</a></li>
+    <li><a href="#testimonials">Testimoni</a></li>
+    <li><a href="#contact">Kontak</a></li>
+  </ul>
+  <a href="https://wa.me/6281234567890" class="nav-cta">Konsultasi Gratis</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+
+  <!-- Stars -->
+  <div class="hero-stars" id="stars"></div>
+
+  <!-- Kaaba SVG silhouette -->
+  <svg class="hero-kaaba" viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <!-- Masjidil Haram silhouette simplified -->
+    <rect x="280" y="150" width="340" height="250" fill="#C9A84C"/>
+    <rect x="340" y="80" width="220" height="320" fill="#C9A84C"/>
+    <!-- Minarets -->
+    <rect x="120" y="40" width="28" height="360" fill="#C9A84C"/>
+    <polygon points="134,10 120,40 148,40" fill="#C9A84C"/>
+    <rect x="752" y="40" width="28" height="360" fill="#C9A84C"/>
+    <polygon points="766,10 752,40 780,40" fill="#C9A84C"/>
+    <rect x="220" y="80" width="22" height="320" fill="#C9A84C"/>
+    <polygon points="231,52 220,80 242,80" fill="#C9A84C"/>
+    <rect x="658" y="80" width="22" height="320" fill="#C9A84C"/>
+    <polygon points="669,52 658,80 680,80" fill="#C9A84C"/>
+    <!-- Kaaba cube -->
+    <rect x="390" y="200" width="120" height="200" fill="#8B6914"/>
+    <rect x="410" y="160" width="80" height="240" fill="#9A7A2C"/>
+    <!-- Crescent on top -->
+    <circle cx="450" cy="55" r="22" fill="none" stroke="#C9A84C" stroke-width="6"/>
+    <circle cx="460" cy="55" r="16" fill="#080810"/>
+    <line x1="450" y1="30" x2="450" y2="10" stroke="#C9A84C" stroke-width="4"/>
+    <line x1="450" y1="80" x2="450" y2="100" stroke="#C9A84C" stroke-width="4"/>
+  </svg>
+
+  <div class="hero-content">
+    <div class="hero-badge">Terpercaya Sejak 2005</div>
+    <div class="hero-arabic">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم</div>
+    <h1 class="hero-title">Yeti<span>Herawati</span></h1>
+    <p class="hero-subtitle">Travel Umroh & Haji Terpercaya — Meraih Panggilan Ilahi dengan Penuh Ketenangan</p>
+    <div class="hero-actions">
+      <a href="#packages" class="btn-primary">Lihat Paket</a>
+      <a href="https://wa.me/6281234567890" class="btn-secondary">Hubungi Kami</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">
+    <span>Gulir</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip" id="stats">
+  <div class="stat-item">
+    <div class="stat-number">19<sup>+</sup></div>
+    <div class="stat-label">Tahun Pengalaman</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">15K<sup>+</sup></div>
+    <div class="stat-label">Jamaah Berangkat</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">98<sup>%</sup></div>
+    <div class="stat-label">Kepuasan Jamaah</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">✦12✦</div>
+    <div class="stat-label">Penghargaan Nasional</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-visual">
+    <div class="about-img-main">
+      <svg class="about-mosque-icon" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="60" y="80" width="280" height="220" fill="#C9A84C" rx="4"/>
+        <rect x="100" y="40" width="200" height="260" fill="#E8C97A" rx="4"/>
+        <circle cx="200" cy="30" r="35" fill="none" stroke="#C9A84C" stroke-width="8"/>
+        <circle cx="200" cy="30" r="22" fill="#080810"/>
+        <rect x="60" y="10" width="16" height="290" fill="#C9A84C"/>
+        <rect x="324" y="10" width="16" height="290" fill="#C9A84C"/>
+        <polygon points="68,0 60,10 76,10" fill="#C9A84C"/>
+        <polygon points="332,0 324,10 340,10" fill="#C9A84C"/>
+        <rect x="155" y="160" width="90" height="140" fill="#9A7A2C"/>
+        <path d="M155 160 Q200 120 245 160" fill="#C9A84C"/>
+      </svg>
+    </div>
+    <div class="about-img-accent">
+      <div class="big-num">19</div>
+      <div class="big-label">Tahun<br>Melayani</div>
+    </div>
+    <div class="about-gold-line"></div>
+  </div>
+
+  <div class="about-text">
+    <div>
+      <div class="section-tag">Tentang Kami</div>
+      <h2 class="section-title">Perjalanan Suci<br>Dimulai dari <em>Kepercayaan</em></h2>
+      <p class="section-desc">Yeti Herawati Travel hadir sebagai mitra terpercaya Anda dalam meraih impian menunaikan ibadah Umroh dan Haji. Dengan pengalaman lebih dari 19 tahun, kami telah membimbing ribuan jamaah menuju Tanah Suci.</p>
+    </div>
+
+    <div class="about-feature">
+      <div class="feature-icon">🕌</div>
+      <div class="feature-text">
+        <h4>Terdaftar Resmi Kemenag RI</h4>
+        <p>Izin resmi dari Kementerian Agama Republik Indonesia, menjamin keamanan dan legalitas perjalanan Anda.</p>
+      </div>
+    </div>
+
+    <div class="about-feature">
+      <div class="feature-icon">🤲</div>
+      <div class="feature-text">
+        <h4>Pembimbing Ibadah Bersertifikat</h4>
+        <p>Tim Ustadz dan Ustadzah berpengalaman mendampingi setiap langkah ibadah Anda di Tanah Suci.</p>
+      </div>
+    </div>
+
+    <div class="about-feature">
+      <div class="feature-icon">⭐</div>
+      <div class="feature-text">
+        <h4>Akomodasi Premium Pilihan</h4>
+        <p>Hotel berbintang terdekat Masjidil Haram & Masjid Nabawi untuk kenyamanan ibadah maksimal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGES -->
+<section class="packages" id="packages">
+  <div class="packages-header">
+    <div>
+      <div class="section-tag">Pilihan Paket</div>
+      <h2 class="section-title">Paket <em>Umroh & Haji</em><br>Terbaik untuk Anda</h2>
+    </div>
+    <p class="section-desc" style="max-width:300px;">Pilih paket yang sesuai dengan kebutuhan dan kenyamanan ibadah Anda.</p>
+  </div>
+
+  <div class="packages-grid">
+    <!-- Paket Hemat -->
+    <div class="pkg-card">
+      <div class="pkg-type">Umroh</div>
+      <div class="pkg-name">Paket Hemat</div>
+      <div class="pkg-duration">9 Hari 8 Malam</div>
+      <div class="pkg-price">
+        <span class="from">Mulai dari</span>
+        <div class="amount"><span class="currency">Rp</span>22,5<span style="font-size:20px">jt</span></div>
+        <span class="per">/ orang</span>
+      </div>
+      <ul class="pkg-features">
+        <li>Tiket Pesawat PP (Qatar / Etihad)</li>
+        <li>Hotel Bintang 3 Dekat Masjid</li>
+        <li>Visa Umroh & Asuransi</li>
+        <li>Makan 3x Sehari</li>
+        <li>Bus Ber-AC & Guide Lokal</li>
+        <li>Perlengkapan Umroh Lengkap</li>
+      </ul>
+      <a href="#contact" class="pkg-btn">Daftar Sekarang</a>
+    </div>
+
+    <!-- Paket Reguler -->
+    <div class="pkg-card featured">
+      <div class="pkg-badge">✦ Terpopuler</div>
+      <div class="pkg-type">Umroh</div>
+      <div class="pkg-name">Paket Reguler Plus</div>
+      <div class="pkg-duration">12 Hari 11 Malam</div>
+      <div class="pkg-price">
+        <span class="from">Mulai dari</span>
+        <div class="amount"><span class="currency">Rp</span>32<span style="font-size:20px">jt</span></div>
+        <span class="per">/ orang</span>
+      </div>
+      <ul class="pkg-features">
+        <li>Tiket Pesawat PP (Garuda / SQ)</li>
+        <li>Hotel Bintang 4 Dekat Masjid</li>
+        <li>Visa Umroh & Asuransi Jiwa</li>
+        <li>Makan 3x Sehari + Snack</li>
+        <li>Ziarah Lengkap Makkah-Madinah</li>
+        <li>Pembimbing Ibadah Tersertifikasi</li>
+        <li>City Tour Jeddah</li>
+      </ul>
+      <a href="#contact" class="pkg-btn">Daftar Sekarang</a>
+    </div>
+
+    <!-- Paket VIP -->
+    <div class="pkg-card">
+      <div class="pkg-type">Umroh Premium</div>
+      <div class="pkg-name">Paket VIP Royal</div>
+      <div class="pkg-duration">14 Hari 13 Malam</div>
+      <div class="pkg-price">
+        <span class="from">Mulai dari</span>
+        <div class="amount"><span class="currency">Rp</span>55<span style="font-size:20px">jt</span></div>
+        <span class="per">/ orang</span>
+      </div>
+      <ul class="pkg-features">
+        <li>Business Class Priority</li>
+        <li>Hotel Bintang 5 (100m Masjid)</li>
+        <li>Private Shuttle Eksklusif</li>
+        <li>Layanan Concierge 24 Jam</li>
+        <li>Ziarah Privat dengan Ustadz</li>
+        <li>Muthawwif Berpengalaman</li>
+        <li>Hamper & Souvenir Premium</li>
+      </ul>
+      <a href="#contact" class="pkg-btn">Daftar Sekarang</a>
+    </div>
+  </div>
+
+  <!-- Haji -->
+  <div style="margin-top:4px;">
+    <div class="pkg-card featured" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:48px;">
+      <div>
+        <div class="pkg-badge">🕋 Ibadah Haji</div>
+        <div class="pkg-type">Haji Khusus / Plus</div>
+        <div class="pkg-name">Paket Haji<br>Furoda & Plus</div>
+        <div class="pkg-duration">40–42 Hari</div>
+        <p style="font-size:15px;color:var(--text-muted);font-style:italic;line-height:1.8;margin-top:16px;">Paket Haji ONH Plus & Furoda resmi dengan fasilitas terbaik. Kuota terjamin, akomodasi premium, dan bimbingan manasik haji dari Ustadz berpengalaman.</p>
+      </div>
+      <div>
+        <div class="pkg-price" style="margin-bottom:20px;">
+          <span class="from">Mulai dari</span>
+          <div class="amount"><span class="currency">Rp</span>185<span style="font-size:20px">jt</span></div>
+          <span class="per">/ orang (ONH Plus)</span>
+        </div>
+        <ul class="pkg-features">
+          <li>Visa Haji Resmi & Terjamin</li>
+          <li>Hotel Bintang 5 di Makkah & Madinah</li>
+          <li>Maktab Elite Mina & Arafah</li>
+          <li>Bus AC & Transportasi Lengkap</li>
+          <li>Pembimbing Haji Sertifikasi Nasional</li>
+          <li>Manasik Haji Intensif Pra-Keberangkatan</li>
+        </ul>
+        <a href="#contact" class="pkg-btn" style="margin-top:20px;max-width:220px;">Konsultasi Haji</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESTINATIONS / ZIARA -->
+<section class="ziara" id="destinations">
+  <div class="section-tag">Destinasi Ziarah</div>
+  <h2 class="section-title">Tempat-Tempat <em>Bersejarah</em><br>yang Akan Anda Kunjungi</h2>
+
+  <div class="ziara-grid">
+    <div class="ziara-card">
+      <div class="ziara-bg">
+        <svg viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="80" y="50" width="240" height="450" fill="#C9A84C"/>
+          <rect x="120" y="10" width="160" height="490" fill="#E8C97A"/>
+          <circle cx="200" cy="5" r="28" fill="none" stroke="#C9A84C" stroke-width="6"/>
+          <rect x="155" y="240" width="90" height="210" fill="#9A7A2C"/>
+          <path d="M155 240 Q200 195 245 240" fill="#C9A84C"/>
+          <rect x="40" y="0" width="14" height="500" fill="#C9A84C"/>
+          <rect x="346" y="0" width="14" height="500" fill="#C9A84C"/>
+        </svg>
+      </div>
+      <div class="ziara-gradient"></div>
+      <div class="ziara-content">
+        <div class="ziara-tag">Makkah Al-Mukarramah</div>
+        <div class="ziara-name">Masjidil Haram & Ka'bah</div>
+        <div class="ziara-desc">Kiblat umat Islam seluruh dunia — pusat ibadah Thawaf dan Sa'i</div>
+      </div>
+    </div>
+
+    <div class="ziara-card">
+      <div class="ziara-bg">
+        <svg viewBox="0 0 300 300" fill="none">
+          <ellipse cx="150" cy="200" rx="120" ry="80" fill="#C9A84C"/>
+          <rect x="110" y="60" width="80" height="240" fill="#E8C97A"/>
+          <ellipse cx="150" cy="60" rx="40" ry="30" fill="#C9A84C"/>
+          <rect x="120" y="30" width="60" height="10" fill="#C9A84C"/>
+        </svg>
+      </div>
+      <div class="ziara-gradient"></div>
+      <div class="ziara-content">
+        <div class="ziara-tag">Makkah</div>
+        <div class="ziara-name">Jabal Rahmah</div>
+        <div class="ziara-desc">Bukit tempat bertemunya Nabi Adam dan Hawa</div>
+      </div>
+    </div>
+
+    <div class="ziara-card">
+      <div class="ziara-bg">
+        <svg viewBox="0 0 300 300" fill="none">
+          <rect x="50" y="80" width="200" height="220" fill="#C9A84C"/>
+          <rect x="80" y="50" width="140" height="250" fill="#E8C97A"/>
+          <circle cx="150" cy="30" r="24" fill="none" stroke="#C9A84C" stroke-width="5"/>
+          <rect x="30" y="20" width="12" height="280" fill="#C9A84C"/>
+          <rect x="258" y="20" width="12" height="280" fill="#C9A84C"/>
+          <rect x="113" y="180" width="74" height="120" fill="#9A7A2C"/>
+        </svg>
+      </div>
+      <div class="ziara-gradient"></div>
+      <div class="ziara-content">
+        <div class="ziara-tag">Madinah Al-Munawwarah</div>
+        <div class="ziara-name">Masjid Nabawi</div>
+        <div class="ziara-desc">Kota Nabi, tempat Rasulullah dimakamkan</div>
+      </div>
+    </div>
+
+    <div class="ziara-card">
+      <div class="ziara-bg">
+        <svg viewBox="0 0 300 200" fill="none">
+          <rect x="20" y="60" width="260" height="140" fill="#C9A84C" rx="4"/>
+          <rect x="60" y="30" width="180" height="170" fill="#E8C97A" rx="4"/>
+          <circle cx="150" cy="20" r="18" fill="none" stroke="#C9A84C" stroke-width="4"/>
+          <rect x="20" y="5" width="10" height="195" fill="#C9A84C"/>
+          <rect x="270" y="5" width="10" height="195" fill="#C9A84C"/>
+        </svg>
+      </div>
+      <div class="ziara-gradient"></div>
+      <div class="ziara-content">
+        <div class="ziara-tag">Madinah</div>
+        <div class="ziara-name">Masjid Quba</div>
+        <div class="ziara-desc">Masjid pertama yang dibangun dalam sejarah Islam</div>
+      </div>
+    </div>
+
+    <div class="ziara-card">
+      <div class="ziara-bg">
+        <svg viewBox="0 0 300 200" fill="none">
+          <path d="M0 150 Q75 50 150 80 Q225 110 300 30 L300 200 L0 200Z" fill="#C9A84C"/>
+          <circle cx="80" cy="70" r="15" fill="#E8C97A"/>
+          <circle cx="200" cy="50" r="20" fill="#E8C97A"/>
+        </svg>
+      </div>
+      <div class="ziara-gradient"></div>
+      <div class="ziara-content">
+        <div class="ziara-tag">Arafah</div>
+        <div class="ziara-name">Padang Arafah</div>
+        <div class="ziara-desc">Puncak Haji — Wukuf di Hari Arafah</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="section-tag">Kata Mereka</div>
+  <h2 class="section-title">Ribuan Jamaah,<br><em>Satu Kepercayaan</em></h2>
+
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">Alhamdulillah, perjalanan umroh kami berjalan sangat lancar. Tim Yeti Herawati Travel sangat profesional, sabar, dan penuh perhatian. Pembimbing kami luar biasa dalam menjelaskan setiap rukun ibadah.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">H</div>
+        <div class="testi-info">
+          <div class="name">Hj. Siti Rahma</div>
+          <div class="city">Jakarta, 2024</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">Ini kali ketiga kami berangkat umroh bersama Yeti Herawati. Sudah seperti keluarga sendiri. Hotelnya sangat dekat dengan Masjidil Haram, makanan enak, dan pelayanan prima sejak daftar sampai kembali ke tanah air.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">A</div>
+        <div class="testi-info">
+          <div class="name">Ahmad Fauzi & Keluarga</div>
+          <div class="city">Bandung, 2024</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">Kami berangkat haji ONH Plus dan sangat puas dengan fasilitas yang diberikan. Tenda Mina nyaman, hotel bintang 5, dan Ustadz pembimbing kami sungguh menguasai ilmu manasik. Jazakallah khair.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">M</div>
+        <div class="testi-info">
+          <div class="name">Drs. H. Mukhlis, M.Ag</div>
+          <div class="city">Surabaya, 2023</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="cta-arabic">لبيك اللهم لبيك</div>
+  <h2 class="cta-title">Siap Menjawab<br><em>Panggilan Ilahi?</em></h2>
+  <p class="cta-sub">Daftarkan diri Anda sekarang dan biarkan kami membantu mewujudkan impian Anda menunaikan ibadah ke Tanah Suci.</p>
+  <div class="cta-form">
+    <input class="cta-input" type="text" placeholder="Nama lengkap Anda...">
+    <button class="cta-submit">Konsultasi →</button>
+  </div>
+  <div style="margin-top:32px;display:flex;gap:32px;justify-content:center;flex-wrap:wrap;">
+    <a href="https://wa.me/6281234567890" style="display:flex;align-items:center;gap:10px;color:var(--text-muted);text-decoration:none;font-family:'Tajawal',sans-serif;font-size:13px;letter-spacing:1px;transition:color 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text-muted)'">
+      <span style="font-size:20px">📱</span> +62 812-3456-7890
+    </a>
+    <a href="mailto:info@yetiherawatitravel.com" style="display:flex;align-items:center;gap:10px;color:var(--text-muted);text-decoration:none;font-family:'Tajawal',sans-serif;font-size:13px;letter-spacing:1px;transition:color 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text-muted)'">
+      <span style="font-size:20px">✉️</span> info@yetiherawatitravel.com
+    </a>
+    <a href="#" style="display:flex;align-items:center;gap:10px;color:var(--text-muted);text-decoration:none;font-family:'Tajawal',sans-serif;font-size:13px;letter-spacing:1px;transition:color 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text-muted)'">
+      <span style="font-size:20px">📍</span> Jl. Raya Kebayoran No. 45, Jakarta Selatan
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="brand-name">Yeti Herawati</div>
+      <div class="brand-sub">Travel Umroh & Haji</div>
+      <p>Melayani dengan sepenuh hati, membimbing dengan penuh ilmu, mengantarkan jamaah meraih ibadah yang mabrur sejak 2005.</p>
+      <div class="footer-social">
+        <a href="#" class="social-btn">f</a>
+        <a href="#" class="social-btn">ig</a>
+        <a href="#" class="social-btn">yt</a>
+        <a href="#" class="social-btn">wa</a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h5>Layanan</h5>
+      <ul>
+        <li><a href="#">Umroh Reguler</a></li>
+        <li><a href="#">Umroh Premium</a></li>
+        <li><a href="#">Umroh VIP</a></li>
+        <li><a href="#">Haji ONH Plus</a></li>
+        <li><a href="#">Haji Furoda</a></li>
+        <li><a href="#">Umroh Ramadhan</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h5>Informasi</h5>
+      <ul>
+        <li><a href="#">Tentang Kami</a></li>
+        <li><a href="#">Izin & Legalitas</a></li>
+        <li><a href="#">Panduan Umroh</a></li>
+        <li><a href="#">Manasik Online</a></li>
+        <li><a href="#">Blog Islami</a></li>
+        <li><a href="#">FAQ</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h5>Hubungi Kami</h5>
+      <div class="footer-contact-item">
+        <div class="contact-icon">📍</div>
+        <div class="contact-text">Jl. Raya Kebayoran No. 45<br>Jakarta Selatan 12160</div>
+      </div>
+      <div class="footer-contact-item">
+        <div class="contact-icon">📞</div>
+        <div class="contact-text">+62 21 7654-3210<br>+62 812-3456-7890</div>
+      </div>
+      <div class="footer-contact-item">
+        <div class="contact-icon">✉️</div>
+        <div class="contact-text">info@yetiherawatitravel.com</div>
+      </div>
+      <div class="footer-contact-item">
+        <div class="contact-icon">🕐</div>
+        <div class="contact-text">Sen – Jum: 08.00 – 17.00<br>Sabtu: 08.00 – 13.00</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2025 <span class="gold">Yeti Herawati Travel</span>. Seluruh hak dilindungi undang-undang.</p>
+    <p>Izin PPIU No: <span class="gold">D/458/2005</span> · Kemenag RI</p>
+    <p>Dibuat dengan <span class="gold">♥</span> untuk jamaah Indonesia</p>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/6281234567890" class="wa-float" title="Chat WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<script>
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  });
+
+  // Generate stars
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 70}%;
+      --d: ${2 + Math.random() * 4}s;
+      --delay: ${Math.random() * 4}s;
+      --op: ${0.3 + Math.random() * 0.7};
+      ${Math.random() > 0.8 ? 'width:3px;height:3px;' : ''}
+    `;
+    starsContainer.appendChild(star);
+  }
+
+  // Animate stats on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.pkg-card, .testi-card, .about-feature').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(30px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+  });
+
+  // CTA form submit
+  document.querySelector('.cta-submit').addEventListener('click', function() {
+    const input = document.querySelector('.cta-input');
+    if (input.value.trim()) {
+      const name = input.value.trim();
+      window.open(`https://wa.me/6281234567890?text=Assalamu'alaikum, saya ${encodeURIComponent(name)} ingin berkonsultasi tentang paket Umroh/Haji di Yeti Herawati Travel.`, '_blank');
+      input.value = '';
+    } else {
+      input.style.borderColor = 'var(--gold)';
+      input.placeholder = 'Mohon isi nama Anda terlebih dahulu...';
+      setTimeout(() => {
+        input.style.borderColor = '';
+        input.placeholder = 'Nama lengkap Anda...';
+      }, 2000);
+    }
+  });
+</script>
+
+</body>
+</html>
