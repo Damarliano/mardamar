@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pradja Damarliano Y P W — NOC · NCC IPHUB Engineer</title>
+<title>Pradja Damarliano — NOC · NCC IPHUB Engineer</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -521,7 +521,7 @@ footer{
 <!-- HERO -->
 <section id="hero">
   <p class="hero-tag">NOC Engineer · NCC IPHUB · Satellite Communication</p>
-  <h1 class="hero-name">Pradja Damarliano<br><span>Y P W</span></h1>
+  <h1 class="hero-name">Pradja<br><span>Damarliano</span></h1>
   <p class="hero-role">
     Network Operations Center
     <span class="sep">//</span>
@@ -1025,5 +1025,142 @@ document.querySelectorAll(".cert-card").forEach(function(card,i){
   card.appendChild(hint);
 });
 </script>
+
+<!-- ══ BACKGROUND MUSIC ══ -->
+<div id="yt-hidden" style="position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;pointer-events:none;opacity:0;"></div>
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<style>
+#music-fab{
+  position:fixed;bottom:28px;left:28px;
+  z-index:99998;
+  width:48px;height:48px;
+  border-radius:50%;
+  background:rgba(8,20,40,0.9);
+  border:1px solid var(--cyan);
+  color:var(--cyan);
+  font-size:1.1rem;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(10px);
+  transition:all 0.3s ease;
+  box-shadow:0 0 0 0 rgba(0,229,255,0.4);
+  animation:music-pulse 2s ease-in-out infinite;
+}
+@keyframes music-pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,0.4);}
+  50%{box-shadow:0 0 0 8px rgba(0,229,255,0);}
+}
+#music-fab:hover{background:rgba(0,229,255,0.15);transform:scale(1.08);}
+#music-fab.playing{
+  border-color:var(--blue);color:var(--blue);
+  animation:music-spin-dot 3s linear infinite;
+}
+@keyframes music-spin-dot{
+  0%,100%{box-shadow:0 0 12px rgba(0,168,255,0.5);}
+  50%{box-shadow:0 0 24px rgba(0,229,255,0.8);}
+}
+#music-fab .fab-icon{font-size:1.1rem;line-height:1;}
+#music-tooltip{
+  position:fixed;bottom:34px;left:84px;
+  z-index:99998;
+  font-family:'Space Mono',monospace;
+  font-size:0.58rem;letter-spacing:0.15em;
+  color:var(--cyan);
+  background:rgba(8,20,40,0.9);
+  border:1px solid rgba(0,229,255,0.2);
+  padding:6px 12px;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.2s;
+  white-space:nowrap;
+}
+#music-fab:hover ~ #music-tooltip,
+#music-tooltip.show{opacity:1;}
+</style>
+
+<button id="music-fab" title="Musik" onclick="toggleMusic()">
+  <span class="fab-icon">♪</span>
+</button>
+<div id="music-tooltip">Klik untuk memutar musik</div>
+
+<script>
+var ytPlayer = null;
+var musicPlaying = false;
+var playerReady = false;
+var VIDEO_ID = 'bzRMneypG04';
+var fab = document.getElementById('music-fab');
+var tooltip = document.getElementById('music-tooltip');
+
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-hidden', {
+    videoId: VIDEO_ID,
+    playerVars: {
+      autoplay: 1,
+      loop: 1,
+      playlist: VIDEO_ID,
+      controls: 0,
+      disablekb: 1,
+      fs: 0,
+      rel: 0,
+      modestbranding: 1,
+      mute: 0
+    },
+    events: {
+      onReady: function(e) {
+        playerReady = true;
+        e.target.setVolume(35);
+        // Try autoplay immediately
+        try { e.target.playVideo(); } catch(err) {}
+      },
+      onStateChange: function(e) {
+        if(e.data === YT.PlayerState.PLAYING) {
+          musicPlaying = true;
+          fab.classList.add('playing');
+          fab.querySelector('.fab-icon').textContent = '♫';
+          tooltip.textContent = 'Musik sedang diputar';
+        } else if(e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
+          musicPlaying = false;
+          fab.classList.remove('playing');
+          fab.querySelector('.fab-icon').textContent = '♪';
+          tooltip.textContent = 'Klik untuk memutar musik';
+        }
+      }
+    }
+  });
+};
+
+function toggleMusic() {
+  if(!ytPlayer || !playerReady) return;
+  if(musicPlaying) {
+    ytPlayer.pauseVideo();
+  } else {
+    ytPlayer.playVideo();
+  }
+}
+
+// Auto-play on first user interaction anywhere on page
+var autoStarted = false;
+function tryAutoStart() {
+  if(autoStarted) return;
+  autoStarted = true;
+  if(playerReady && !musicPlaying) {
+    try { ytPlayer.playVideo(); } catch(e) {}
+  }
+  document.removeEventListener('click', tryAutoStart);
+  document.removeEventListener('scroll', tryAutoStart);
+  document.removeEventListener('keydown', tryAutoStart);
+  document.removeEventListener('touchstart', tryAutoStart);
+}
+document.addEventListener('click', tryAutoStart);
+document.addEventListener('scroll', tryAutoStart);
+document.addEventListener('keydown', tryAutoStart);
+document.addEventListener('touchstart', tryAutoStart);
+
+// Tooltip hover
+fab.addEventListener('mouseenter', function(){ tooltip.classList.add('show'); });
+fab.addEventListener('mouseleave', function(){ tooltip.classList.remove('show'); });
+</script>
+
 </body>
 </html>
