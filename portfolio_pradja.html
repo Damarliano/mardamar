@@ -370,9 +370,8 @@ nav{
 .cert-card{
   background:var(--card);
   padding:28px 28px;
-  transition:background 0.3s, transform 0.2s;
+  transition:background 0.3s;
   position:relative;overflow:hidden;
-  cursor:pointer;
 }
 .cert-card::after{
   content:'';
@@ -382,7 +381,7 @@ nav{
   transform:scaleX(0);
   transition:transform 0.3s;
 }
-.cert-card:hover{background:rgba(0,168,255,0.1);transform:translateY(-2px);}
+.cert-card:hover{background:rgba(0,168,255,0.06);}
 .cert-card:hover::after{transform:scaleX(1);}
 .cert-issuer{
   font-family:'Space Mono',monospace;
@@ -401,131 +400,6 @@ nav{
   letter-spacing:0.08em;
 }
 .cert-valid.active{color:#00ff88;}
-.cert-view-hint{
-  margin-top:14px;
-  font-family:'Space Mono',monospace;
-  font-size:0.6rem;letter-spacing:0.12em;
-  color:var(--blue);opacity:0;
-  transition:opacity 0.25s;
-  display:flex;align-items:center;gap:6px;
-}
-.cert-card:hover .cert-view-hint{opacity:1;}
-
-/* ── MODAL ── */
-#cert-modal{
-  display:none;
-  position:fixed;inset:0;
-  z-index:99999;
-  background:rgba(5,13,26,0.96);
-  backdrop-filter:blur(16px);
-  align-items:center;justify-content:center;
-  padding:20px;
-}
-#cert-modal.open{display:flex;}
-.modal-box{
-  position:relative;
-  width:100%;max-width:920px;
-  max-height:92vh;
-  background:var(--bg2);
-  border:1px solid var(--border);
-  border-top:3px solid var(--cyan);
-  display:flex;flex-direction:column;
-  animation:modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  overflow:hidden;
-}
-@keyframes modalIn{
-  from{opacity:0;transform:scale(0.93) translateY(20px);}
-  to{opacity:1;transform:scale(1) translateY(0);}
-}
-.modal-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 20px;
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;gap:12px;
-}
-.modal-title-wrap{flex:1;min-width:0;}
-.modal-issuer{
-  font-family:'Space Mono',monospace;
-  font-size:0.6rem;letter-spacing:0.2em;
-  color:var(--cyan);text-transform:uppercase;
-  margin-bottom:3px;
-}
-.modal-cert-name{
-  font-size:0.95rem;font-weight:700;color:var(--text);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.modal-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.modal-open-btn{
-  font-family:'Space Mono',monospace;
-  font-size:0.62rem;letter-spacing:0.08em;
-  padding:7px 14px;
-  border:1px solid var(--blue);
-  color:var(--blue);background:transparent;
-  cursor:pointer;text-decoration:none;
-  transition:all 0.2s;display:flex;align-items:center;gap:5px;
-  white-space:nowrap;
-}
-.modal-open-btn:hover{background:rgba(0,168,255,0.12);color:var(--cyan);border-color:var(--cyan);}
-.modal-close{
-  width:34px;height:34px;
-  background:transparent;
-  border:1px solid rgba(0,168,255,0.25);
-  color:var(--muted);font-size:1.1rem;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:all 0.2s;flex-shrink:0;
-}
-.modal-close:hover{border-color:var(--cyan);color:var(--cyan);}
-.modal-body{
-  flex:1;overflow:hidden;
-  position:relative;
-  background:#0a0f1a;
-  min-height:480px;
-}
-.modal-iframe{
-  width:100%;
-  height:100%;
-  min-height:540px;
-  border:none;
-  display:block;
-  position:relative;z-index:1;
-}
-.modal-loading{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  gap:16px;color:var(--muted);
-  font-family:'Space Mono',monospace;font-size:0.72rem;
-  letter-spacing:0.12em;z-index:0;
-}
-.modal-spinner{
-  width:30px;height:30px;
-  border:2px solid rgba(0,168,255,0.15);
-  border-top-color:var(--cyan);
-  border-radius:50%;
-  animation:spin 0.75s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg);}}
-.modal-footer{
-  padding:10px 20px;
-  border-top:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;
-}
-.modal-nav{display:flex;gap:6px;}
-.modal-nav-btn{
-  font-family:'Space Mono',monospace;
-  font-size:0.62rem;letter-spacing:0.08em;
-  padding:6px 14px;
-  border:1px solid var(--border);
-  color:var(--muted);background:transparent;
-  cursor:pointer;transition:all 0.2s;
-}
-.modal-nav-btn:hover:not(:disabled){border-color:var(--blue);color:var(--blue);}
-.modal-nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
-.modal-counter{
-  font-family:'Space Mono',monospace;
-  font-size:0.62rem;color:var(--muted);letter-spacing:0.08em;
-}
 
 /* ── EDUCATION ── */
 .edu-card{
@@ -854,90 +728,50 @@ footer{
   </div>
 
   <div class="cert-grid">
-    <div class="cert-card reveal reveal-delay-1" onclick="openCert(0)">
+    <div class="cert-card reveal reveal-delay-1">
       <div class="cert-issuer">Kacific</div>
       <div class="cert-name">Kacific Global Certification</div>
       <div class="cert-valid active">✦ Berlaku s/d 26 Oktober 2026</div>
-      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
     </div>
-    <div class="cert-card reveal reveal-delay-2" onclick="openCert(1)">
+    <div class="cert-card reveal reveal-delay-2">
       <div class="cert-issuer">ID Network</div>
       <div class="cert-name">Jaringan Komputer Dasar</div>
       <div class="cert-valid active">✦ Berlaku s/d 29 September 2026</div>
-      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
     </div>
-    <div class="cert-card reveal reveal-delay-3" onclick="openCert(2)">
+    <div class="cert-card reveal reveal-delay-3">
       <div class="cert-issuer">ID Network</div>
       <div class="cert-name">Cisco Dasar</div>
       <div class="cert-valid active">✦ Berlaku s/d 28 September 2026</div>
-      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
     </div>
-    <div class="cert-card reveal reveal-delay-1" onclick="openCert(3)">
+    <div class="cert-card reveal reveal-delay-1">
       <div class="cert-issuer">ID Network</div>
       <div class="cert-name">Linux Dasar</div>
       <div class="cert-valid active">✦ Berlaku s/d 29 September 2026</div>
-      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
     </div>
-    <div class="cert-card reveal reveal-delay-2" onclick="openCert(4)">
+    <div class="cert-card reveal reveal-delay-2">
       <div class="cert-issuer">Coding Studio</div>
       <div class="cert-name">Fundamental Penetration Testing</div>
       <div class="cert-valid">Sertifikasi Keahlian</div>
-      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
     </div>
-    <div class="cert-card reveal reveal-delay-3" onclick="openCert(5)">
+    <div class="cert-card reveal reveal-delay-3">
       <div class="cert-issuer">Coding Studio</div>
       <div class="cert-name">Fundamental Algoritma</div>
       <div class="cert-valid">Sertifikasi Keahlian</div>
-      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
     </div>
-    <div class="cert-card reveal reveal-delay-1" onclick="openCert(6)">
+    <div class="cert-card reveal reveal-delay-1">
       <div class="cert-issuer">Coding Studio</div>
       <div class="cert-name">Fundamental Command Linux</div>
       <div class="cert-valid">Sertifikasi Keahlian</div>
-      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
     </div>
-    <div class="cert-card reveal reveal-delay-2" onclick="openCert(7)">
+    <div class="cert-card reveal reveal-delay-2">
       <div class="cert-issuer">Coding Studio</div>
       <div class="cert-name">Fundamental Jaringan Komputer</div>
       <div class="cert-valid">Sertifikasi Keahlian</div>
-      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
     </div>
-    <div class="cert-card reveal reveal-delay-3" onclick="openCert(8)">
+    <div class="cert-card reveal reveal-delay-3">
       <div class="cert-issuer">Coding Studio</div>
       <div class="cert-name">Fundamental Cyber Security</div>
       <div class="cert-valid">Sertifikasi Keahlian</div>
-      <div class="cert-view-hint">▶ Lihat Sertifikat</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ CERT MODAL ══ -->
-<div id="cert-modal" role="dialog" aria-modal="true">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div class="modal-title-wrap">
-        <div class="modal-issuer" id="modal-issuer">—</div>
-        <div class="modal-cert-name" id="modal-cert-name">—</div>
-      </div>
-      <div class="modal-actions">
-        <a id="modal-open-btn" href="#" target="_blank" class="modal-open-btn">↗ Buka di Tab Baru</a>
-        <button class="modal-close" onclick="closeCert()" aria-label="Tutup">✕</button>
-      </div>
-    </div>
-    <div class="modal-body">
-      <div class="modal-loading" id="modal-loading">
-        <div class="modal-spinner"></div>
-        <span>Memuat sertifikat...</span>
-      </div>
-      <iframe id="modal-iframe" class="modal-iframe" src="" allowfullscreen
-        onload="document.getElementById('modal-loading').style.display='none'"></iframe>
-    </div>
-    <div class="modal-footer">
-      <div class="modal-nav">
-        <button class="modal-nav-btn" id="btn-prev" onclick="navCert(-1)">← Sebelumnya</button>
-        <button class="modal-nav-btn" id="btn-next" onclick="navCert(1)">Berikutnya →</button>
-      </div>
-      <span class="modal-counter" id="modal-counter">1 / 9</span>
     </div>
   </div>
 </div>
@@ -993,73 +827,7 @@ footer{
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ── Cert Modal ──
-const CERTS = [
-  { issuer: "Kacific", name: "Kacific Global Certification",          id: "1iXlfjgzKSaJTTJHm5qaWQKY4Nxp6J8k1" },
-  { issuer: "ID Network", name: "Jaringan Komputer Dasar",            id: "1l5HFqaLVPxVKXtKSzQznVf5XNNZ9sWnA" },
-  { issuer: "ID Network", name: "Cisco Dasar",                        id: "1l5HFqaLVPxVKXtKSzQznVf5XNNZ9sWnA" },
-  { issuer: "ID Network", name: "Linux Dasar",                        id: "1l77ybUy2s7MbrBTPXKIGr_D1OM1CVkrf" },
-  { issuer: "Coding Studio", name: "Fundamental Penetration Testing", id: "1C8OtGjOeh-a_YxkQulAMZzjzE_8wGPXD" },
-  { issuer: "Coding Studio", name: "Fundamental Algoritma",           id: "1OArvwmuhpnGu8-pVfLWGf-ApiVpTArGm" },
-  { issuer: "Coding Studio", name: "Fundamental Command Linux",       id: "1NS-L9LHFqiU_IEA4mnSzr9Aw4rsAGC_p" },
-  { issuer: "Coding Studio", name: "Fundamental Jaringan Komputer",  id: "1eEaZYpV2UQDg3KE2Hj4JcxLHZOAtgBPm" },
-  { issuer: "Coding Studio", name: "Fundamental Cyber Security",      id: "1MCEKrS6-Vvr-Y72ysaJgTiAlf-v4mGTO" }
-];
-
-let currentCert = 0;
-
-function drivePreviewUrl(fileId) {
-  return `https://drive.google.com/file/d/${fileId}/preview`;
-}
-function driveDirectUrl(fileId) {
-  return `https://drive.google.com/file/d/${fileId}/view`;
-}
-
-function openCert(idx) {
-  currentCert = idx;
-  renderModal();
-  document.getElementById('cert-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeCert() {
-  document.getElementById('cert-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  document.getElementById('modal-iframe').src = '';
-  document.getElementById('modal-loading').style.display = 'flex';
-}
-
-function renderModal() {
-  const c = CERTS[currentCert];
-  document.getElementById('modal-issuer').textContent = c.issuer;
-  document.getElementById('modal-cert-name').textContent = c.name;
-  document.getElementById('modal-open-btn').href = driveDirectUrl(c.id);
-  document.getElementById('modal-counter').textContent = (currentCert + 1) + ' / ' + CERTS.length;
-  document.getElementById('modal-loading').style.display = 'flex';
-  document.getElementById('modal-iframe').src = drivePreviewUrl(c.id);
-  document.getElementById('btn-prev').disabled = currentCert === 0;
-  document.getElementById('btn-next').disabled = currentCert === CERTS.length - 1;
-}
-
-function navCert(dir) {
-  const next = currentCert + dir;
-  if(next >= 0 && next < CERTS.length) {
-    currentCert = next;
-    renderModal();
-  }
-}
-
-// Close on backdrop click
-document.getElementById('cert-modal').addEventListener('click', function(e) {
-  if(e.target === this) closeCert();
-});
-
-// Close on Escape key
-document.addEventListener('keydown', function(e) {
-  if(e.key === 'Escape') closeCert();
-  if(e.key === 'ArrowRight') navCert(1);
-  if(e.key === 'ArrowLeft') navCert(-1);
-});
+// Reveal on scroll
 const revealEls = document.querySelectorAll('.reveal');
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => {
@@ -1102,4 +870,160 @@ const skillObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if(e.isIntersecting){
       e.target.querySelectorAll('.skill-fill').forEach(bar => {
-  
+          const w = bar.getAttribute('data-width');
+        setTimeout(() => bar.style.width = w + '%', 200);
+      });
+      skillObserver.unobserve(e.target);
+    }
+  });
+},{threshold:0.2});
+document.querySelectorAll('.skill-group').forEach(g => skillObserver.observe(g));
+</script>
+
+<style>
+.cert-card{cursor:pointer;}
+.cert-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,168,255,0.15);}
+.cert-view-hint{
+  margin-top:12px;
+  font-family:'Space Mono',monospace;
+  font-size:0.58rem;letter-spacing:0.15em;
+  color:var(--blue);opacity:0;
+  transition:opacity 0.2s;
+}
+.cert-card:hover .cert-view-hint{opacity:1;}
+#cert-modal{
+  display:none;position:fixed;inset:0;z-index:99999;
+  background:rgba(5,13,26,0.97);backdrop-filter:blur(18px);
+  align-items:center;justify-content:center;padding:16px;
+}
+#cert-modal.open{display:flex;}
+.cm-box{
+  width:100%;max-width:880px;max-height:94vh;
+  background:#081428;border:1px solid rgba(0,168,255,0.2);
+  border-top:3px solid #00e5ff;
+  display:flex;flex-direction:column;
+  animation:cmIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  overflow:hidden;
+}
+@keyframes cmIn{from{opacity:0;transform:scale(0.94) translateY(18px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.cm-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 20px;border-bottom:1px solid rgba(0,168,255,0.12);
+  gap:12px;flex-shrink:0;
+}
+.cm-info{flex:1;min-width:0;}
+.cm-iss{font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;color:#00e5ff;text-transform:uppercase;margin-bottom:3px;}
+.cm-name{font-size:0.92rem;font-weight:700;color:#e8f4fd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cm-acts{display:flex;gap:8px;flex-shrink:0;align-items:center;}
+.cm-openbtn{
+  font-family:'Space Mono',monospace;font-size:0.6rem;letter-spacing:0.08em;
+  padding:7px 13px;border:1px solid #00a8ff;color:#00a8ff;
+  background:transparent;cursor:pointer;text-decoration:none;
+  transition:all 0.2s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;
+}
+.cm-openbtn:hover{background:rgba(0,168,255,0.1);color:#00e5ff;border-color:#00e5ff;}
+.cm-close{
+  width:32px;height:32px;border:1px solid rgba(0,168,255,0.25);
+  background:transparent;color:#6b8fab;font-size:1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;flex-shrink:0;
+}
+.cm-close:hover{border-color:#00e5ff;color:#00e5ff;}
+.cm-body{flex:1;position:relative;background:#050d1a;min-height:460px;}
+.cm-iframe{width:100%;height:100%;min-height:520px;border:none;display:block;position:relative;z-index:1;}
+.cm-load{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;
+  color:#6b8fab;font-family:'Space Mono',monospace;font-size:0.68rem;letter-spacing:0.12em;
+}
+.cm-spin{
+  width:28px;height:28px;border:2px solid rgba(0,168,255,0.15);
+  border-top-color:#00e5ff;border-radius:50%;
+  animation:cmspin 0.75s linear infinite;
+}
+@keyframes cmspin{to{transform:rotate(360deg);}}
+.cm-foot{
+  padding:9px 20px;border-top:1px solid rgba(0,168,255,0.12);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.cm-nav{display:flex;gap:6px;}
+.cm-navbtn{
+  font-family:'Space Mono',monospace;font-size:0.6rem;letter-spacing:0.06em;
+  padding:6px 12px;border:1px solid rgba(0,168,255,0.2);
+  color:#6b8fab;background:transparent;cursor:pointer;transition:all 0.2s;
+}
+.cm-navbtn:hover:not(:disabled){border-color:#00a8ff;color:#00a8ff;}
+.cm-navbtn:disabled{opacity:0.28;cursor:not-allowed;}
+.cm-cnt{font-family:'Space Mono',monospace;font-size:0.6rem;color:#6b8fab;letter-spacing:0.08em;}
+</style>
+
+<div id="cert-modal">
+  <div class="cm-box">
+    <div class="cm-head">
+      <div class="cm-info">
+        <div class="cm-iss" id="cm-iss"></div>
+        <div class="cm-name" id="cm-name"></div>
+      </div>
+      <div class="cm-acts">
+        <a id="cm-openbtn" href="#" target="_blank" rel="noopener" class="cm-openbtn">&#8599; Buka Tab Baru</a>
+        <button class="cm-close" onclick="cmClose()">&#x2715;</button>
+      </div>
+    </div>
+    <div class="cm-body">
+      <div class="cm-load" id="cm-load"><div class="cm-spin"></div><span>Memuat sertifikat...</span></div>
+      <iframe id="cm-iframe" class="cm-iframe" src="" allowfullscreen onload="document.getElementById('cm-load').style.display='none'"></iframe>
+    </div>
+    <div class="cm-foot">
+      <div class="cm-nav">
+        <button class="cm-navbtn" id="cm-prev" onclick="cmNav(-1)">&#8592; Sebelumnya</button>
+        <button class="cm-navbtn" id="cm-next" onclick="cmNav(1)">Berikutnya &#8594;</button>
+      </div>
+      <span class="cm-cnt" id="cm-cnt">1 / 9</span>
+    </div>
+  </div>
+</div>
+
+<script>
+var CERTS=[
+  {iss:"Kacific",name:"Kacific Global Certification",id:"1iXlfjgzKSaJTTJHm5qaWQKY4Nxp6J8k1"},
+  {iss:"ID Network",name:"Jaringan Komputer Dasar",id:"1l5HFqaLVPxVKXtKSzQznVf5XNNZ9sWnA"},
+  {iss:"ID Network",name:"Cisco Dasar",id:"1l5HFqaLVPxVKXtKSzQznVf5XNNZ9sWnA"},
+  {iss:"ID Network",name:"Linux Dasar",id:"1l77ybUy2s7MbrBTPXKIGr_D1OM1CVkrf"},
+  {iss:"Coding Studio",name:"Fundamental Penetration Testing",id:"1C8OtGjOeh-a_YxkQulAMZzjzE_8wGPXD"},
+  {iss:"Coding Studio",name:"Fundamental Algoritma",id:"1OArvwmuhpnGu8-pVfLWGf-ApiVpTArGm"},
+  {iss:"Coding Studio",name:"Fundamental Command Linux",id:"1NS-L9LHFqiU_IEA4mnSzr9Aw4rsAGC_p"},
+  {iss:"Coding Studio",name:"Fundamental Jaringan Komputer",id:"1eEaZYpV2UQDg3KE2Hj4JcxLHZOAtgBPm"},
+  {iss:"Coding Studio",name:"Fundamental Cyber Security",id:"1MCEKrS6-Vvr-Y72ysaJgTiAlf-v4mGTO"}
+];
+var cmIdx=0;
+function cmOpen(i){cmIdx=i;cmRender();document.getElementById("cert-modal").classList.add("open");document.body.style.overflow="hidden";}
+function cmClose(){document.getElementById("cert-modal").classList.remove("open");document.body.style.overflow="";document.getElementById("cm-iframe").src="";document.getElementById("cm-load").style.display="flex";}
+function cmRender(){
+  var c=CERTS[cmIdx];
+  document.getElementById("cm-iss").textContent=c.iss;
+  document.getElementById("cm-name").textContent=c.name;
+  document.getElementById("cm-openbtn").href="https://drive.google.com/file/d/"+c.id+"/view";
+  document.getElementById("cm-cnt").textContent=(cmIdx+1)+" / "+CERTS.length;
+  document.getElementById("cm-load").style.display="flex";
+  document.getElementById("cm-iframe").src="https://drive.google.com/file/d/"+c.id+"/preview";
+  document.getElementById("cm-prev").disabled=cmIdx===0;
+  document.getElementById("cm-next").disabled=cmIdx===CERTS.length-1;
+}
+function cmNav(d){var n=cmIdx+d;if(n>=0&&n<CERTS.length){cmIdx=n;cmRender();}}
+document.getElementById("cert-modal").addEventListener("click",function(e){if(e.target===this)cmClose();});
+document.addEventListener("keydown",function(e){
+  if(!document.getElementById("cert-modal").classList.contains("open"))return;
+  if(e.key==="Escape")cmClose();
+  if(e.key==="ArrowRight")cmNav(1);
+  if(e.key==="ArrowLeft")cmNav(-1);
+});
+document.querySelectorAll(".cert-card").forEach(function(card,i){
+  card.addEventListener("click",function(){cmOpen(i);});
+  var hint=document.createElement("div");
+  hint.className="cert-view-hint";
+  hint.textContent="▶ Lihat Sertifikat";
+  card.appendChild(hint);
+});
+</script>
+</body>
+</html>
