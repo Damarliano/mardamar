@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untuk Sinta — dari Damar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --warm-white: #faf7f2;
+    --charcoal: #2a2520;
+    --muted-brown: #5c4d3e;
+    --rose: #c4866a;
+    --rose-light: #e8c4b0;
+    --gold: #b89a6e;
+    --gold-light: #d4b88a;
+    --shadow: rgba(42,37,32,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--warm-white);
+    color: var(--charcoal);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 60px 24px;
+    text-align: center;
+    background: linear-gradient(160deg, #f5f0e8 0%, #ede4d8 50%, #f0e8e0 100%);
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,134,106,0.12) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-ornament {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 0.3s;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(56px, 10vw, 110px);
+    font-weight: 300;
+    line-height: 1.0;
+    color: var(--charcoal);
+    letter-spacing: -1px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 0.6s;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  .hero-sub {
+    margin-top: 24px;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--muted-brown);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 0.9s;
+  }
+
+  .hero-divider {
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+    margin: 40px auto;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 1.1s;
+  }
+
+  .hero-message {
+    max-width: 440px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.8;
+    color: var(--muted-brown);
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 1.3s;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 2s;
+  }
+
+  .scroll-hint span {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollDown 2s ease-in-out infinite;
+  }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 100px 24px; }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--charcoal);
+    margin-bottom: 24px;
+  }
+
+  .section-title em { font-style: italic; color: var(--rose); }
+
+  /* ── MEMORIES / GALLERY ── */
+  .gallery-section {
+    background: var(--cream);
+  }
+
+  .gallery-header {
+    max-width: 900px;
+    margin: 0 auto 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .gallery-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 8px 20px;
+    border: 1px solid var(--gold-light);
+    background: transparent;
+    color: var(--muted-brown);
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--charcoal);
+    color: var(--cream);
+    border-color: var(--charcoal);
+  }
+
+  /* Gallery Grid */
+  .gallery-grid {
+    max-width: 900px;
+    margin: 0 auto;
+    columns: 3;
+    column-gap: 16px;
+  }
+
+  @media (max-width: 700px) {
+    .gallery-grid { columns: 2; }
+  }
+  @media (max-width: 460px) {
+    .gallery-grid { columns: 1; }
+  }
+
+  .gallery-item {
+    break-inside: avoid;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 3px;
+    cursor: pointer;
+    background: var(--rose-light);
+  }
+
+  .gallery-item img,
+  .gallery-item video {
+    width: 100%;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .gallery-item:hover img,
+  .gallery-item:hover video {
+    transform: scale(1.04);
+  }
+
+  .gallery-item-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(42,37,32,0.6) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex;
+    align-items: flex-end;
+    padding: 16px;
+  }
+
+  .gallery-item:hover .gallery-item-overlay { opacity: 1; }
+
+  .gallery-item-caption {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--cream);
+    line-height: 1.4;
+  }
+
+  .gallery-item-type {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    background: rgba(42,37,32,0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .gallery-item-type svg {
+    width: 12px;
+    height: 12px;
+    fill: white;
+  }
+
+  /* Upload Zone */
+  .upload-zone {
+    max-width: 900px;
+    margin: 48px auto 0;
+    border: 1px dashed var(--gold);
+    border-radius: 4px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(196,134,106,0.03);
+  }
+
+  .upload-zone:hover, .upload-zone.dragover {
+    background: rgba(196,134,106,0.07);
+    border-color: var(--rose);
+  }
+
+  .upload-zone input { display: none; }
+
+  .upload-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 16px;
+    opacity: 0.4;
+  }
+
+  .upload-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-style: italic;
+    color: var(--muted-brown);
+    margin-bottom: 8px;
+  }
+
+  .upload-sub {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* ── LETTER SECTION ── */
+  .letter-section {
+    background: var(--charcoal);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .letter-section::before {
+    content: '"';
+    position: absolute;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 400px;
+    color: rgba(255,255,255,0.03);
+    top: -80px;
+    left: -20px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .letter-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .letter-section .section-label { color: var(--rose-light); }
+  .letter-section .section-title { color: var(--cream); }
+  .letter-section .section-title em { color: var(--rose); }
+
+  .letter-body {
+    margin-top: 40px;
+    padding: 48px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+  }
+
+  .letter-body p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    line-height: 2;
+    color: rgba(245,240,232,0.85);
+    margin-bottom: 24px;
+  }
+
+  .letter-body p:last-child { margin-bottom: 0; }
+
+  .letter-signature {
+    margin-top: 40px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--gold-light);
+    text-align: right;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline-section {
+    background: var(--warm-white);
+  }
+
+  .timeline-inner {
+    max-width: 700px;
+    margin: 60px auto 0;
+  }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 100px 1px 1fr;
+    gap: 0 32px;
+    margin-bottom: 56px;
+    position: relative;
+  }
+
+  .timeline-date {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--gold);
+    text-align: right;
+    padding-top: 4px;
+    line-height: 1.4;
+  }
+
+  .timeline-line {
+    width: 1px;
+    background: linear-gradient(to bottom, var(--gold) 0%, var(--rose-light) 100%);
+    position: relative;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rose);
+    border: 2px solid var(--warm-white);
+    box-shadow: 0 0 0 3px rgba(196,134,106,0.2);
+  }
+
+  .timeline-content {
+    padding-bottom: 40px;
+  }
+
+  .timeline-content h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 8px;
+  }
+
+  .timeline-content p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--muted-brown);
+  }
+
+  /* ── ADD MOMENT FORM ── */
+  .add-moment-section {
+    background: var(--cream);
+    padding: 80px 24px;
+  }
+
+  .add-moment-inner {
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  .field-group {
+    margin-bottom: 28px;
+  }
+
+  .field-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .field-input,
+  .field-textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--rose-light);
+    padding: 10px 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: var(--charcoal);
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  .field-input:focus,
+  .field-textarea:focus {
+    border-color: var(--rose);
+  }
+
+  .field-textarea {
+    resize: none;
+    min-height: 100px;
+    line-height: 1.7;
+  }
+
+  ::placeholder { color: var(--rose-light); }
+
+  .btn-submit {
+    margin-top: 16px;
+    padding: 14px 48px;
+    background: var(--charcoal);
+    color: var(--cream);
+    border: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-submit:hover {
+    background: var(--rose);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(196,134,106,0.3);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 60px 24px 80px;
+    text-align: center;
+    background: var(--charcoal);
+  }
+
+  .footer-symbol {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px;
+    color: var(--rose);
+    margin-bottom: 20px;
+    opacity: 0.7;
+  }
+
+  .footer-names {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--cream);
+    letter-spacing: 2px;
+  }
+
+  .footer-year {
+    margin-top: 12px;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,17,14,0.95);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(8px);
+  }
+
+  .lightbox.active { display: flex; }
+
+  .lightbox-content {
+    max-width: 90vw;
+    max-height: 90vh;
+    position: relative;
+  }
+
+  .lightbox-content img,
+  .lightbox-content video {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 3px;
+    object-fit: contain;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: -44px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .lightbox-close:hover {
+    border-color: var(--rose);
+    color: var(--rose);
+  }
+
+  .lightbox-caption {
+    margin-top: 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-style: italic;
+    color: rgba(245,240,232,0.7);
+    text-align: center;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    padding: 14px 24px;
+    background: var(--charcoal);
+    color: var(--cream);
+    border-left: 3px solid var(--rose);
+    font-size: 13px;
+    border-radius: 3px;
+    z-index: 2000;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--rose-light);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollDown {
+    0%, 100% { opacity: 0.4; transform: scaleY(0.5); transform-origin: top; }
+    50% { opacity: 1; transform: scaleY(1); }
+  }
+
+  .fade-in-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .fade-in-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Video thumbnail overlay play button */
+  .play-btn {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(42,37,32,0.2);
+    transition: background 0.3s;
+  }
+
+  .play-btn svg {
+    width: 40px;
+    height: 40px;
+    fill: white;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+    transition: transform 0.3s;
+  }
+
+  .gallery-item:hover .play-btn { background: rgba(42,37,32,0.1); }
+  .gallery-item:hover .play-btn svg { transform: scale(1.1); }
+
+  /* ── DRIVE BUTTON ── */
+  .btn-drive {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    background: var(--warm-white);
+    color: var(--charcoal);
+    border: 1px solid var(--gold-light);
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+  }
+
+  .btn-drive:hover {
+    background: var(--charcoal);
+    color: var(--cream);
+    border-color: var(--charcoal);
+  }
+
+  .btn-drive svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .upload-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 20px;
+  }
+
+  .upload-divider {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rose-light);
+    margin: 8px 0 20px;
+  }
+
+  /* ── DRIVE SETUP MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,17,14,0.85);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(6px);
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal-box {
+    background: var(--warm-white);
+    max-width: 560px;
+    width: 100%;
+    border-radius: 4px;
+    padding: 48px;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: var(--muted-brown);
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--charcoal);
+    margin-bottom: 8px;
+  }
+
+  .modal-title em { font-style: italic; color: var(--rose); }
+
+  .modal-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted-brown);
+    margin-bottom: 28px;
+  }
+
+  .modal-step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+
+  .modal-step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--rose);
+    color: white;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .modal-step-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--charcoal);
+  }
+
+  .modal-step-text a {
+    color: var(--rose);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rose-light);
+  }
+
+  .modal-step-text code {
+    background: var(--cream);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-size: 12px;
+    font-family: monospace;
+    color: var(--muted-brown);
+  }
+
+  .modal-field {
+    margin-top: 24px;
+  }
+
+  .modal-field label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .modal-field input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--rose-light);
+    padding: 10px 0;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    color: var(--charcoal);
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .modal-field input:focus { border-color: var(--rose); }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .btn-modal-primary {
+    padding: 12px 32px;
+    background: var(--charcoal);
+    color: var(--cream);
+    border: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.3s;
+  }
+
+  .btn-modal-primary:hover { background: var(--rose); }
+
+  .btn-modal-secondary {
+    padding: 12px 24px;
+    background: transparent;
+    color: var(--muted-brown);
+    border: 1px solid var(--rose-light);
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+
+  .btn-modal-secondary:hover { border-color: var(--charcoal); color: var(--charcoal); }
+
+  /* Drive connected badge */
+  .drive-badge {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-top: 8px;
+  }
+
+  .drive-badge.visible { display: flex; }
+
+  .drive-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6abf8a;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Progress bar for storage */
+  .storage-bar {
+    max-width: 900px;
+    margin: 20px auto 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .storage-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted-brown);
+    white-space: nowrap;
+  }
+
+  .storage-track {
+    flex: 1;
+    height: 2px;
+    background: var(--rose-light);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .storage-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--rose), var(--gold));
+    border-radius: 1px;
+    transition: width 0.5s ease;
+  }
+
+  .storage-count {
+    font-size: 12px;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  /* ── MUSIC PLAYER ── */
+  .music-player {
+    position: fixed;
+    bottom: 32px;
+    left: 32px;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .music-card {
+    background: var(--charcoal);
+    border: 1px solid rgba(196,134,106,0.25);
+    border-radius: 4px;
+    overflow: hidden;
+    width: 260px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.28);
+    transform-origin: bottom left;
+    transform: scaleY(0) translateY(8px);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.23,1,0.32,1), opacity 0.3s ease;
+    pointer-events: none;
+    margin-bottom: 10px;
+  }
+
+  .music-card.open {
+    transform: scaleY(1) translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .music-card-header {
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .music-note-icon {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--rose);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    animation: musicPulse 2.4s ease-in-out infinite;
+  }
+  .music-note-icon svg { width: 15px; height: 15px; fill: white; }
+
+  @keyframes musicPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(196,134,106,0.4); }
+    50%       { box-shadow: 0 0 0 6px rgba(196,134,106,0); }
+  }
+
+  .music-info { flex: 1; min-width: 0; }
+  .music-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px; font-style: italic; color: var(--cream);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
+  }
+  .music-artist {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold); margin-top: 2px;
+  }
+
+  .music-waveform {
+    padding: 10px 18px; display: flex; align-items: center; gap: 3px; height: 40px;
+  }
+  .music-bar {
+    width: 3px; border-radius: 2px; background: var(--rose); opacity: 0.7;
+    animation: wave 1.2s ease-in-out infinite;
+  }
+  .music-bar:nth-child(1){animation-delay:0s;height:10px}
+  .music-bar:nth-child(2){animation-delay:.15s;height:18px}
+  .music-bar:nth-child(3){animation-delay:.3s;height:24px}
+  .music-bar:nth-child(4){animation-delay:.45s;height:14px}
+  .music-bar:nth-child(5){animation-delay:.6s;height:20px}
+  .music-bar:nth-child(6){animation-delay:.75s;height:16px}
+  .music-bar:nth-child(7){animation-delay:.9s;height:22px}
+  .music-bar:nth-child(8){animation-delay:1.05s;height:12px}
+
+  @keyframes wave {
+    0%,100%{transform:scaleY(.35);opacity:.35}
+    50%{transform:scaleY(1);opacity:.9}
+  }
+
+  .music-open-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 18px; background: var(--rose); border: none;
+    cursor: pointer; width: 100%; transition: background 0.3s; text-decoration: none;
+  }
+  .music-open-btn:hover { background: #b5705a; }
+  .music-open-btn svg { width: 16px; height: 16px; fill: white; flex-shrink: 0; }
+  .music-open-btn span {
+    font-family: 'Jost', sans-serif; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; color: white;
+  }
+
+  .music-toggle {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--charcoal); border: 1px solid rgba(196,134,106,0.35);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    transition: all 0.3s ease; position: relative;
+  }
+  .music-toggle:hover { background: var(--rose); border-color: var(--rose); transform: scale(1.08); }
+  .music-toggle svg { width: 18px; height: 18px; fill: var(--cream); }
+
+  .music-toggle-ring {
+    position: absolute; inset: -5px; border-radius: 50%;
+    border: 1px solid rgba(196,134,106,0.22);
+    animation: ringPulse 3s ease-in-out infinite; pointer-events: none;
+  }
+  @keyframes ringPulse {
+    0%,100%{transform:scale(1);opacity:.7}
+    50%{transform:scale(1.18);opacity:0}
+  }
+
+  @media(max-width:480px){
+    .music-player{bottom:20px;left:16px}
+    .music-card{width:220px}
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-ornament">Sebuah tempat, hanya untuk kita</p>
+  <h1 class="hero-title">Untuk <em>Sinta</em></h1>
+  <p class="hero-sub">dari Damar, dengan sepenuh hati</p>
+  <div class="hero-divider"></div>
+  <p class="hero-message">Di sini tersimpan setiap momen yang berharga — tawa, diam, dan semua hal kecil yang membuat kita menjadi kita.</p>
+  <div class="scroll-hint">
+    <span>Lihat</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery-section">
+  <div class="gallery-header fade-in-up">
+    <div>
+      <p class="section-label">Kenangan</p>
+      <h2 class="section-title">Momen <em>Kita</em></h2>
+    </div>
+    <div class="gallery-filters">
+      <button class="filter-btn active" data-filter="all">Semua</button>
+      <button class="filter-btn" data-filter="foto">Foto</button>
+      <button class="filter-btn" data-filter="video">Video</button>
+    </div>
+  </div>
+
+  <div class="storage-bar fade-in-up">
+    <span class="storage-label">Tersimpan</span>
+    <div class="storage-track"><div class="storage-fill" id="storageBar" style="width:0%"></div></div>
+    <span class="storage-count" id="storageCount">0 item</span>
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid">
+    <div class="empty-state" id="emptyState" style="column-span: all;">
+      Belum ada kenangan tersimpan.<br>Mulai tambahkan foto atau video pertamamu.
+    </div>
+  </div>
+
+  <div class="upload-zone fade-in-up" id="uploadZone">
+    <input type="file" id="fileInput" accept="image/*,video/*" multiple>
+
+    <div class="upload-actions">
+      <button class="btn-drive" id="driveBtn">
+        <svg viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+          <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+          <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/>
+          <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+          <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+          <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+          <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+        </svg>
+        Import dari Google Drive
+      </button>
+      <div class="drive-badge" id="driveBadge">
+        <div class="drive-badge-dot"></div>
+        <span id="driveBadgeText">Google Drive terhubung</span>
+      </div>
+    </div>
+
+    <p class="upload-divider">atau</p>
+
+    <div class="upload-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--gold)">
+        <path d="M12 16V4m0 0L8 8m4-4l4 4M20 20H4"/>
+      </svg>
+    </div>
+    <p class="upload-text">Upload dari perangkat</p>
+    <p class="upload-sub">Foto atau video · Klik atau seret ke sini</p>
+  </div>
+
+<!-- DRIVE SETUP MODAL -->
+<div class="modal-overlay" id="driveModal">
+  <div class="modal-box">
+    <button class="modal-close" id="driveModalClose">✕</button>
+    <h2 class="modal-title">Import dari <em>Google Drive</em></h2>
+    <p class="modal-desc">Untuk terhubung ke Google Drive, masukkan API Key dan Client ID dari Google Cloud Console. Setup ini hanya perlu dilakukan sekali — tersimpan otomatis di browser.</p>
+
+    <div class="modal-step">
+      <div class="modal-step-num">1</div>
+      <div class="modal-step-text">
+        Buka <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>, buat project baru atau pilih yang sudah ada.
+      </div>
+    </div>
+    <div class="modal-step">
+      <div class="modal-step-num">2</div>
+      <div class="modal-step-text">
+        Aktifkan <code>Google Drive API</code> dan <code>Google Picker API</code> di menu <em>APIs & Services → Library</em>.
+      </div>
+    </div>
+    <div class="modal-step">
+      <div class="modal-step-num">3</div>
+      <div class="modal-step-text">
+        Buat <code>API Key</code> di <em>Credentials</em>, lalu buat <code>OAuth 2.0 Client ID</code> (tipe: Web Application). Tambahkan URL website ini ke <em>Authorized JavaScript Origins</em>.
+      </div>
+    </div>
+    <div class="modal-step">
+      <div class="modal-step-num">4</div>
+      <div class="modal-step-text">
+        Salin kedua nilai di bawah lalu klik <strong>Hubungkan</strong>. Setelah terhubung, kamu bisa pilih foto &amp; video langsung dari Drive.
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>API Key</label>
+      <input type="text" id="driveApiKey" placeholder="AIzaSy...">
+    </div>
+    <div class="modal-field">
+      <label>OAuth Client ID</label>
+      <input type="text" id="driveClientId" placeholder="xxxxx.apps.googleusercontent.com">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-primary" id="driveConnectBtn">Hubungkan Drive</button>
+      <button class="btn-modal-secondary" id="driveModalCancel">Batal</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- LETTER -->
+<section class="letter-section fade-in-up">
+  <div class="letter-inner">
+    <p class="section-label">Kata Hati</p>
+    <h2 class="section-title">Sebuah <em>Surat</em></h2>
+    <div class="letter-body">
+      <p>Sinta yang aku sayangi,</p>
+      <p>Ada hal-hal yang mudah terucap, dan ada yang lebih mudah terasa — bahwa kehadiranmu dalam hidupku bukan sesuatu yang kebetulan.</p>
+      <p>Kubuat ruang ini bukan karena ingin memamerkan apa yang kita miliki, tapi karena aku ingin setiap momen bersamamu punya tempat yang layak. Sebuah tempat yang hanya milik kita.</p>
+      <p>Terima kasih sudah ada.</p>
+    </div>
+    <p class="letter-signature">— Damar</p>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline-section">
+  <div style="max-width:700px;margin:0 auto" class="fade-in-up">
+    <p class="section-label">Perjalanan</p>
+    <h2 class="section-title">Jejak <em>Waktu</em></h2>
+  </div>
+  <div class="timeline-inner" id="timelineInner">
+    <!-- Timeline items rendered by JS -->
+  </div>
+</section>
+
+<!-- ADD MOMENT -->
+<section class="add-moment-section">
+  <div class="add-moment-inner fade-in-up">
+    <p class="section-label">Tuliskan</p>
+    <h2 class="section-title">Tambah <em>Momen</em></h2>
+
+    <div class="field-group" style="margin-top:40px">
+      <label class="field-label" for="momentDate">Tanggal</label>
+      <input class="field-input" type="date" id="momentDate">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="momentTitle">Judul Momen</label>
+      <input class="field-input" type="text" id="momentTitle" placeholder="Hari pertama kita…">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="momentNote">Catatan</label>
+      <textarea class="field-textarea" id="momentNote" placeholder="Ceritakan sedikit tentang momen ini…"></textarea>
+    </div>
+
+    <button class="btn-submit" id="addMomentBtn">Simpan Momen</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-symbol">♡</div>
+  <p class="footer-names">Sinta & Damar</p>
+  <p class="footer-year">Selalu dan selamanya</p>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-content">
+    <button class="lightbox-close" id="lightboxClose">✕</button>
+    <img id="lightboxImg" src="" style="display:none">
+    <video id="lightboxVideo" src="" controls style="display:none"></video>
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── STATE ──
+  const DB_KEY = 'sinta_damar_gallery';
+  const TIMELINE_KEY = 'sinta_damar_timeline';
+
+  function loadGallery() {
+    try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; } catch { return []; }
+  }
+
+  function saveGallery(items) {
+    try { localStorage.setItem(DB_KEY, JSON.stringify(items)); } catch(e) {
+      showToast('Penyimpanan penuh. Hapus beberapa item terlebih dahulu.');
+    }
+  }
+
+  function loadTimeline() {
+    try {
+      return JSON.parse(localStorage.getItem(TIMELINE_KEY)) || [
+        { date: 'Awal cerita', title: 'Hari pertama kita bertemu', note: 'Semuanya dimulai dari sini.' },
+        { date: 'Perjalanan kita', title: 'Momen-momen berharga', note: 'Yang membuat kita semakin dekat.' }
+      ];
+    } catch { return []; }
+  }
+
+  function saveTimeline(items) {
+    localStorage.setItem(TIMELINE_KEY, JSON.stringify(items));
+  }
+
+  // ── GALLERY RENDER ──
+  let currentFilter = 'all';
+  let galleryItems = loadGallery();
+
+  function renderGallery() {
+    const grid = document.getElementById('galleryGrid');
+    const emptyState = document.getElementById('emptyState');
+    const filtered = currentFilter === 'all' ? galleryItems
+      : galleryItems.filter(i => i.type === currentFilter);
+
+    // Clear non-empty state items
+    [...grid.querySelectorAll('.gallery-item')].forEach(el => el.remove());
+
+    if (filtered.length === 0) {
+      emptyState.style.display = 'block';
+    } else {
+      emptyState.style.display = 'none';
+      filtered.forEach((item, idx) => {
+        const el = createGalleryElement(item, idx);
+        grid.appendChild(el);
+      });
+    }
+
+    updateStorageBar();
+  }
+
+  function createGalleryElement(item, idx) {
+    const div = document.createElement('div');
+    div.className = 'gallery-item';
+    div.dataset.idx = idx;
+
+    if (item.type === 'foto') {
+      div.innerHTML = `
+        <img src="${item.src}" alt="${item.caption || ''}" loading="lazy">
+        <div class="gallery-item-overlay"><span class="gallery-item-caption">${item.caption || ''}</span></div>
+        <div class="gallery-item-type">
+          <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        </div>
+      `;
+    } else if (item.driveEmbed) {
+      const thumbStyle = item.thumb
+        ? `background:url('${item.thumb}') center/cover no-repeat; min-height:180px;`
+        : 'background:var(--charcoal); min-height:180px;';
+      div.innerHTML = `
+        <div style="${thumbStyle} width:100%; display:block;"></div>
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="gallery-item-overlay"><span class="gallery-item-caption">${item.caption || ''}</span></div>
+        <div class="gallery-item-type">
+          <svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        </div>
+      `;
+    } else {
+      div.innerHTML = `
+        <video src="${item.src}" muted preload="metadata" style="max-height:260px;object-fit:cover;width:100%"></video>
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="gallery-item-overlay"><span class="gallery-item-caption">${item.caption || ''}</span></div>
+        <div class="gallery-item-type">
+          <svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        </div>
+      `;
+    }
+
+    div.addEventListener('click', () => openLightbox(item));
+    return div;
+  }
+
+  function updateStorageBar() {
+    const count = galleryItems.length;
+    const MAX = 200;
+    const pct = Math.min((count / MAX) * 100, 100);
+    document.getElementById('storageBar').style.width = pct + '%';
+    document.getElementById('storageCount').textContent = count + ' item';
+  }
+
+  // ── LIGHTBOX ──
+  function openLightbox(item) {
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightboxImg');
+    const vid = document.getElementById('lightboxVideo');
+    const cap = document.getElementById('lightboxCaption');
+
+    // Remove any existing iframe
+    const existingIframe = lb.querySelector('.drive-iframe');
+    if (existingIframe) existingIframe.remove();
+
+    if (item.type === 'foto') {
+      img.src = item.src;
+      img.style.display = 'block';
+      vid.style.display = 'none';
+      vid.pause();
+    } else if (item.driveEmbed) {
+      img.style.display = 'none';
+      vid.style.display = 'none';
+      const iframe = document.createElement('iframe');
+      iframe.className = 'drive-iframe';
+      iframe.src = item.src;
+      iframe.style.cssText = 'width:80vw;height:70vh;border:none;border-radius:3px;';
+      iframe.allow = 'autoplay';
+      lb.querySelector('.lightbox-content').insertBefore(iframe, cap);
+    } else {
+      vid.src = item.src;
+      vid.style.display = 'block';
+      img.style.display = 'none';
+    }
+
+    cap.textContent = item.caption || '';
+    lb.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    const lb = document.getElementById('lightbox');
+    const vid = document.getElementById('lightboxVideo');
+    vid.pause();
+    const iframe = lb.querySelector('.drive-iframe');
+    if (iframe) iframe.remove();
+    lb.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+
+  // ── FILE UPLOAD ──
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput = document.getElementById('fileInput');
+
+  uploadZone.addEventListener('click', () => fileInput.click());
+
+  uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+  });
+
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  });
+
+  fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+  function handleFiles(files) {
+    const arr = [...files];
+    let processed = 0;
+
+    arr.forEach(file => {
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
+      if (!isImage && !isVideo) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Prompt caption
+        const caption = prompt(`Caption untuk "${file.name}"?\n(boleh kosong)`) || '';
+        galleryItems.unshift({
+          src: e.target.result,
+          type: isImage ? 'foto' : 'video',
+          caption,
+          name: file.name,
+          date: new Date().toISOString()
+        });
+        saveGallery(galleryItems);
+        processed++;
+        if (processed === arr.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/')).length) {
+          renderGallery();
+          showToast('Kenangan berhasil ditambahkan ♡');
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ── FILTERS ──
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentFilter = this.dataset.filter;
+      renderGallery();
+    });
+  });
+
+  // ── TIMELINE ──
+  let timelineItems = loadTimeline();
+
+  function renderTimeline() {
+    const inner = document.getElementById('timelineInner');
+    inner.innerHTML = timelineItems.map(item => `
+      <div class="timeline-item fade-in-up">
+        <div class="timeline-date">${item.date}</div>
+        <div class="timeline-line"><div class="timeline-dot"></div></div>
+        <div class="timeline-content">
+          <h3>${item.title}</h3>
+          <p>${item.note}</p>
+        </div>
+      </div>
+    `).join('');
+    observeFadeElements();
+  }
+
+  // ── ADD MOMENT ──
+  document.getElementById('addMomentBtn').addEventListener('click', () => {
+    const date = document.getElementById('momentDate').value;
+    const title = document.getElementById('momentTitle').value.trim();
+    const note = document.getElementById('momentNote').value.trim();
+
+    if (!title) { showToast('Tuliskan judul momen terlebih dahulu.'); return; }
+
+    const dateLabel = date ? new Date(date).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' }) : 'Tak bertanggal';
+
+    timelineItems.unshift({ date: dateLabel, title, note: note || '—' });
+    saveTimeline(timelineItems);
+    renderTimeline();
+
+    document.getElementById('momentDate').value = '';
+    document.getElementById('momentTitle').value = '';
+    document.getElementById('momentNote').value = '';
+    showToast('Momen berhasil ditambahkan ♡');
+  });
+
+  // ── TOAST ──
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+  }
+
+  // ── INTERSECTION OBSERVER ──
+  function observeFadeElements() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+  }
+
+  // ── GOOGLE DRIVE INTEGRATION ──
+  const DRIVE_KEY = 'sinta_damar_drive_config';
+
+  let driveConfig = (() => {
+    try { return JSON.parse(localStorage.getItem(DRIVE_KEY)) || {}; } catch { return {}; }
+  })();
+
+  let driveAccessToken = null;
+  let driveInited = false;
+
+  function saveDriveConfig(cfg) {
+    driveConfig = cfg;
+    localStorage.setItem(DRIVE_KEY, JSON.stringify(cfg));
+  }
+
+  function checkDriveConnected() {
+    if (driveConfig.apiKey && driveConfig.clientId) {
+      document.getElementById('driveBadge').classList.add('visible');
+      document.getElementById('driveBadgeText').textContent = 'Google Drive terhubung';
+      return true;
+    }
+    return false;
+  }
+
+  // Open setup modal or run picker if already configured
+  document.getElementById('driveBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (driveConfig.apiKey && driveConfig.clientId) {
+      initAndOpenPicker();
+    } else {
+      // Pre-fill if saved
+      document.getElementById('driveApiKey').value = driveConfig.apiKey || '';
+      document.getElementById('driveClientId').value = driveConfig.clientId || '';
+      document.getElementById('driveModal').classList.add('active');
+    }
+  });
+
+  document.getElementById('driveModalClose').addEventListener('click', () => {
+    document.getElementById('driveModal').classList.remove('active');
+  });
+
+  document.getElementById('driveModalCancel').addEventListener('click', () => {
+    document.getElementById('driveModal').classList.remove('active');
+  });
+
+  document.getElementById('driveModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+  });
+
+  document.getElementById('driveConnectBtn').addEventListener('click', () => {
+    const apiKey = document.getElementById('driveApiKey').value.trim();
+    const clientId = document.getElementById('driveClientId').value.trim();
+
+    if (!apiKey || !clientId) {
+      showToast('Masukkan API Key dan Client ID terlebih dahulu.');
+      return;
+    }
+
+    saveDriveConfig({ apiKey, clientId });
+    document.getElementById('driveModal').classList.remove('active');
+    checkDriveConnected();
+    showToast('Google Drive berhasil terhubung ♡');
+    initAndOpenPicker();
+  });
+
+  function loadGapiScript(cb) {
+    if (window.gapi) { cb(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://apis.google.com/js/api.js';
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  function loadGsiScript(cb) {
+    if (window.google && window.google.accounts) { cb(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  function initAndOpenPicker() {
+    showToast('Menghubungkan ke Google Drive…');
+    loadGapiScript(() => {
+      gapi.load('picker', () => {
+        loadGsiScript(() => {
+          getAccessToken((token) => {
+            if (!token) return;
+            driveAccessToken = token;
+            openDrivePicker(token);
+          });
+        });
+      });
+    });
+  }
+
+  function getAccessToken(cb) {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: driveConfig.clientId,
+      scope: 'https://www.googleapis.com/auth/drive.readonly',
+      callback: (resp) => {
+        if (resp.error) {
+          showToast('Gagal login ke Google. Coba lagi.');
+          return;
+        }
+        cb(resp.access_token);
+      }
+    });
+    client.requestAccessToken({ prompt: 'consent' });
+  }
+
+  function openDrivePicker(token) {
+    const view = new google.picker.View(google.picker.ViewId.DOCS);
+    view.setMimeTypes('image/png,image/jpeg,image/jpg,image/gif,image/webp,video/mp4,video/quicktime,video/x-msvideo,video/webm,video/3gpp');
+
+    const picker = new google.picker.PickerBuilder()
+      .setTitle('Pilih foto atau video dari Drive — Sinta & Damar')
+      .addView(view)
+      .addView(new google.picker.DocsUploadView())
+      .setOAuthToken(token)
+      .setDeveloperKey(driveConfig.apiKey)
+      .setCallback(pickerCallback)
+      .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+      .build();
+
+    picker.setVisible(true);
+  }
+
+  function pickerCallback(data) {
+    if (data.action !== google.picker.Action.PICKED) return;
+    const docs = data[google.picker.Response.DOCUMENTS];
+    if (!docs || docs.length === 0) return;
+
+    showToast(`Memuat ${docs.length} file dari Drive…`);
+
+    let loaded = 0;
+    docs.forEach(doc => {
+      const fileId = doc[google.picker.Document.ID];
+      const name = doc[google.picker.Document.NAME] || '';
+      const mime = doc[google.picker.Document.MIME_TYPE] || '';
+      const isImage = mime.startsWith('image/');
+      const isVideo = mime.startsWith('video/');
+      if (!isImage && !isVideo) { loaded++; return; }
+
+      // Use Drive thumbnail for images, embed link for videos
+      if (isImage) {
+        // Fetch as blob via Drive API
+        fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+          headers: { Authorization: `Bearer ${driveAccessToken}` }
+        })
+        .then(r => r.blob())
+        .then(blob => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            galleryItems.unshift({
+              src: e.target.result,
+              type: 'foto',
+              caption: name.replace(/\.[^.]+$/, ''),
+              name,
+              date: new Date().toISOString(),
+              source: 'drive'
+            });
+            loaded++;
+            if (loaded === docs.length) finalizeDriveImport();
+          };
+          reader.readAsDataURL(blob);
+        })
+        .catch(() => { loaded++; if (loaded === docs.length) finalizeDriveImport(); });
+      } else {
+        // Videos: store as Drive embed URL (streaming)
+        const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+        const thumbUrl = doc[google.picker.Document.THUMBNAILS]
+          ? doc[google.picker.Document.THUMBNAILS][0].url
+          : '';
+        galleryItems.unshift({
+          src: embedUrl,
+          thumb: thumbUrl,
+          type: 'video',
+          caption: name.replace(/\.[^.]+$/, ''),
+          name,
+          date: new Date().toISOString(),
+          source: 'drive',
+          driveEmbed: true,
+          fileId
+        });
+        loaded++;
+        if (loaded === docs.length) finalizeDriveImport();
+      }
+    });
+  }
+
+  function finalizeDriveImport() {
+    saveGallery(galleryItems);
+    renderGallery();
+    showToast('File dari Google Drive berhasil ditambahkan ♡');
+  }
+
+  // ── INIT ──
+  renderGallery();
+  renderTimeline();
+  observeFadeElements();
+  checkDriveConnected();
+</script>
+
+<!-- MUSIC PLAYER -->
+<div class="music-player" id="musicPlayer">
+  <div class="music-card" id="musicCard">
+    <div class="music-card-header">
+      <div class="music-note-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
+      </div>
+      <div class="music-info">
+        <div class="music-title">Lagu Kita</div>
+        <div class="music-artist">Backsound · Sinta &amp; Damar</div>
+      </div>
+    </div>
+    <div class="music-waveform">
+      <div class="music-bar"></div>
+      <div class="music-bar"></div>
+      <div class="music-bar"></div>
+      <div class="music-bar"></div>
+      <div class="music-bar"></div>
+      <div class="music-bar"></div>
+      <div class="music-bar"></div>
+      <div class="music-bar"></div>
+    </div>
+    <a class="music-open-btn" href="https://www.youtube.com/watch?v=bzRMneypG04" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+      <span>Putar di YouTube</span>
+    </a>
+  </div>
+
+  <button class="music-toggle" id="musicToggle" title="Musik">
+    <div class="music-toggle-ring"></div>
+    <svg id="musicIcon" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
+  </button>
+</div>
+
+<script>
+  (function() {
+    const toggle = document.getElementById('musicToggle');
+    const card   = document.getElementById('musicCard');
+    let open = false;
+
+    // Auto-open after 1.5s
+    setTimeout(() => {
+      open = true;
+      card.classList.add('open');
+    }, 1500);
+
+    toggle.addEventListener('click', () => {
+      open = !open;
+      card.classList.toggle('open', open);
+    });
+  })();
+</script>
+
+</body>
+</html>
