@@ -1237,7 +1237,7 @@
 <section class="hero">
   <p class="hero-ornament">Sebuah tempat, hanya untuk kita</p>
   <h1 class="hero-title">Untuk <em>Sinta</em></h1>
-  <p class="hero-sub">dari Damar</p>
+  <p class="hero-sub">dari Damar, dengan sepenuh hati</p>
   <div class="hero-divider"></div>
   <p class="hero-message">Di sini tersimpan setiap momen yang berharga — tawa, diam, dan semua hal kecil yang membuat kita menjadi kita.</p>
   <div class="scroll-hint">
@@ -1356,13 +1356,13 @@
 <!-- LETTER -->
 <section class="letter-section fade-in-up">
   <div class="letter-inner">
-    <p class="section-label">Deep Down</p>
+    <p class="section-label">Kata Hati</p>
     <h2 class="section-title">Sebuah <em>Surat</em></h2>
     <div class="letter-body">
-      <p>My Sinta Cute Person,</p>
-      <p>Ada hal-hal yang mudah terucap, dan ada yang lebih mudah terasa — bahwa mengenalmu dalam hidupku bukan sesuatu yang kebetulan.</p>
-      <p>Kubuat ruang ini bukan karena ingin memamerkan apa yang kita miliki, tapi karena aku ingin setiap momen bersamamu punya tempat yang layak. Sebuah tempat yang hanya milik kita, khususnya aku.</p>
-      <p>Terima kasih sudah mau mengenalku.</p>
+      <p>Sinta yang aku sayangi,</p>
+      <p>Ada hal-hal yang mudah terucap, dan ada yang lebih mudah terasa — bahwa kehadiranmu dalam hidupku bukan sesuatu yang kebetulan.</p>
+      <p>Kubuat ruang ini bukan karena ingin memamerkan apa yang kita miliki, tapi karena aku ingin setiap momen bersamamu punya tempat yang layak. Sebuah tempat yang hanya milik kita.</p>
+      <p>Terima kasih sudah ada.</p>
     </div>
     <p class="letter-signature">— Damar</p>
   </div>
@@ -1392,7 +1392,7 @@
 
     <div class="field-group">
       <label class="field-label" for="momentTitle">Judul Momen</label>
-      <input class="field-input" type="text" id="momentTitle" placeholder="Cerita hari ini bersamamu...">
+      <input class="field-input" type="text" id="momentTitle" placeholder="Hari pertama kita…">
     </div>
 
     <div class="field-group">
@@ -1425,62 +1425,137 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── STATE ──
-  const DB_KEY = 'sinta_damar_gallery';
-  const TIMELINE_KEY = 'sinta_damar_timeline';
+  // ══════════════════════════════════════════════════
+  // STORAGE LAYER — Google Drive sebagai database utama
+  // Fallback ke localStorage jika Drive belum terhubung
+  // ══════════════════════════════════════════════════
 
-  function loadGallery() {
-    try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; } catch { return []; }
+  const DRIVE_KEY      = 'sinta_damar_drive_config';
+  const LOCAL_GALLERY  = 'sinta_damar_gallery';
+  const LOCAL_TIMELINE = 'sinta_damar_timeline';
+  const DRIVE_DATA_FILENAME = 'sinta-damar-kenangan.json';
+
+  let driveConfig = (() => {
+    try { return JSON.parse(localStorage.getItem(DRIVE_KEY)) || {}; } catch { return {}; }
+  })();
+
+  let driveAccessToken = null;
+  let driveDataFileId  = null;   // ID file JSON di Drive
+  let driveReady       = false;  // token & fileId sudah siap
+
+  // ── LOCAL FALLBACK ──
+  function localLoadGallery() {
+    try { return JSON.parse(localStorage.getItem(LOCAL_GALLERY)) || []; } catch { return []; }
   }
-
-  function saveGallery(items) {
-    try { localStorage.setItem(DB_KEY, JSON.stringify(items)); } catch(e) {
-      showToast('Penyimpanan penuh. Hapus beberapa item terlebih dahulu.');
-    }
+  function localSaveGallery(items) {
+    try { localStorage.setItem(LOCAL_GALLERY, JSON.stringify(items)); } catch(e) {}
   }
-
-  function loadTimeline() {
+  function localLoadTimeline() {
     try {
-      return JSON.parse(localStorage.getItem(TIMELINE_KEY)) || [
-        { date: 'Awal cerita', title: 'Hari pertama kita bertemu', note: 'Semuanya dimulai dari sini yang perlahan aku tertarik ingin mengenalmu lebih dari sekedar teman.' },
-        { date: 'Perjalanan kita', title: 'Momen-momen berharga', note: 'Yang membuat ku ingin terus mengingatmu.' }
+      return JSON.parse(localStorage.getItem(LOCAL_TIMELINE)) || [
+        { date: 'Awal cerita',    title: 'Hari pertama kita bertemu', note: 'Semuanya dimulai dari sini.' },
+        { date: 'Perjalanan kita',title: 'Momen-momen berharga',      note: 'Yang membuat kita semakin dekat.' }
       ];
     } catch { return []; }
   }
+  function localSaveTimeline(items) {
+    try { localStorage.setItem(LOCAL_TIMELINE, JSON.stringify(items)); } catch(e) {}
+  }
+
+  // ── DRIVE SAVE (menulis ulang file JSON) ──
+  async function driveSaveData(gallery, timeline) {
+    if (!driveReady) return;
+    const payload = JSON.stringify({ gallery, timeline, updated: new Date().toISOString() });
+    const blob    = new Blob([payload], { type: 'application/json' });
+
+    if (driveDataFileId) {
+      // Update existing file
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveDataFileId}?uploadType=media`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${driveAccessToken}`, 'Content-Type': 'application/json' },
+        body: payload
+      });
+    } else {
+      // Create new file in Drive root
+      const meta = JSON.stringify({ name: DRIVE_DATA_FILENAME, mimeType: 'application/json' });
+      const form = new FormData();
+      form.append('metadata', new Blob([meta], { type: 'application/json' }));
+      form.append('file', blob);
+      const res  = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${driveAccessToken}` },
+        body: form
+      });
+      const json = await res.json();
+      driveDataFileId = json.id;
+      localStorage.setItem('sinta_damar_drive_file_id', driveDataFileId);
+    }
+  }
+
+  // ── DRIVE LOAD (baca file JSON dari Drive) ──
+  async function driveLoadData() {
+    if (!driveAccessToken) return null;
+    // Cari file berdasarkan nama
+    let fileId = localStorage.getItem('sinta_damar_drive_file_id') || null;
+
+    if (!fileId) {
+      const q   = encodeURIComponent(`name='${DRIVE_DATA_FILENAME}' and trashed=false`);
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`, {
+        headers: { Authorization: `Bearer ${driveAccessToken}` }
+      });
+      const json = await res.json();
+      if (json.files && json.files.length > 0) {
+        fileId = json.files[0].id;
+        localStorage.setItem('sinta_damar_drive_file_id', fileId);
+      }
+    }
+
+    if (!fileId) return null;
+    driveDataFileId = fileId;
+
+    const res  = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+      headers: { Authorization: `Bearer ${driveAccessToken}` }
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  }
+
+  // ── UNIFIED SAVE ──
+  function saveGallery(items) {
+    localSaveGallery(items);
+    if (driveReady) driveSaveData(items, timelineItems).catch(console.error);
+  }
 
   function saveTimeline(items) {
-    localStorage.setItem(TIMELINE_KEY, JSON.stringify(items));
+    localSaveTimeline(items);
+    if (driveReady) driveSaveData(galleryItems, items).catch(console.error);
   }
 
   // ── GALLERY RENDER ──
   let currentFilter = 'all';
-  let galleryItems = loadGallery();
+  let galleryItems  = localLoadGallery();
+  let timelineItems = localLoadTimeline();
 
   function renderGallery() {
-    const grid = document.getElementById('galleryGrid');
+    const grid       = document.getElementById('galleryGrid');
     const emptyState = document.getElementById('emptyState');
-    const filtered = currentFilter === 'all' ? galleryItems
-      : galleryItems.filter(i => i.type === currentFilter);
+    const filtered   = currentFilter === 'all' ? galleryItems
+                     : galleryItems.filter(i => i.type === currentFilter);
 
-    // Clear non-empty state items
     [...grid.querySelectorAll('.gallery-item')].forEach(el => el.remove());
 
     if (filtered.length === 0) {
       emptyState.style.display = 'block';
     } else {
       emptyState.style.display = 'none';
-      filtered.forEach((item, idx) => {
-        const el = createGalleryElement(item, idx);
-        grid.appendChild(el);
-      });
+      filtered.forEach((item, idx) => grid.appendChild(createGalleryElement(item, idx)));
     }
-
     updateStorageBar();
   }
 
   function createGalleryElement(item, idx) {
     const div = document.createElement('div');
-    div.className = 'gallery-item';
+    div.className   = 'gallery-item';
     div.dataset.idx = idx;
 
     if (item.type === 'foto') {
@@ -1489,33 +1564,26 @@
         <div class="gallery-item-overlay"><span class="gallery-item-caption">${item.caption || ''}</span></div>
         <div class="gallery-item-type">
           <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-        </div>
-      `;
+        </div>`;
     } else if (item.driveEmbed) {
       const thumbStyle = item.thumb
-        ? `background:url('${item.thumb}') center/cover no-repeat; min-height:180px;`
-        : 'background:var(--charcoal); min-height:180px;';
+        ? `background:url('${item.thumb}') center/cover no-repeat;min-height:180px;`
+        : 'background:var(--charcoal);min-height:180px;';
       div.innerHTML = `
-        <div style="${thumbStyle} width:100%; display:block;"></div>
-        <div class="play-btn">
-          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </div>
+        <div style="${thumbStyle}width:100%;display:block;"></div>
+        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
         <div class="gallery-item-overlay"><span class="gallery-item-caption">${item.caption || ''}</span></div>
         <div class="gallery-item-type">
           <svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-        </div>
-      `;
+        </div>`;
     } else {
       div.innerHTML = `
         <video src="${item.src}" muted preload="metadata" style="max-height:260px;object-fit:cover;width:100%"></video>
-        <div class="play-btn">
-          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </div>
+        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
         <div class="gallery-item-overlay"><span class="gallery-item-caption">${item.caption || ''}</span></div>
         <div class="gallery-item-type">
           <svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-        </div>
-      `;
+        </div>`;
     }
 
     div.addEventListener('click', () => openLightbox(item));
@@ -1524,31 +1592,24 @@
 
   function updateStorageBar() {
     const count = galleryItems.length;
-    const MAX = 200;
-    const pct = Math.min((count / MAX) * 100, 100);
-    document.getElementById('storageBar').style.width = pct + '%';
+    document.getElementById('storageBar').style.width = Math.min((count/200)*100,100) + '%';
     document.getElementById('storageCount').textContent = count + ' item';
   }
 
   // ── LIGHTBOX ──
   function openLightbox(item) {
-    const lb = document.getElementById('lightbox');
+    const lb  = document.getElementById('lightbox');
     const img = document.getElementById('lightboxImg');
     const vid = document.getElementById('lightboxVideo');
     const cap = document.getElementById('lightboxCaption');
-
-    // Remove any existing iframe
     const existingIframe = lb.querySelector('.drive-iframe');
     if (existingIframe) existingIframe.remove();
 
     if (item.type === 'foto') {
-      img.src = item.src;
-      img.style.display = 'block';
-      vid.style.display = 'none';
-      vid.pause();
+      img.src = item.src; img.style.display = 'block';
+      vid.style.display = 'none'; vid.pause();
     } else if (item.driveEmbed) {
-      img.style.display = 'none';
-      vid.style.display = 'none';
+      img.style.display = 'none'; vid.style.display = 'none';
       const iframe = document.createElement('iframe');
       iframe.className = 'drive-iframe';
       iframe.src = item.src;
@@ -1556,18 +1617,15 @@
       iframe.allow = 'autoplay';
       lb.querySelector('.lightbox-content').insertBefore(iframe, cap);
     } else {
-      vid.src = item.src;
-      vid.style.display = 'block';
-      img.style.display = 'none';
+      vid.src = item.src; vid.style.display = 'block'; img.style.display = 'none';
     }
-
     cap.textContent = item.caption || '';
     lb.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
   function closeLightbox() {
-    const lb = document.getElementById('lightbox');
+    const lb  = document.getElementById('lightbox');
     const vid = document.getElementById('lightboxVideo');
     vid.pause();
     const iframe = lb.querySelector('.drive-iframe');
@@ -1581,50 +1639,34 @@
     if (e.target === this) closeLightbox();
   });
 
-  // ── FILE UPLOAD ──
+  // ── FILE UPLOAD (lokal) ──
   const uploadZone = document.getElementById('uploadZone');
-  const fileInput = document.getElementById('fileInput');
+  const fileInput  = document.getElementById('fileInput');
 
   uploadZone.addEventListener('click', () => fileInput.click());
-
-  uploadZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadZone.classList.add('dragover');
-  });
-
+  uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
   uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-
-  uploadZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadZone.classList.remove('dragover');
-    handleFiles(e.dataTransfer.files);
-  });
-
+  uploadZone.addEventListener('drop', (e) => { e.preventDefault(); uploadZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
   fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
   function handleFiles(files) {
-    const arr = [...files];
-    let processed = 0;
-
+    const arr = [...files].filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+    if (!arr.length) return;
+    let done = 0;
     arr.forEach(file => {
-      const isImage = file.type.startsWith('image/');
-      const isVideo = file.type.startsWith('video/');
-      if (!isImage && !isVideo) return;
-
       const reader = new FileReader();
       reader.onload = (e) => {
-        // Prompt caption
-        const caption = prompt(`Caption untuk "${file.name}"?\n(boleh kosong)`) || '';
+        const caption = prompt(`Caption untuk "${file.name}"?
+(boleh kosong)`) || '';
         galleryItems.unshift({
           src: e.target.result,
-          type: isImage ? 'foto' : 'video',
-          caption,
-          name: file.name,
+          type: file.type.startsWith('image/') ? 'foto' : 'video',
+          caption, name: file.name,
           date: new Date().toISOString()
         });
-        saveGallery(galleryItems);
-        processed++;
-        if (processed === arr.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/')).length) {
+        done++;
+        if (done === arr.length) {
+          saveGallery(galleryItems);
           renderGallery();
           showToast('Kenangan berhasil ditambahkan ♡');
         }
@@ -1644,40 +1686,32 @@
   });
 
   // ── TIMELINE ──
-  let timelineItems = loadTimeline();
-
   function renderTimeline() {
     const inner = document.getElementById('timelineInner');
     inner.innerHTML = timelineItems.map(item => `
       <div class="timeline-item fade-in-up">
         <div class="timeline-date">${item.date}</div>
         <div class="timeline-line"><div class="timeline-dot"></div></div>
-        <div class="timeline-content">
-          <h3>${item.title}</h3>
-          <p>${item.note}</p>
-        </div>
-      </div>
-    `).join('');
+        <div class="timeline-content"><h3>${item.title}</h3><p>${item.note}</p></div>
+      </div>`).join('');
     observeFadeElements();
   }
 
   // ── ADD MOMENT ──
   document.getElementById('addMomentBtn').addEventListener('click', () => {
-    const date = document.getElementById('momentDate').value;
+    const date  = document.getElementById('momentDate').value;
     const title = document.getElementById('momentTitle').value.trim();
-    const note = document.getElementById('momentNote').value.trim();
-
+    const note  = document.getElementById('momentNote').value.trim();
     if (!title) { showToast('Tuliskan judul momen terlebih dahulu.'); return; }
-
-    const dateLabel = date ? new Date(date).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' }) : 'Tak bertanggal';
-
+    const dateLabel = date
+      ? new Date(date).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })
+      : 'Tak bertanggal';
     timelineItems.unshift({ date: dateLabel, title, note: note || '—' });
     saveTimeline(timelineItems);
     renderTimeline();
-
-    document.getElementById('momentDate').value = '';
+    document.getElementById('momentDate').value  = '';
     document.getElementById('momentTitle').value = '';
-    document.getElementById('momentNote').value = '';
+    document.getElementById('momentNote').value  = '';
     showToast('Momen berhasil ditambahkan ♡');
   });
 
@@ -1685,8 +1719,7 @@
   let toastTimer;
   function showToast(msg) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
+    t.textContent = msg; t.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
   }
@@ -1695,133 +1728,166 @@
   function observeFadeElements() {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
+        if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
       });
     }, { threshold: 0.1 });
-
     document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
   }
 
-  // ── GOOGLE DRIVE INTEGRATION ──
-  const DRIVE_KEY = 'sinta_damar_drive_config';
-
-  let driveConfig = (() => {
-    try { return JSON.parse(localStorage.getItem(DRIVE_KEY)) || {}; } catch { return {}; }
-  })();
-
-  let driveAccessToken = null;
-  let driveInited = false;
+  // ══════════════════════════════════════════════════
+  // GOOGLE DRIVE — Auth + Picker + Sync
+  // ══════════════════════════════════════════════════
 
   function saveDriveConfig(cfg) {
     driveConfig = cfg;
     localStorage.setItem(DRIVE_KEY, JSON.stringify(cfg));
   }
 
+  function setBadge(text, visible) {
+    const badge = document.getElementById('driveBadge');
+    document.getElementById('driveBadgeText').textContent = text;
+    badge.classList.toggle('visible', visible);
+  }
+
   function checkDriveConnected() {
     if (driveConfig.apiKey && driveConfig.clientId) {
-      document.getElementById('driveBadge').classList.add('visible');
-      document.getElementById('driveBadgeText').textContent = 'Google Drive terhubung';
+      setBadge('Google Drive terhubung', true);
       return true;
     }
     return false;
   }
 
-  // Open setup modal or run picker if already configured
+  // Open modal atau langsung sync+picker jika sudah ada config
   document.getElementById('driveBtn').addEventListener('click', (e) => {
     e.stopPropagation();
     if (driveConfig.apiKey && driveConfig.clientId) {
-      initAndOpenPicker();
+      initDriveAndSync();
     } else {
-      // Pre-fill if saved
-      document.getElementById('driveApiKey').value = driveConfig.apiKey || '';
+      document.getElementById('driveApiKey').value   = driveConfig.apiKey   || '';
       document.getElementById('driveClientId').value = driveConfig.clientId || '';
       document.getElementById('driveModal').classList.add('active');
     }
   });
 
-  document.getElementById('driveModalClose').addEventListener('click', () => {
-    document.getElementById('driveModal').classList.remove('active');
-  });
-
-  document.getElementById('driveModalCancel').addEventListener('click', () => {
-    document.getElementById('driveModal').classList.remove('active');
-  });
-
-  document.getElementById('driveModal').addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('active');
-  });
+  document.getElementById('driveModalClose').addEventListener('click',  () => document.getElementById('driveModal').classList.remove('active'));
+  document.getElementById('driveModalCancel').addEventListener('click', () => document.getElementById('driveModal').classList.remove('active'));
+  document.getElementById('driveModal').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
 
   document.getElementById('driveConnectBtn').addEventListener('click', () => {
-    const apiKey = document.getElementById('driveApiKey').value.trim();
+    const apiKey   = document.getElementById('driveApiKey').value.trim();
     const clientId = document.getElementById('driveClientId').value.trim();
-
-    if (!apiKey || !clientId) {
-      showToast('Masukkan API Key dan Client ID terlebih dahulu.');
-      return;
-    }
-
+    if (!apiKey || !clientId) { showToast('Masukkan API Key dan Client ID terlebih dahulu.'); return; }
     saveDriveConfig({ apiKey, clientId });
     document.getElementById('driveModal').classList.remove('active');
     checkDriveConnected();
-    showToast('Google Drive berhasil terhubung ♡');
-    initAndOpenPicker();
+    initDriveAndSync();
   });
 
   function loadGapiScript(cb) {
     if (window.gapi) { cb(); return; }
-    const s = document.createElement('script');
-    s.src = 'https://apis.google.com/js/api.js';
-    s.onload = cb;
-    document.head.appendChild(s);
+    const s = document.createElement('script'); s.src = 'https://apis.google.com/js/api.js'; s.onload = cb; document.head.appendChild(s);
   }
-
   function loadGsiScript(cb) {
     if (window.google && window.google.accounts) { cb(); return; }
-    const s = document.createElement('script');
-    s.src = 'https://accounts.google.com/gsi/client';
-    s.onload = cb;
-    document.head.appendChild(s);
+    const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.onload = cb; document.head.appendChild(s);
   }
 
-  function initAndOpenPicker() {
+  // Minta token → load data dari Drive → render → buka picker
+  function initDriveAndSync(openPickerAfter = true) {
     showToast('Menghubungkan ke Google Drive…');
     loadGapiScript(() => {
       gapi.load('picker', () => {
         loadGsiScript(() => {
-          getAccessToken((token) => {
-            if (!token) return;
-            driveAccessToken = token;
-            openDrivePicker(token);
+          const client = google.accounts.oauth2.initTokenClient({
+            client_id: driveConfig.clientId,
+            scope: [
+              'https://www.googleapis.com/auth/drive.file',
+              'https://www.googleapis.com/auth/drive.readonly'
+            ].join(' '),
+            callback: async (resp) => {
+              if (resp.error) { showToast('Gagal login ke Google. Coba lagi.'); return; }
+              driveAccessToken = resp.access_token;
+              driveReady = true;
+              setBadge('Drive terhubung — memuat data…', true);
+
+              // Coba load data tersimpan di Drive
+              try {
+                const data = await driveLoadData();
+                if (data) {
+                  // Merge: Drive lebih prioritas (data lebih baru)
+                  galleryItems  = data.gallery  || localLoadGallery();
+                  timelineItems = data.timeline || localLoadTimeline();
+                  localSaveGallery(galleryItems);
+                  localSaveTimeline(timelineItems);
+                  renderGallery();
+                  renderTimeline();
+                  setBadge('Drive terhubung ✓ Data dimuat', true);
+                  showToast('Data berhasil dimuat dari Google Drive ♡');
+                } else {
+                  // Tidak ada file di Drive — upload data lokal ke Drive
+                  setBadge('Drive terhubung — menyimpan data…', true);
+                  await driveSaveData(galleryItems, timelineItems);
+                  setBadge('Google Drive terhubung ✓', true);
+                  showToast('Data lokal berhasil disinkronkan ke Drive ♡');
+                }
+              } catch(err) {
+                console.error(err);
+                showToast('Gagal memuat data dari Drive.');
+              }
+
+              if (openPickerAfter) openDrivePicker(driveAccessToken);
+            }
           });
+          client.requestAccessToken({ prompt: '' });
         });
       });
     });
   }
 
-  function getAccessToken(cb) {
-    const client = google.accounts.oauth2.initTokenClient({
-      client_id: driveConfig.clientId,
-      scope: 'https://www.googleapis.com/auth/drive.readonly',
-      callback: (resp) => {
-        if (resp.error) {
-          showToast('Gagal login ke Google. Coba lagi.');
-          return;
-        }
-        cb(resp.access_token);
-      }
+  // Auto-sync saat load jika config sudah ada (tanpa buka picker)
+  function autoSyncDrive() {
+    if (!driveConfig.apiKey || !driveConfig.clientId) return;
+    showToast('Menyinkronkan data dari Google Drive…');
+    loadGapiScript(() => {
+      gapi.load('picker', () => {
+        loadGsiScript(() => {
+          const client = google.accounts.oauth2.initTokenClient({
+            client_id: driveConfig.clientId,
+            scope: [
+              'https://www.googleapis.com/auth/drive.file',
+              'https://www.googleapis.com/auth/drive.readonly'
+            ].join(' '),
+            callback: async (resp) => {
+              if (resp.error) { console.warn('Auto-sync: token gagal'); return; }
+              driveAccessToken = resp.access_token;
+              driveReady = true;
+              try {
+                const data = await driveLoadData();
+                if (data) {
+                  galleryItems  = data.gallery  || localLoadGallery();
+                  timelineItems = data.timeline || localLoadTimeline();
+                  localSaveGallery(galleryItems);
+                  localSaveTimeline(timelineItems);
+                  renderGallery();
+                  renderTimeline();
+                  setBadge('Google Drive terhubung ✓', true);
+                  showToast('Data tersinkron dari Google Drive ♡');
+                }
+              } catch(e) { console.error('Auto-sync error', e); }
+            }
+          });
+          // prompt:'none' → tidak minta login ulang jika sudah ada sesi
+          client.requestAccessToken({ prompt: 'none' });
+        });
+      });
     });
-    client.requestAccessToken({ prompt: 'consent' });
   }
 
   function openDrivePicker(token) {
     const view = new google.picker.View(google.picker.ViewId.DOCS);
     view.setMimeTypes('image/png,image/jpeg,image/jpg,image/gif,image/webp,video/mp4,video/quicktime,video/x-msvideo,video/webm,video/3gpp');
-
     const picker = new google.picker.PickerBuilder()
-      .setTitle('Pilih foto atau video dari Drive — Sinta & Damar')
+      .setTitle('Pilih foto atau video — Sinta & Damar')
       .addView(view)
       .addView(new google.picker.DocsUploadView())
       .setOAuthToken(token)
@@ -1829,29 +1895,24 @@
       .setCallback(pickerCallback)
       .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
       .build();
-
     picker.setVisible(true);
   }
 
   function pickerCallback(data) {
     if (data.action !== google.picker.Action.PICKED) return;
     const docs = data[google.picker.Response.DOCUMENTS];
-    if (!docs || docs.length === 0) return;
-
+    if (!docs || !docs.length) return;
     showToast(`Memuat ${docs.length} file dari Drive…`);
-
     let loaded = 0;
     docs.forEach(doc => {
-      const fileId = doc[google.picker.Document.ID];
-      const name = doc[google.picker.Document.NAME] || '';
-      const mime = doc[google.picker.Document.MIME_TYPE] || '';
+      const fileId  = doc[google.picker.Document.ID];
+      const name    = doc[google.picker.Document.NAME] || '';
+      const mime    = doc[google.picker.Document.MIME_TYPE] || '';
       const isImage = mime.startsWith('image/');
       const isVideo = mime.startsWith('video/');
-      if (!isImage && !isVideo) { loaded++; return; }
+      if (!isImage && !isVideo) { loaded++; checkDone(); return; }
 
-      // Use Drive thumbnail for images, embed link for videos
       if (isImage) {
-        // Fetch as blob via Drive API
         fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
           headers: { Authorization: `Bearer ${driveAccessToken}` }
         })
@@ -1859,54 +1920,36 @@
         .then(blob => {
           const reader = new FileReader();
           reader.onload = (e) => {
-            galleryItems.unshift({
-              src: e.target.result,
-              type: 'foto',
-              caption: name.replace(/\.[^.]+$/, ''),
-              name,
-              date: new Date().toISOString(),
-              source: 'drive'
-            });
-            loaded++;
-            if (loaded === docs.length) finalizeDriveImport();
+            galleryItems.unshift({ src: e.target.result, type: 'foto', caption: name.replace(/\.[^.]+$/, ''), name, date: new Date().toISOString(), source: 'drive' });
+            loaded++; checkDone();
           };
           reader.readAsDataURL(blob);
         })
-        .catch(() => { loaded++; if (loaded === docs.length) finalizeDriveImport(); });
+        .catch(() => { loaded++; checkDone(); });
       } else {
-        // Videos: store as Drive embed URL (streaming)
-        const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-        const thumbUrl = doc[google.picker.Document.THUMBNAILS]
-          ? doc[google.picker.Document.THUMBNAILS][0].url
-          : '';
-        galleryItems.unshift({
-          src: embedUrl,
-          thumb: thumbUrl,
-          type: 'video',
-          caption: name.replace(/\.[^.]+$/, ''),
-          name,
-          date: new Date().toISOString(),
-          source: 'drive',
-          driveEmbed: true,
-          fileId
-        });
-        loaded++;
-        if (loaded === docs.length) finalizeDriveImport();
+        const thumbUrl = doc[google.picker.Document.THUMBNAILS] ? doc[google.picker.Document.THUMBNAILS][0].url : '';
+        galleryItems.unshift({ src: `https://drive.google.com/file/d/${fileId}/preview`, thumb: thumbUrl, type: 'video', caption: name.replace(/\.[^.]+$/, ''), name, date: new Date().toISOString(), source: 'drive', driveEmbed: true, fileId });
+        loaded++; checkDone();
+      }
+
+      function checkDone() {
+        if (loaded === docs.length) {
+          saveGallery(galleryItems);
+          renderGallery();
+          showToast('File dari Google Drive berhasil ditambahkan ♡');
+        }
       }
     });
-  }
-
-  function finalizeDriveImport() {
-    saveGallery(galleryItems);
-    renderGallery();
-    showToast('File dari Google Drive berhasil ditambahkan ♡');
   }
 
   // ── INIT ──
   renderGallery();
   renderTimeline();
   observeFadeElements();
-  checkDriveConnected();
+  if (checkDriveConnected()) {
+    // Auto-sync data dari Drive saat halaman dibuka
+    setTimeout(autoSyncDrive, 1200);
+  }
 </script>
 
 
@@ -1918,7 +1961,7 @@
   <div class="music-welcome-inner">
     <div class="music-welcome-symbol">♡</div>
     <h2 class="music-welcome-title">Untuk <em>Sinta</em></h2>
-    <p class="music-welcome-sub">dari Damar</p>
+    <p class="music-welcome-sub">dari Damar, dengan sepenuh hati</p>
     <button class="music-welcome-btn" id="musicStartBtn">
       <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       Buka &amp; Putar Musik
