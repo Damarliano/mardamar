@@ -1088,6 +1088,147 @@
     .music-player{bottom:20px;left:16px}
     .music-card{width:220px}
   }
+
+  /* ── MUSIC PLAYER ── */
+  .music-welcome {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: rgba(20,17,14,0.92);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0;
+    transition: opacity 0.7s ease;
+  }
+  .music-welcome.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .music-welcome-inner {
+    text-align: center;
+    padding: 48px 40px;
+  }
+  .music-welcome-symbol {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 64px;
+    color: var(--rose);
+    line-height: 1;
+    margin-bottom: 24px;
+    animation: heartbeat 2s ease-in-out infinite;
+  }
+  @keyframes heartbeat {
+    0%,100%{transform:scale(1)}
+    14%{transform:scale(1.15)}
+    28%{transform:scale(1)}
+    42%{transform:scale(1.1)}
+    56%{transform:scale(1)}
+  }
+  .music-welcome-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+  .music-welcome-title em { font-style:italic; color:var(--rose); }
+  .music-welcome-sub {
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 40px;
+  }
+  .music-welcome-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 44px;
+    background: var(--rose);
+    border: none;
+    border-radius: 2px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(196,134,106,0.4);
+  }
+  .music-welcome-btn:hover {
+    background: #b5705a;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(196,134,106,0.5);
+  }
+  .music-welcome-btn svg { width:18px;height:18px;fill:white; }
+  .music-skip {
+    margin-top: 20px;
+    background: none;
+    border: none;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.3);
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  .music-skip:hover { color: rgba(245,240,232,0.6); }
+
+  /* Floating mini player */
+  .music-mini {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    z-index: 500;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: var(--charcoal);
+    border: 1px solid rgba(196,134,106,0.25);
+    border-radius: 40px;
+    padding: 8px 16px 8px 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    animation: slideUp 0.5s cubic-bezier(0.23,1,0.32,1) forwards;
+  }
+  .music-mini.visible { display: flex; }
+  @keyframes slideUp {
+    from{transform:translateY(20px);opacity:0}
+    to{transform:translateY(0);opacity:1}
+  }
+  .music-mini-icon {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--rose);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .music-mini-icon svg { width:14px;height:14px;fill:white; }
+  .music-mini-bars {
+    display: flex; align-items: center; gap: 2px; height: 20px;
+  }
+  .music-mini-bar {
+    width: 3px; border-radius: 2px; background: var(--rose); opacity: 0.8;
+    animation: wave 1.2s ease-in-out infinite;
+  }
+  .music-mini-bar:nth-child(1){animation-delay:0s;height:8px}
+  .music-mini-bar:nth-child(2){animation-delay:.2s;height:14px}
+  .music-mini-bar:nth-child(3){animation-delay:.4s;height:10px}
+  .music-mini-bar:nth-child(4){animation-delay:.6s;height:16px}
+  .music-mini-bar:nth-child(5){animation-delay:.8s;height:10px}
+  .music-mini-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; font-style: italic; color: var(--cream);
+    white-space: nowrap;
+  }
+  .music-mini-ctrl {
+    background: none; border: none; cursor: pointer; padding: 2px;
+    display: flex; align-items: center;
+  }
+  .music-mini-ctrl svg { width:16px;height:16px;fill:var(--gold); transition:fill 0.2s; }
+  .music-mini-ctrl:hover svg { fill: var(--rose); }
+
 </style>
 </head>
 <body>
@@ -1771,124 +1912,130 @@
 
 
 
-<!-- YOUTUBE AUTOPLAY PLAYER -->
-<div class="music-player" id="musicPlayer">
-  <div class="music-card" id="musicCard">
-    <div class="music-card-header">
-      <div class="music-note-icon" id="musicNoteIcon">
-        <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
-      </div>
-      <div class="music-info">
-        <div class="music-title" id="musicTitle">Lagu Kita</div>
-        <div class="music-artist">Backsound · Sinta &amp; Damar</div>
-      </div>
-      <button id="musicPlayPause" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">
-        <svg id="iconPause" viewBox="0 0 24 24" width="20" height="20" fill="var(--cream)"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-        <svg id="iconPlay"  viewBox="0 0 24 24" width="20" height="20" fill="var(--cream)" style="display:none"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-    </div>
 
-    <div class="music-waveform" id="musicWaveform">
-      <div class="music-bar"></div>
-      <div class="music-bar"></div>
-      <div class="music-bar"></div>
-      <div class="music-bar"></div>
-      <div class="music-bar"></div>
-      <div class="music-bar"></div>
-      <div class="music-bar"></div>
-      <div class="music-bar"></div>
-    </div>
-
-    <div style="padding:0 18px 14px;display:flex;align-items:center;gap:10px;">
-      <span style="font-size:10px;letter-spacing:1px;color:var(--gold);font-family:'Jost',sans-serif;" id="volLabel">VOL</span>
-      <input type="range" id="volSlider" min="0" max="100" value="60"
-        style="flex:1;accent-color:var(--rose);height:3px;cursor:pointer;">
-    </div>
+<!-- WELCOME + MUSIC SCREEN -->
+<div class="music-welcome" id="musicWelcome">
+  <div class="music-welcome-inner">
+    <div class="music-welcome-symbol">♡</div>
+    <h2 class="music-welcome-title">Untuk <em>Sinta</em></h2>
+    <p class="music-welcome-sub">dari Damar, dengan sepenuh hati</p>
+    <button class="music-welcome-btn" id="musicStartBtn">
+      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      Buka &amp; Putar Musik
+    </button>
+    <br>
+    <button class="music-skip" id="musicSkipBtn">Lewati musik</button>
   </div>
+</div>
 
-  <button class="music-toggle" id="musicToggle" title="Musik">
-    <div class="music-toggle-ring"></div>
+<!-- FLOATING MINI PLAYER -->
+<div class="music-mini" id="musicMini">
+  <div class="music-mini-icon">
     <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
+  </div>
+  <div class="music-mini-bars" id="miniBars">
+    <div class="music-mini-bar"></div>
+    <div class="music-mini-bar"></div>
+    <div class="music-mini-bar"></div>
+    <div class="music-mini-bar"></div>
+    <div class="music-mini-bar"></div>
+  </div>
+  <span class="music-mini-label">Lagu Kita</span>
+  <button class="music-mini-ctrl" id="miniPlayPause" title="Play/Pause">
+    <svg id="miniIconPause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    <svg id="miniIconPlay"  viewBox="0 0 24 24" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+  </button>
+  <button class="music-mini-ctrl" id="miniOpenYT" title="Buka di YouTube">
+    <svg viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6zm11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
   </button>
 </div>
 
-<!-- Hidden YouTube IFrame -->
-<div id="ytPlayerWrap" style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;bottom:0;left:0;overflow:hidden;">
+<!-- HIDDEN YOUTUBE IFRAME -->
+<div style="position:fixed;width:1px;height:1px;overflow:hidden;bottom:0;left:0;opacity:0;pointer-events:none;">
   <div id="ytPlayer"></div>
 </div>
 
 <script>
-(function () {
-  const VIDEO_ID = 'bzRMneypG04';
-  let player, playing = true, ready = false;
+(function(){
+  const VIDEO_ID  = '6iGj0NohNi4';
+  const YT_URL    = 'https://www.youtube.com/watch?v=6iGj0NohNi4';
+  let player, isPlaying = false, ytReady = false;
 
-  // Load YouTube IFrame API
-  const tag = document.createElement('script');
-  tag.src = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(tag);
+  const welcome      = document.getElementById('musicWelcome');
+  const startBtn     = document.getElementById('musicStartBtn');
+  const skipBtn      = document.getElementById('musicSkipBtn');
+  const mini         = document.getElementById('musicMini');
+  const miniBars     = document.getElementById('miniBars');
+  const miniPlayPause= document.getElementById('miniPlayPause');
+  const miniIconPause= document.getElementById('miniIconPause');
+  const miniIconPlay = document.getElementById('miniIconPlay');
+  const miniOpenYT   = document.getElementById('miniOpenYT');
 
-  window.onYouTubeIframeAPIReady = function () {
+  function dismissWelcome() {
+    welcome.classList.add('hidden');
+    setTimeout(() => welcome.style.display = 'none', 700);
+    mini.classList.add('visible');
+  }
+
+  function setPlaying(val) {
+    isPlaying = val;
+    miniIconPause.style.display = val ? 'block' : 'none';
+    miniIconPlay.style.display  = val ? 'none'  : 'block';
+    [...document.querySelectorAll('.music-mini-bar')].forEach(b =>
+      b.style.animationPlayState = val ? 'running' : 'paused'
+    );
+  }
+
+  // Load YT API
+  const s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(s);
+
+  window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('ytPlayer', {
-      height: '1',
-      width: '1',
+      width: '1', height: '1',
       videoId: VIDEO_ID,
       playerVars: {
-        autoplay: 1,
-        loop: 1,
-        playlist: VIDEO_ID,
-        controls: 0,
-        mute: 0,
-        playsinline: 1,
-        origin: window.location.origin || 'https://localhost'
+        autoplay: 0, loop: 1, playlist: VIDEO_ID,
+        controls: 0, mute: 0, playsinline: 1
       },
       events: {
-        onReady: function (e) {
-          ready = true;
-          e.target.setVolume(60);
-          e.target.playVideo();
-          updateUI(true);
+        onReady: function(e) {
+          ytReady = true;
+          e.target.setVolume(70);
         },
-        onStateChange: function (e) {
-          if (e.data === YT.PlayerState.PLAYING) updateUI(true);
-          if (e.data === YT.PlayerState.PAUSED)  updateUI(false);
+        onStateChange: function(e) {
+          if (e.data === YT.PlayerState.PLAYING) setPlaying(true);
+          if (e.data === YT.PlayerState.PAUSED)  setPlaying(false);
           if (e.data === YT.PlayerState.ENDED)    e.target.playVideo();
         }
       }
     });
   };
 
-  function updateUI(isPlaying) {
-    playing = isPlaying;
-    document.getElementById('iconPause').style.display = isPlaying ? 'block' : 'none';
-    document.getElementById('iconPlay').style.display  = isPlaying ? 'none'  : 'block';
-    const bars = document.querySelectorAll('.music-bar');
-    bars.forEach(b => b.style.animationPlayState = isPlaying ? 'running' : 'paused');
-    document.getElementById('musicNoteIcon').style.animationPlayState = isPlaying ? 'running' : 'paused';
-  }
-
-  // Play/Pause button
-  document.getElementById('musicPlayPause').addEventListener('click', function () {
-    if (!ready) return;
-    if (playing) { player.pauseVideo(); }
-    else         { player.playVideo();  }
+  // START — user gesture triggers playback (bypasses browser autoplay block)
+  startBtn.addEventListener('click', function() {
+    dismissWelcome();
+    if (ytReady) {
+      player.playVideo();
+    } else {
+      // YT not ready yet — wait then play
+      const iv = setInterval(() => {
+        if (ytReady) { clearInterval(iv); player.playVideo(); }
+      }, 200);
+    }
   });
 
-  // Volume slider
-  document.getElementById('volSlider').addEventListener('input', function () {
-    if (ready) player.setVolume(parseInt(this.value));
+  skipBtn.addEventListener('click', dismissWelcome);
+
+  miniPlayPause.addEventListener('click', function() {
+    if (!ytReady) { window.open(YT_URL, '_blank'); return; }
+    if (isPlaying) player.pauseVideo();
+    else           player.playVideo();
   });
 
-  // Toggle card open/close
-  const card   = document.getElementById('musicCard');
-  const toggle = document.getElementById('musicToggle');
-  let open = false;
-
-  // Auto-open after 1.5s
-  setTimeout(() => { open = true; card.classList.add('open'); }, 1500);
-
-  toggle.addEventListener('click', () => {
-    open = !open;
-    card.classList.toggle('open', open);
+  miniOpenYT.addEventListener('click', function() {
+    window.open(YT_URL, '_blank');
   });
 })();
 </script>
