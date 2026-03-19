@@ -1768,19 +1768,27 @@
   checkDriveConnected();
 </script>
 
-<!-- MUSIC PLAYER -->
+
+
+
+<!-- YOUTUBE AUTOPLAY PLAYER -->
 <div class="music-player" id="musicPlayer">
   <div class="music-card" id="musicCard">
     <div class="music-card-header">
-      <div class="music-note-icon">
+      <div class="music-note-icon" id="musicNoteIcon">
         <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
       </div>
       <div class="music-info">
-        <div class="music-title">Lagu Kita</div>
+        <div class="music-title" id="musicTitle">Lagu Kita</div>
         <div class="music-artist">Backsound · Sinta &amp; Damar</div>
       </div>
+      <button id="musicPlayPause" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">
+        <svg id="iconPause" viewBox="0 0 24 24" width="20" height="20" fill="var(--cream)"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        <svg id="iconPlay"  viewBox="0 0 24 24" width="20" height="20" fill="var(--cream)" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+      </button>
     </div>
-    <div class="music-waveform">
+
+    <div class="music-waveform" id="musicWaveform">
       <div class="music-bar"></div>
       <div class="music-bar"></div>
       <div class="music-bar"></div>
@@ -1790,35 +1798,99 @@
       <div class="music-bar"></div>
       <div class="music-bar"></div>
     </div>
-    <a class="music-open-btn" href="https://www.youtube.com/watch?v=bzRMneypG04" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-      <span>Putar di YouTube</span>
-    </a>
+
+    <div style="padding:0 18px 14px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:10px;letter-spacing:1px;color:var(--gold);font-family:'Jost',sans-serif;" id="volLabel">VOL</span>
+      <input type="range" id="volSlider" min="0" max="100" value="60"
+        style="flex:1;accent-color:var(--rose);height:3px;cursor:pointer;">
+    </div>
   </div>
 
   <button class="music-toggle" id="musicToggle" title="Musik">
     <div class="music-toggle-ring"></div>
-    <svg id="musicIcon" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
   </button>
 </div>
 
+<!-- Hidden YouTube IFrame -->
+<div id="ytPlayerWrap" style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;bottom:0;left:0;overflow:hidden;">
+  <div id="ytPlayer"></div>
+</div>
+
 <script>
-  (function() {
-    const toggle = document.getElementById('musicToggle');
-    const card   = document.getElementById('musicCard');
-    let open = false;
+(function () {
+  const VIDEO_ID = 'bzRMneypG04';
+  let player, playing = true, ready = false;
 
-    // Auto-open after 1.5s
-    setTimeout(() => {
-      open = true;
-      card.classList.add('open');
-    }, 1500);
+  // Load YouTube IFrame API
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
 
-    toggle.addEventListener('click', () => {
-      open = !open;
-      card.classList.toggle('open', open);
+  window.onYouTubeIframeAPIReady = function () {
+    player = new YT.Player('ytPlayer', {
+      height: '1',
+      width: '1',
+      videoId: VIDEO_ID,
+      playerVars: {
+        autoplay: 1,
+        loop: 1,
+        playlist: VIDEO_ID,
+        controls: 0,
+        mute: 0,
+        playsinline: 1,
+        origin: window.location.origin || 'https://localhost'
+      },
+      events: {
+        onReady: function (e) {
+          ready = true;
+          e.target.setVolume(60);
+          e.target.playVideo();
+          updateUI(true);
+        },
+        onStateChange: function (e) {
+          if (e.data === YT.PlayerState.PLAYING) updateUI(true);
+          if (e.data === YT.PlayerState.PAUSED)  updateUI(false);
+          if (e.data === YT.PlayerState.ENDED)    e.target.playVideo();
+        }
+      }
     });
-  })();
+  };
+
+  function updateUI(isPlaying) {
+    playing = isPlaying;
+    document.getElementById('iconPause').style.display = isPlaying ? 'block' : 'none';
+    document.getElementById('iconPlay').style.display  = isPlaying ? 'none'  : 'block';
+    const bars = document.querySelectorAll('.music-bar');
+    bars.forEach(b => b.style.animationPlayState = isPlaying ? 'running' : 'paused');
+    document.getElementById('musicNoteIcon').style.animationPlayState = isPlaying ? 'running' : 'paused';
+  }
+
+  // Play/Pause button
+  document.getElementById('musicPlayPause').addEventListener('click', function () {
+    if (!ready) return;
+    if (playing) { player.pauseVideo(); }
+    else         { player.playVideo();  }
+  });
+
+  // Volume slider
+  document.getElementById('volSlider').addEventListener('input', function () {
+    if (ready) player.setVolume(parseInt(this.value));
+  });
+
+  // Toggle card open/close
+  const card   = document.getElementById('musicCard');
+  const toggle = document.getElementById('musicToggle');
+  let open = false;
+
+  // Auto-open after 1.5s
+  setTimeout(() => { open = true; card.classList.add('open'); }, 1500);
+
+  toggle.addEventListener('click', () => {
+    open = !open;
+    card.classList.toggle('open', open);
+  });
+})();
 </script>
 
 </body>
