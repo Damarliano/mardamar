@@ -1290,6 +1290,7 @@
       <div class="drive-badge" id="driveBadge">
         <div class="drive-badge-dot"></div>
         <span id="driveBadgeText">Google Drive terhubung</span>
+        <button id="driveDisconnectBtn" title="Putus & reset koneksi Drive" style="background:none;border:none;cursor:pointer;color:var(--rose-light);font-size:11px;letter-spacing:1px;margin-left:4px;padding:0;text-decoration:underline;font-family:'Jost',sans-serif;">reset</button>
       </div>
     </div>
 
@@ -1348,6 +1349,7 @@
     <div class="modal-actions">
       <button class="btn-modal-primary" id="driveConnectBtn">Hubungkan Drive</button>
       <button class="btn-modal-secondary" id="driveModalCancel">Batal</button>
+      <button class="btn-modal-secondary" id="driveResetBtn" style="border-color:#c4866a;color:#c4866a;" title="Hapus semua config Drive tersimpan">↺ Reset</button>
     </div>
   </div>
 </div>
@@ -1435,9 +1437,7 @@
   const LOCAL_TIMELINE = 'sinta_damar_timeline';
   const DRIVE_DATA_FILENAME = 'sinta-damar-kenangan.json';
 
-  let driveConfig = (() => {
-    try { return JSON.parse(localStorage.getItem(DRIVE_KEY)) || {}; } catch { return {}; }
-  })();
+  let driveConfig = {};  // Reset — isi via modal
 
   let driveAccessToken = null;
   let driveDataFileId  = null;   // ID file JSON di Drive
@@ -1763,11 +1763,31 @@
     if (driveConfig.apiKey && driveConfig.clientId) {
       initDriveAndSync();
     } else {
-      document.getElementById('driveApiKey').value   = driveConfig.apiKey   || '';
-      document.getElementById('driveClientId').value = driveConfig.clientId || '';
+      document.getElementById('driveApiKey').value   = '';
+      document.getElementById('driveClientId').value = '';
       document.getElementById('driveModal').classList.add('active');
     }
   });
+
+  // ── RESET DRIVE CONFIG ──
+  function resetDriveConfig() {
+    localStorage.removeItem('sinta_damar_drive_config');
+    localStorage.removeItem('sinta_damar_drive_file_id');
+    driveConfig       = {};
+    driveAccessToken  = null;
+    driveDataFileId   = null;
+    driveReady        = false;
+    document.getElementById('driveBadge').classList.remove('visible');
+    document.getElementById('driveApiKey').value   = '';
+    document.getElementById('driveClientId').value = '';
+    showToast('Koneksi Drive direset. Silakan hubungkan ulang.');
+    document.getElementById('driveModal').classList.remove('active');
+    // Buka modal langsung agar user bisa input ulang
+    setTimeout(() => document.getElementById('driveModal').classList.add('active'), 400);
+  }
+
+  document.getElementById('driveResetBtn').addEventListener('click', resetDriveConfig);
+  document.getElementById('driveDisconnectBtn').addEventListener('click', resetDriveConfig);
 
   document.getElementById('driveModalClose').addEventListener('click',  () => document.getElementById('driveModal').classList.remove('active'));
   document.getElementById('driveModalCancel').addEventListener('click', () => document.getElementById('driveModal').classList.remove('active'));
@@ -1943,6 +1963,23 @@
   }
 
   // ── INIT ──
+  // Bersihkan config Drive lama agar user bisa input ulang yang fresh
+  (function clearOldConfig() {
+    const saved = localStorage.getItem('sinta_damar_drive_config');
+    if (saved) {
+      try {
+        const cfg = JSON.parse(saved);
+        // Jika ada config tersimpan, load ke driveConfig
+        if (cfg && cfg.apiKey && cfg.clientId) {
+          driveConfig = cfg;
+        }
+      } catch(e) {
+        localStorage.removeItem('sinta_damar_drive_config');
+        localStorage.removeItem('sinta_damar_drive_file_id');
+      }
+    }
+  })();
+
   renderGallery();
   renderTimeline();
   observeFadeElements();
