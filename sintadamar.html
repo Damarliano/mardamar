@@ -1557,7 +1557,7 @@ function toast(msg) {
 // ================================================
 // OWNER MODE
 // ================================================
-function setOwner(val) {
+function val) {
   isOwner = val;
   document.body.classList.toggle('owner-mode', val);
   document.getElementById('ownerBadge').classList.toggle('visible', val);
@@ -1581,7 +1581,7 @@ document.getElementById('ownerPassword').onkeydown = function(e) { if(e.key==='E
 function doLogin() {
   if (document.getElementById('ownerPassword').value === CONFIG.OWNER_PASSWORD) {
     document.getElementById('ownerModal').classList.remove('active');
-    setOwner(true); toast('Selamat datang, Damar \u2665');
+    setOwner(true); toast('Selamat datang, Damar');
   } else {
     document.getElementById('ownerError').style.display = 'block';
     document.getElementById('ownerPassword').value = '';
@@ -1643,7 +1643,7 @@ function makeCard(item) {
       var seg = itemUrl.split('/public/media/')[1];
       if (seg) storageDelete(seg);
       galleryItems = galleryItems.filter(function(i){ return i.id !== itemId; });
-      renderGallery(); toast('Dihapus \u2665');
+      renderGallery(); toast('Dihapus!');
     }).catch(function(){ toast('Gagal menghapus.'); });
   });
   return d;
@@ -1679,7 +1679,7 @@ function handleUp(files) {
 
   function uploadNext(i) {
     if (i >= arr.length) {
-      renderGallery(); toast('Berhasil ditambahkan \u2665');
+      renderGallery(); toast('Berhasil ditambahkan!');
       setTimeout(function(){ prog.classList.remove('visible'); bar.style.width='0%'; }, 1500);
       return;
     }
@@ -1794,7 +1794,7 @@ document.getElementById('addMomentBtn').addEventListener('click', function() {
       document.getElementById('momentDate').value='';
       document.getElementById('momentTitle').value='';
       document.getElementById('momentNote').value='';
-      toast('Momen berhasil ditambahkan \u2665');
+      toast('Momen berhasil ditambahkan!');
     }).catch(function(){ toast('Gagal menyimpan.'); });
   } else {
     timelineItems.unshift({id:Date.now()+'', date_label:date_label, title:title, note:note||'-'});
@@ -1802,7 +1802,7 @@ document.getElementById('addMomentBtn').addEventListener('click', function() {
     document.getElementById('momentDate').value='';
     document.getElementById('momentTitle').value='';
     document.getElementById('momentNote').value='';
-    toast('Momen berhasil ditambahkan \u2665');
+    toast('Momen berhasil ditambahkan!');
   }
 });
 
