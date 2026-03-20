@@ -145,9 +145,47 @@
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes spin { to { transform: rotate(360deg); } }
   @media (max-width: 480px) { nav { padding: 0.9rem 1rem; } .nav-tabs { display: none; } .section { padding: 5rem 1rem 3rem; } .hero-actions { flex-direction: column; align-items: center; } .journal-card { padding: 1.2rem; } }
+
+  /* === MUSIC PLAYER === */
+  #musicBtn {
+    position: fixed;
+    bottom: 1.8rem;
+    right: 1.8rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--deep);
+    border: none;
+    cursor: pointer;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(122,63,52,0.35);
+    transition: all 0.3s ease;
+    color: var(--cream);
+    font-size: 1.1rem;
+  }
+  #musicBtn:hover { background: var(--ink); transform: scale(1.08); }
+  #musicBtn.playing { animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 4px 20px rgba(122,63,52,0.35); }
+    50% { box-shadow: 0 4px 28px rgba(122,63,52,0.6); }
+  }
+  #ytPlayer { display: none; }
 </style>
 </head>
 <body>
+
+<!-- MUSIC PLAYER -->
+<button id="musicBtn" title="Putar / Pause musik" onclick="toggleMusic()">♪</button>
+<div id="ytPlayer">
+  <iframe id="ytIframe"
+    src="https://www.youtube.com/embed/bzRMneypG04?enablejsapi=1&autoplay=0&loop=1&playlist=bzRMneypG04&controls=0&mute=0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen>
+  </iframe>
+</div>
 
 <!-- SETUP -->
 <div class="setup-screen" id="setupScreen">
@@ -657,6 +695,67 @@ function toast(msg, type) {
   clearTimeout(el._t);
   el._t = setTimeout(function(){ el.className = 'toast'; }, 3000);
 }
+
+
+// === MUSIC PLAYER ===
+var _musicPlaying = false;
+var _ytReady = false;
+var _ytPlayer = null;
+
+function onYouTubeIframeAPIReady() {
+  _ytPlayer = new YT.Player('ytIframe', {
+    events: {
+      'onReady': function(e) {
+        _ytReady = true;
+        // Autoplay saat siap (browser memerlukan interaksi dulu)
+        tryAutoplay();
+      },
+      'onStateChange': function(e) {
+        if (e.data === YT.PlayerState.ENDED) {
+          _ytPlayer.playVideo(); // loop manual
+        }
+      }
+    }
+  });
+}
+
+function tryAutoplay() {
+  if (!_ytReady || !_ytPlayer) return;
+  try {
+    _ytPlayer.playVideo();
+    _musicPlaying = true;
+    document.getElementById('musicBtn').classList.add('playing');
+    document.getElementById('musicBtn').textContent = '♫';
+  } catch(e) {}
+}
+
+function toggleMusic() {
+  if (!_ytReady || !_ytPlayer) return;
+  if (_musicPlaying) {
+    _ytPlayer.pauseVideo();
+    _musicPlaying = false;
+    document.getElementById('musicBtn').classList.remove('playing');
+    document.getElementById('musicBtn').textContent = '♪';
+  } else {
+    _ytPlayer.playVideo();
+    _musicPlaying = true;
+    document.getElementById('musicBtn').classList.add('playing');
+    document.getElementById('musicBtn').textContent = '♫';
+  }
+}
+
+// Load YouTube IFrame API
+(function() {
+  var tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+})();
+
+// Fallback: autoplay saat user pertama kali klik/sentuh halaman
+document.addEventListener('click', function autoplayOnce() {
+  tryAutoplay();
+  document.removeEventListener('click', autoplayOnce);
+}, {once: true});
 
 // === INIT ===
 window.addEventListener('DOMContentLoaded', function() {
