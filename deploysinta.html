@@ -154,7 +154,7 @@
   <div class="setup-box">
     <h2>Konfigurasi Supabase</h2>
     <p>Masukkan kredensial Supabase project kamu untuk memulai.</p>
-    <div class="field"><label>Supabase URL</label><input type="text" id="cfgUrl" placeholder="https://xxxxx.sbClient.co"/></div>
+    <div class="field"><label>Supabase URL</label><input type="text" id="cfgUrl" placeholder="https://xxxxx.supabase.co"/></div>
     <div class="field"><label>Supabase Anon Key</label><input type="text" id="cfgKey" placeholder="eyJhbGciOiJIUzI1NiIs..."/></div>
     <div class="field"><label>Owner Email</label><input type="email" id="cfgOwner" placeholder="damar@email.com"/></div>
     <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="saveConfig()">Simpan & Mulai</button>
@@ -325,38 +325,38 @@
 </div>
 
 <script>
-let SUPABASE_URL = localStorage.getItem('ds_url') || '';
-let SUPABASE_KEY = localStorage.getItem('ds_key') || '';
-let OWNER_EMAIL  = localStorage.getItem('ds_owner') || '';
-let sbClient = null, currentUser = null, isOwner = false;
-let mediaItems = [], moments = [], selectedMood = '';
+var _sbUrl = localStorage.getItem('ds_url') || '';
+var _sbKey = localStorage.getItem('ds_key') || '';
+var _sbOwner = localStorage.getItem('ds_owner') || '';
+var _sb = null, currentUser = null, isOwner = false;
+var mediaItems = [], moments = [], selectedMood = '';
 
 function saveConfig() {
-  const url = document.getElementById('cfgUrl').value.trim();
-  const key = document.getElementById('cfgKey').value.trim();
-  const own = document.getElementById('cfgOwner').value.trim();
+  var url = document.getElementById('cfgUrl').value.trim();
+  var key = document.getElementById('cfgKey').value.trim();
+  var own = document.getElementById('cfgOwner').value.trim();
   if (!url||!key||!own){alert('Semua field wajib diisi');return;}
   localStorage.setItem('ds_url',url); localStorage.setItem('ds_key',key); localStorage.setItem('ds_owner',own);
-  SUPABASE_URL=url; SUPABASE_KEY=key; OWNER_EMAIL=own;
+  _sbUrl=url; _sbKey=key; _sbOwner=own;
   document.getElementById('setupScreen').classList.remove('show');
   initSupabase(); toast('Konfigurasi disimpan!','success');
 }
 
 function initSupabase() {
-  if (!SUPABASE_URL||!SUPABASE_KEY){document.getElementById('setupScreen').classList.add('show');return;}
-  sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  if (!_sbUrl||!_sbKey){document.getElementById('setupScreen').classList.add('show');return;}
+  _sb = window.supabase.createClient(_sbUrl, _sbKey);
   checkSession();
 }
 
 async function checkSession() {
-  const {data} = await sbClient.auth.getSession();
-  if (data.session) setUser(data.session.user);
+  var res = await _sb.auth.getSession();
+  if (res.data.session) setUser(res.data.session.user);
   loadMedia(); loadMoments();
 }
 
 function setUser(user) {
-  currentUser = user; isOwner = user && user.email === OWNER_EMAIL;
-  const chip = document.getElementById('userChip');
+  currentUser = user; isOwner = user && user.email === _sbOwner;
+  var chip = document.getElementById('userChip');
   chip.textContent = isOwner ? '👑 Owner' : 'Tamu';
   chip.className = 'user-chip' + (isOwner ? ' owner-chip' : '');
   chip.style.display = '';
@@ -367,23 +367,23 @@ function setUser(user) {
   document.getElementById('ownerMomentTools').style.display = isOwner ? 'block' : 'none';
 }
 
-function toggleAuth() { if(currentUser)return; document.getElementById('authModal').classList.add('active'); setTimeout(()=>document.getElementById('loginEmail').focus(),100); }
+function toggleAuth() { if(currentUser)return; document.getElementById('authModal').classList.add('active'); setTimeout(function(){document.getElementById('loginEmail').focus();},100); }
 function closeAuthModal() { document.getElementById('authModal').classList.remove('active'); }
 
 async function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass  = document.getElementById('loginPass').value;
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass  = document.getElementById('loginPass').value;
   if (!email||!pass) return;
-  const btn = document.getElementById('loginBtn');
+  var btn = document.getElementById('loginBtn');
   btn.innerHTML = '<span class="loading-spinner"></span> Masuk...'; btn.disabled = true;
-  const {data,error} = await sbClient.auth.signInWithPassword({email,password:pass});
+  var res = await _sb.auth.signInWithPassword({email:email, password:pass});
   btn.innerHTML = 'Masuk'; btn.disabled = false;
-  if (error){document.getElementById('authError').textContent='Email atau password salah.';document.getElementById('authError').style.display='';return;}
-  setUser(data.user); closeAuthModal(); toast('Selamat datang kembali, Damar 🌸','success');
+  if (res.error){document.getElementById('authError').textContent='Email atau password salah.';document.getElementById('authError').style.display='';return;}
+  setUser(res.data.user); closeAuthModal(); toast('Selamat datang kembali, Damar 🌸','success');
 }
 
 async function doLogout() {
-  await sbClient.auth.signOut(); currentUser=null; isOwner=false;
+  await _sb.auth.signOut(); currentUser=null; isOwner=false;
   document.getElementById('userChip').style.display='none';
   document.getElementById('authBtn').style.display='';
   document.getElementById('logoutBtn').style.display='none';
@@ -393,8 +393,8 @@ async function doLogout() {
 }
 
 function showPage(name) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
   document.getElementById('heroSection').style.display='none';
@@ -402,9 +402,9 @@ function showPage(name) {
 
 function goHero() {
   document.getElementById('heroSection').style.display='';
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.getElementById('page-gallery').classList.add('active');
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
   document.getElementById('tab-gallery').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -414,27 +414,27 @@ function scrollToContent() {
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// UPLOAD
-const dropZone = document.getElementById('dropZone');
-dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover');});
-dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragover');handleFiles(e.dataTransfer.files);});
 function handleFileUpload(e){handleFiles(e.target.files);}
 
 async function handleFiles(files) {
   if(!isOwner){toast('Hanya owner yang bisa upload','error');return;}
-  const arr=Array.from(files); showProgress('Menyiapkan...',0);
-  for(let i=0;i<arr.length;i++){showProgress(`Mengupload ${arr[i].name}...`,Math.round((i/arr.length)*100));await uploadFile(arr[i]);}
-  showProgress('Selesai!',100); setTimeout(()=>document.getElementById('uploadProgress').classList.remove('active'),1500);
-  loadMedia(); toast(`${arr.length} file berhasil diupload 🌸`,'success');
+  var arr=Array.from(files); showProgress('Menyiapkan...',0);
+  for(var i=0;i<arr.length;i++){
+    showProgress('Mengupload '+arr[i].name+'...',Math.round((i/arr.length)*100));
+    await uploadFile(arr[i]);
+  }
+  showProgress('Selesai!',100);
+  setTimeout(function(){document.getElementById('uploadProgress').classList.remove('active');},1500);
+  loadMedia(); toast(arr.length+' file berhasil diupload 🌸','success');
 }
 
 async function uploadFile(file) {
-  const ext=file.name.split('.').pop(); const name=`${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-  const type=file.type.startsWith('video')?'video':'image';
-  const {error:upErr}=await sbClient.storage.from('media').upload(name,file,{cacheControl:'3600'});
-  if(upErr){toast('Gagal upload: '+upErr.message,'error');return;}
-  await sbClient.from('media_items').insert({filename:name,type,caption:file.name.replace(/\.[^.]+$/,'')});
+  var ext=file.name.split('.').pop();
+  var name=Date.now()+'_'+Math.random().toString(36).slice(2)+'.'+ext;
+  var type=file.type.startsWith('video')?'video':'image';
+  var r=await _sb.storage.from('media').upload(name,file,{cacheControl:'3600'});
+  if(r.error){toast('Gagal upload: '+r.error.message,'error');return;}
+  await _sb.from('media_items').insert({filename:name,type:type,caption:file.name.replace(/\.[^.]+$/,'')});
 }
 
 function showProgress(text,pct){
@@ -445,148 +445,147 @@ function showProgress(text,pct){
 
 async function importGDrive() {
   if(!isOwner)return;
-  const rawUrl=document.getElementById('gdriveUrl').value.trim();
-  const type=document.getElementById('gdriveType').value;
+  var rawUrl=document.getElementById('gdriveUrl').value.trim();
+  var type=document.getElementById('gdriveType').value;
   if(!rawUrl){toast('Masukkan link Google Drive','error');return;}
-  let embedUrl=rawUrl;
-  const m=rawUrl.match(/\/d\/([\w-]+)|id=([\w-]+)/);
-  if(m){const fid=m[1]||m[2];embedUrl=type==='image'?`https://drive.google.com/uc?export=view&id=${fid}`:`https://drive.google.com/file/d/${fid}/preview`;}
-  const {error}=await sbClient.from('media_items').insert({filename:null,gdrive_url:embedUrl,type,caption:'Dari Google Drive'});
-  if(error){toast('Gagal import: '+error.message,'error');return;}
+  var embedUrl=rawUrl;
+  var m=rawUrl.match(/\/d\/([\w-]+)|id=([\w-]+)/);
+  if(m){
+    var fid=m[1]||m[2];
+    embedUrl=type==='image'?'https://drive.google.com/uc?export=view&id='+fid:'https://drive.google.com/file/d/'+fid+'/preview';
+  }
+  var r=await _sb.from('media_items').insert({filename:null,gdrive_url:embedUrl,type:type,caption:'Dari Google Drive'});
+  if(r.error){toast('Gagal import: '+r.error.message,'error');return;}
   document.getElementById('gdriveUrl').value=''; loadMedia(); toast('Berhasil import dari Google Drive 🌸','success');
 }
 
 async function loadMedia() {
-  if(!sbClient)return;
-  const {data}=await sbClient.from('media_items').select('*').order('created_at',{ascending:false});
-  mediaItems=data||[]; renderGallery();
+  if(!_sb)return;
+  var r=await _sb.from('media_items').select('*').order('created_at',{ascending:false});
+  mediaItems=r.data||[]; renderGallery();
 }
 
-function getPublicUrl(filename){const {data}=sbClient.storage.from('media').getPublicUrl(filename);return data.publicUrl;}
+function getPublicUrl(filename){
+  var r=_sb.storage.from('media').getPublicUrl(filename);
+  return r.data.publicUrl;
+}
 
 function renderGallery() {
-  const grid=document.getElementById('galleryGrid'); const empty=document.getElementById('emptyGallery');
+  var grid=document.getElementById('galleryGrid');
+  var empty=document.getElementById('emptyGallery');
   if(!mediaItems.length){grid.innerHTML='';empty.style.display='';return;}
   empty.style.display='none';
-  grid.innerHTML=mediaItems.map(item=>{
-    const url=item.gdrive_url||(item.filename?getPublicUrl(item.filename):'');
-    const isVideo=item.type==='video'; const isGDrive=!!item.gdrive_url;
-    const delBtn=isOwner?`<button class="delete-btn" onclick="deleteMedia(event,'${item.id}','${item.filename||''}')">×</button>`:'';
-    const badge=isVideo?`<span class="video-badge">▶ video</span>`:'';
-    const cap=esc(item.caption||'');
-    if(isGDrive&&isVideo)return`<div class="gallery-item" onclick="openLightbox('${url}','video-gdrive','${cap}')"><iframe src="${url}" style="width:100%;aspect-ratio:16/9;border:none;pointer-events:none" allowfullscreen></iframe>${badge}<div class="gallery-item-overlay"><div class="item-meta"><strong>${cap}</strong></div></div>${delBtn}</div>`;
-    if(isVideo)return`<div class="gallery-item" onclick="openLightbox('${url}','video','${cap}')"><video src="${url}" muted loop autoplay playsinline style="aspect-ratio:16/9"></video>${badge}<div class="gallery-item-overlay"><div class="item-meta"><strong>${cap}</strong></div></div>${delBtn}</div>`;
-    return`<div class="gallery-item" onclick="openLightbox('${url}','image','${cap}')"><img src="${url}" alt="${cap}" loading="lazy"/><div class="gallery-item-overlay"><div class="item-meta"><strong>${cap}</strong></div></div>${delBtn}</div>`;
+  grid.innerHTML=mediaItems.map(function(item){
+    var url=item.gdrive_url||(item.filename?getPublicUrl(item.filename):'');
+    var isVideo=item.type==='video';
+    var isGDrive=!!item.gdrive_url;
+    var cap=esc(item.caption||'');
+    var delBtn=isOwner?'<button class="delete-btn" onclick="deleteMedia(event,\''+item.id+'\',\''+(item.filename||'')+'\')">×</button>':'';
+    var badge=isVideo?'<span class="video-badge">▶ video</span>':'';
+    if(isGDrive&&isVideo)return '<div class="gallery-item" onclick="openLightbox(\''+url+'\',\'video-gdrive\',\''+cap+'\')"><iframe src="'+url+'" style="width:100%;aspect-ratio:16/9;border:none;pointer-events:none" allowfullscreen></iframe>'+badge+'<div class="gallery-item-overlay"><div class="item-meta"><strong>'+cap+'</strong></div></div>'+delBtn+'</div>';
+    if(isVideo)return '<div class="gallery-item" onclick="openLightbox(\''+url+'\',\'video\',\''+cap+'\')"><video src="'+url+'" muted loop autoplay playsinline style="aspect-ratio:16/9"></video>'+badge+'<div class="gallery-item-overlay"><div class="item-meta"><strong>'+cap+'</strong></div></div>'+delBtn+'</div>';
+    return '<div class="gallery-item" onclick="openLightbox(\''+url+'\',\'image\',\''+cap+'\')"><img src="'+url+'" alt="'+cap+'" loading="lazy"/><div class="gallery-item-overlay"><div class="item-meta"><strong>'+cap+'</strong></div></div>'+delBtn+'</div>';
   }).join('');
 }
 
 async function deleteMedia(e,id,filename) {
-  e.stopPropagation(); if(!isOwner||!confirm('Hapus foto/video ini?'))return;
-  if(filename)await sbClient.storage.from('media').remove([filename]);
-  await sbClient.from('media_items').delete().eq('id',id);
+  e.stopPropagation();
+  if(!isOwner||!confirm('Hapus foto/video ini?'))return;
+  if(filename)await _sb.storage.from('media').remove([filename]);
+  await _sb.from('media_items').delete().eq('id',id);
   loadMedia(); toast('Dihapus','success');
 }
 
-// MOMENTS
 function selectMood(btn,mood) {
-  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('selected');});
   btn.classList.add('selected'); selectedMood=mood;
 }
 
 async function saveMoment() {
   if(!isOwner)return;
-  const title=document.getElementById('momentTitle').value.trim();
-  const body=document.getElementById('momentBody').value.trim();
-  const date=document.getElementById('momentDate').value;
+  var title=document.getElementById('momentTitle').value.trim();
+  var body=document.getElementById('momentBody').value.trim();
+  var date=document.getElementById('momentDate').value;
   if(!title||!body){toast('Judul dan cerita tidak boleh kosong','error');return;}
-  const {error}=await sbClient.from('moments').insert({title,body,mood:selectedMood||null,moment_date:date||new Date().toISOString().split('T')[0]});
-  if(error){toast('Gagal menyimpan: '+error.message,'error');return;}
+  var r=await _sb.from('moments').insert({title:title,body:body,mood:selectedMood||null,moment_date:date||new Date().toISOString().split('T')[0]});
+  if(r.error){toast('Gagal menyimpan: '+r.error.message,'error');return;}
   document.getElementById('momentTitle').value='';
   document.getElementById('momentBody').value='';
   document.getElementById('momentDate').value=new Date().toISOString().split('T')[0];
-  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected')); selectedMood='';
+  document.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('selected');}); selectedMood='';
   loadMoments(); toast('Momen tersimpan 🌸','success');
 }
 
 async function loadMoments() {
-  if(!sbClient)return;
-  const {data}=await sbClient.from('moments').select('*').order('moment_date',{ascending:false});
-  moments=data||[]; renderMoments();
+  if(!_sb)return;
+  var r=await _sb.from('moments').select('*').order('moment_date',{ascending:false});
+  moments=r.data||[]; renderMoments();
 }
 
 function renderMoments() {
-  const list=document.getElementById('momentsList'); const empty=document.getElementById('emptyMoments');
+  var list=document.getElementById('momentsList');
+  var empty=document.getElementById('emptyMoments');
   if(!moments.length){list.innerHTML='';empty.style.display='';return;}
   empty.style.display='none';
-  let lastMonth=''; let html='';
-  moments.forEach(m=>{
-    const d=new Date(m.moment_date+'T00:00:00');
-    const dateStr=d.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-    const monthKey=d.toLocaleDateString('id-ID',{year:'numeric',month:'long'});
-    if(monthKey!==lastMonth){html+=`<div class="month-divider">${monthKey}</div>`;lastMonth=monthKey;}
-    const bodyId='mb-'+m.id;
-    const delBtn=isOwner?`<button class="journal-delete-btn" onclick="deleteMoment('${m.id}')">hapus</button>`:'';
-    html+=`<div class="journal-card">${delBtn}<div class="journal-card-header"><div><div class="journal-card-date">${dateStr}</div><div class="journal-card-title">${esc(m.title)}</div></div>${m.mood?`<span class="journal-card-mood">${esc(m.mood)}</span>`:''}</div><div class="journal-card-body clamped" id="${bodyId}">${esc(m.body)}</div><button class="read-more-btn" id="rm-${m.id}" onclick="toggleExpand('${m.id}')">Baca selengkapnya ↓</button></div>`;
+  var lastMonth=''; var html='';
+  moments.forEach(function(m){
+    var d=new Date(m.moment_date+'T00:00:00');
+    var dateStr=d.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    var monthKey=d.toLocaleDateString('id-ID',{year:'numeric',month:'long'});
+    if(monthKey!==lastMonth){html+='<div class="month-divider">'+monthKey+'</div>';lastMonth=monthKey;}
+    var bodyId='mb-'+m.id;
+    var delBtn=isOwner?'<button class="journal-delete-btn" onclick="deleteMoment(\''+m.id+'\')">hapus</button>':'';
+    html+='<div class="journal-card">'+delBtn+'<div class="journal-card-header"><div><div class="journal-card-date">'+dateStr+'</div><div class="journal-card-title">'+esc(m.title)+'</div></div>'+(m.mood?'<span class="journal-card-mood">'+esc(m.mood)+'</span>':'')+'</div><div class="journal-card-body clamped" id="'+bodyId+'">'+esc(m.body)+'</div><button class="read-more-btn" id="rm-'+m.id+'" onclick="toggleExpand(\''+m.id+'\')">Baca selengkapnya ↓</button></div>';
   });
   list.innerHTML=html;
 }
 
 function toggleExpand(id) {
-  const body=document.getElementById('mb-'+id); const btn=document.getElementById('rm-'+id);
+  var body=document.getElementById('mb-'+id);
+  var btn=document.getElementById('rm-'+id);
   if(body.classList.contains('clamped')){body.classList.remove('clamped');btn.textContent='Sembunyikan ↑';}
   else{body.classList.add('clamped');btn.textContent='Baca selengkapnya ↓';}
 }
 
 async function deleteMoment(id) {
   if(!isOwner||!confirm('Hapus momen ini?'))return;
-  await sbClient.from('moments').delete().eq('id',id);
+  await _sb.from('moments').delete().eq('id',id);
   loadMoments(); toast('Momen dihapus','success');
 }
 
-// LIGHTBOX
 function openLightbox(url,type,caption) {
-  const content=document.getElementById('lightboxContent');
+  var cnt=document.getElementById('lightboxContent');
   document.getElementById('lightboxCaption').textContent=caption||'';
-  if(type==='image')content.innerHTML=`<img src="${url}" alt="${caption}"/>`;
-  else if(type==='video')content.innerHTML=`<video src="${url}" controls autoplay style="max-width:90vw;max-height:80vh"></video>`;
-  else if(type==='video-gdrive')content.innerHTML=`<iframe src="${url}" style="width:80vw;height:80vh;border:none" allowfullscreen></iframe>`;
+  if(type==='image')cnt.innerHTML='<img src="'+url+'" alt="'+caption+'"/>';
+  else if(type==='video')cnt.innerHTML='<video src="'+url+'" controls autoplay style="max-width:90vw;max-height:80vh"></video>';
+  else if(type==='video-gdrive')cnt.innerHTML='<iframe src="'+url+'" style="width:80vw;height:80vh;border:none" allowfullscreen></iframe>';
   document.getElementById('lightbox').classList.add('active'); document.body.style.overflow='hidden';
 }
+
 function closeLightbox(e) {
   if(e&&e.target!==document.getElementById('lightbox')&&!e.target.classList.contains('lightbox-close'))return;
   document.getElementById('lightbox').classList.remove('active');
   document.getElementById('lightboxContent').innerHTML=''; document.body.style.overflow='';
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox({target:document.getElementById('lightbox')});});
 
-function esc(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+type;clearTimeout(el._t);el._t=setTimeout(()=>el.className='toast',3000);}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeLightbox({target:document.getElementById('lightbox')});
+});
 
-window.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded',function(){
+  var dz=document.getElementById('dropZone');
+  if(dz){
+    dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('dragover');});
+    dz.addEventListener('dragleave',function(){dz.classList.remove('dragover');});
+    dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('dragover');handleFiles(e.dataTransfer.files);});
+  }
   document.getElementById('momentDate').value=new Date().toISOString().split('T')[0];
-  if(!SUPABASE_URL||!SUPABASE_KEY){document.getElementById('setupScreen').classList.add('show');}
+  if(!_sbUrl||!_sbKey){document.getElementById('setupScreen').classList.add('show');}
   else{initSupabase();}
 });
 
-// Expose functions to global scope (dipanggil dari onclick di HTML)
-window.saveConfig = saveConfig;
-window.showPage = showPage;
-window.goHero = goHero;
-window.scrollToContent = scrollToContent;
-window.handleFileUpload = handleFileUpload;
-window.importGDrive = importGDrive;
-window.deleteMedia = deleteMedia;
-window.selectMood = selectMood;
-window.saveMoment = saveMoment;
-window.deleteMoment = deleteMoment;
-window.openLightbox = openLightbox;
-window.closeLightbox = closeLightbox;
-window.toggleExpand = toggleExpand;
-window.toggleAuth = toggleAuth;
-window.closeAuthModal = closeAuthModal;
-window.doLogin = doLogin;
-window.doLogout = doLogout;
-})(); // end IIFE
+function esc(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(msg,type){type=type||'';var el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+type;clearTimeout(el._t);el._t=setTimeout(function(){el.className='toast';},3000);}
 </script>
 </body>
 </html>
