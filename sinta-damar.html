@@ -6,6 +6,56 @@
 <title>Untuk Sinta — dari Damar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+
+<script>
+// ╔══════════════════════════════════════════════════════╗
+// ║  KONFIGURASI — isi bagian ini satu kali saja         ║
+// ╠══════════════════════════════════════════════════════╣
+// ║  1. Buat akun GRATIS di https://supabase.com         ║
+// ║  2. New Project → Settings → API                     ║
+// ║     Copy: Project URL  →  SUPABASE_URL               ║
+// ║     Copy: anon public  →  SUPABASE_ANON              ║
+// ║  3. Di Supabase: SQL Editor → jalankan SQL di bawah  ║
+// ║  4. Ganti OWNER_PASSWORD dengan password pilihanmu   ║
+// ╚══════════════════════════════════════════════════════╝
+const CONFIG = {
+  SUPABASE_URL   : 'https://pdobqtuoobelrhdpoghw.supabase.co',
+  SUPABASE_ANON  : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkb2JxdHVvb2JlbHJoZHBvZ2h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MzU4ODMsImV4cCI6MjA1ODAxMTg4M30.ftuSHoaQ47oa7b1iySc2-0KWaj4OoO6RFlXRi2lf3vk',
+  OWNER_PASSWORD : 'Bissmillah99',
+};
+
+/*
+SQL — jalankan di Supabase SQL Editor:
+──────────────────────────────────────────────────────────
+create table if not exists gallery (
+  id         uuid default gen_random_uuid() primary key,
+  type       text not null check (type in ('foto','video')),
+  url        text not null,
+  caption    text default '',
+  created_at timestamptz default now()
+);
+create table if not exists moments (
+  id         uuid default gen_random_uuid() primary key,
+  date_label text not null,
+  title      text not null,
+  note       text default '',
+  created_at timestamptz default now()
+);
+insert into storage.buckets (id, name, public)
+  values ('media', 'media', true)
+  on conflict do nothing;
+alter table gallery  enable row level security;
+alter table moments  enable row level security;
+create policy "Read gallery"   on gallery  for select using (true);
+create policy "Write gallery"  on gallery  for all    using (true) with check (true);
+create policy "Read moments"   on moments  for select using (true);
+create policy "Write moments"  on moments  for all    using (true) with check (true);
+create policy "Upload media"   on storage.objects for insert with check (bucket_id = 'media');
+create policy "Read media"     on storage.objects for select using (bucket_id = 'media');
+create policy "Delete media"   on storage.objects for delete using (bucket_id = 'media');
+──────────────────────────────────────────────────────────
+*/
+</script>
 <style>
   :root {
     --cream: #f5f0e8;
@@ -1229,9 +1279,137 @@
   .music-mini-ctrl svg { width:16px;height:16px;fill:var(--gold); transition:fill 0.2s; }
   .music-mini-ctrl:hover svg { fill: var(--rose); }
 
+
+
+/* ── OWNER & GUEST ADDITIONS ── */
+.config-banner{background:#fffbf0;border-bottom:2px solid var(--gold);padding:14px 24px;text-align:center;font-size:13px;color:var(--charcoal);line-height:1.7;display:none}
+.config-banner.visible{display:block}
+.config-banner strong{color:var(--rose)}
+.btn-setup{display:inline-block;margin-left:12px;padding:6px 20px;background:var(--charcoal);color:var(--cream);border:none;border-radius:2px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .3s;vertical-align:middle}
+.btn-setup:hover{background:var(--rose)}
+
+.owner-badge{display:none;align-items:center;gap:8px;padding:6px 14px;background:var(--charcoal);border-radius:20px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold)}
+.owner-badge.visible{display:inline-flex}
+.owner-badge-dot{width:6px;height:6px;border-radius:50%;background:#6abf8a;animation:pulse 2s infinite}
+
+/* Gallery overlay with delete btn */
+.gallery-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(42,37,32,.6) 0%,transparent 60%);opacity:0;transition:opacity .4s;display:flex;align-items:flex-end;justify-content:space-between;padding:14px}
+.gallery-item:hover .gallery-overlay{opacity:1}
+.gallery-caption-text{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--cream);line-height:1.4;flex:1}
+.btn-delete-item{display:none;width:30px;height:30px;border-radius:50%;background:rgba(180,50,50,.85);border:none;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+.btn-delete-item svg{width:13px;height:13px;fill:white}
+.btn-delete-item:hover{background:rgba(180,50,50,1)}
+.owner-mode .btn-delete-item{display:flex}
+
+/* Upload zone — owner only */
+.upload-zone{display:none}
+.owner-mode .upload-zone{display:block}
+
+/* Add moment section — owner only */
+.add-moment-section{display:none}
+.add-moment-section.owner-visible{display:block}
+
+/* Delete moment btn */
+.btn-delete-moment{display:none;float:right;background:none;border:none;cursor:pointer;color:var(--rose-light);font-size:18px;padding:0 4px;transition:color .2s;line-height:1}
+.btn-delete-moment:hover{color:var(--rose)}
+.owner-mode .btn-delete-moment{display:block}
+
+/* Upload progress bar */
+.upload-progress{display:none;max-width:900px;margin:12px auto 0;height:3px;background:var(--rose-light);border-radius:2px;overflow:hidden}
+.upload-progress.visible{display:block}
+.upload-progress-bar{height:100%;background:linear-gradient(to right,var(--rose),var(--gold));width:0%;transition:width .3s ease;border-radius:2px}
+
+/* Owner floating controls */
+.owner-float{position:fixed;bottom:28px;right:28px;z-index:600;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.btn-owner-login,.btn-owner-logout{
+  display:flex;align-items:center;gap:8px;padding:10px 18px;
+  border-radius:24px;font-family:'Jost',sans-serif;font-size:11px;
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s;
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+}
+.btn-owner-login{background:var(--charcoal);border:1px solid rgba(196,134,106,.3);color:var(--gold)}
+.btn-owner-login:hover{background:var(--rose);border-color:var(--rose);color:white}
+.btn-owner-login svg,.btn-owner-logout svg{width:14px;height:14px;fill:currentColor}
+.btn-owner-logout{background:transparent;border:1px solid rgba(196,134,106,.3);color:var(--rose-light);display:none}
+.btn-owner-logout:hover{border-color:var(--rose);color:var(--rose)}
+.owner-mode .btn-owner-login{display:none}
+.owner-mode .btn-owner-logout{display:flex}
+
+/* Skeleton loading */
+.skeleton{background:linear-gradient(90deg,var(--rose-light) 25%,#f5e6de 50%,var(--rose-light) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:3px;margin-bottom:16px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Modal shared */
+.modal-overlay{position:fixed;inset:0;background:rgba(20,17,14,.88);z-index:3000;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px)}
+.modal-overlay.active{display:flex}
+.modal-box{background:var(--warm-white);max-width:460px;width:100%;border-radius:4px;padding:48px;position:relative}
+.modal-box.wide{max-width:560px}
+.modal-close-btn{position:absolute;top:18px;right:18px;background:transparent;border:none;font-size:20px;color:var(--muted-brown);cursor:pointer;padding:4px;line-height:1}
+.modal-title-text{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--charcoal);margin-bottom:8px}
+.modal-title-text em{font-style:italic;color:var(--rose)}
+.modal-desc-text{font-size:13px;line-height:1.7;color:var(--muted-brown);margin-bottom:28px}
+.modal-field-wrap{margin-bottom:20px}
+.modal-field-wrap label{display:block;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.modal-field-wrap input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--rose-light);padding:10px 0;font-family:'Jost',sans-serif;font-size:16px;color:var(--charcoal);outline:none;transition:border-color .3s}
+.modal-field-wrap input:focus{border-color:var(--rose)}
+.modal-error-msg{font-size:12px;color:#c0392b;margin-top:8px;display:none}
+.btn-modal-full{width:100%;padding:14px;background:var(--charcoal);color:var(--cream);border:none;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .3s;margin-top:8px}
+.btn-modal-full:hover{background:var(--rose)}
+
+/* Setup steps */
+.setup-step{display:flex;gap:14px;margin-bottom:16px;align-items:flex-start}
+.setup-num{width:22px;height:22px;border-radius:50%;background:var(--rose);color:white;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.setup-text{font-size:13px;line-height:1.6;color:var(--charcoal)}
+.setup-text a{color:var(--rose);text-decoration:none;border-bottom:1px solid var(--rose-light)}
+.setup-text code{background:var(--cream);padding:2px 6px;border-radius:2px;font-size:11px;font-family:monospace;color:var(--muted-brown)}
+.setup-note{background:#f9f5ef;border:1px solid var(--gold-light);border-radius:3px;padding:12px 16px;margin-top:16px;font-size:12px;color:var(--muted-brown);line-height:1.6}
+
+/* Music player */
+.music-welcome{position:fixed;inset:0;z-index:9000;background:rgba(20,17,14,.93);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;transition:opacity .7s ease}
+.music-welcome.hidden{opacity:0;pointer-events:none}
+.music-welcome-inner{text-align:center;padding:48px 40px}
+.music-heart{font-family:'Cormorant Garamond',serif;font-size:64px;color:var(--rose);line-height:1;margin-bottom:24px;animation:heartbeat 2s ease-in-out infinite;display:block}
+@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}56%{transform:scale(1)}}
+.music-welcome-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--cream);margin-bottom:10px}
+.music-welcome-title em{font-style:italic;color:var(--rose)}
+.music-welcome-sub{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:40px}
+.music-start-btn{display:inline-flex;align-items:center;gap:12px;padding:16px 44px;background:var(--rose);border:none;border-radius:2px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:white;cursor:pointer;transition:all .3s;box-shadow:0 8px 32px rgba(196,134,106,.4)}
+.music-start-btn:hover{background:#b5705a;transform:translateY(-2px)}
+.music-start-btn svg{width:18px;height:18px;fill:white}
+.music-skip-btn{display:block;margin:20px auto 0;background:none;border:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,.3);cursor:pointer;transition:color .3s}
+.music-skip-btn:hover{color:rgba(245,240,232,.6)}
+.music-mini{position:fixed;bottom:28px;left:28px;z-index:500;display:none;align-items:center;gap:10px;background:var(--charcoal);border:1px solid rgba(196,134,106,.25);border-radius:40px;padding:8px 16px 8px 8px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.music-mini.on{display:flex;animation:slideUp .5s cubic-bezier(.23,1,.32,1)}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.music-icon-wrap{width:34px;height:34px;border-radius:50%;background:var(--rose);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.music-icon-wrap svg{width:14px;height:14px;fill:white}
+.mini-bars{display:flex;align-items:center;gap:2px;height:20px}
+.mini-bar{width:3px;border-radius:2px;background:var(--rose);opacity:.8;animation:wave 1.2s ease-in-out infinite}
+.mini-bar:nth-child(1){animation-delay:0s;height:8px}
+.mini-bar:nth-child(2){animation-delay:.2s;height:14px}
+.mini-bar:nth-child(3){animation-delay:.4s;height:10px}
+.mini-bar:nth-child(4){animation-delay:.6s;height:16px}
+.mini-bar:nth-child(5){animation-delay:.8s;height:10px}
+.mini-label{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:var(--cream);white-space:nowrap}
+.mini-ctrl{background:none;border:none;cursor:pointer;padding:2px;display:flex;align-items:center}
+.mini-ctrl svg{width:16px;height:16px;fill:var(--gold);transition:fill .2s}
+.mini-ctrl:hover svg{fill:var(--rose)}
+@keyframes wave{0%,100%{transform:scaleY(.35);opacity:.35}50%{transform:scaleY(1);opacity:.9}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.fade-in-up{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
+.fade-in-up.visible{opacity:1;transform:translateY(0)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scrollDown{0%,100%{opacity:.4;transform:scaleY(.5);transform-origin:top}50%{opacity:1;transform:scaleY(1)}}
+@media(max-width:600px){.music-mini{bottom:16px;left:12px}.owner-float{bottom:16px;right:12px}}
 </style>
 </head>
 <body>
+
+<!-- CONFIG BANNER -->
+<div class="config-banner" id="configBanner">
+  ⚙️ <strong>Supabase belum dikonfigurasi</strong> — data hanya tersimpan sementara di browser ini.
+  <button class="btn-setup" id="btnShowSetup">Lihat Panduan Setup</button>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -1253,106 +1431,39 @@
       <p class="section-label">Kenangan</p>
       <h2 class="section-title">Momen <em>Kita</em></h2>
     </div>
-    <div class="gallery-filters">
-      <button class="filter-btn active" data-filter="all">Semua</button>
-      <button class="filter-btn" data-filter="foto">Foto</button>
-      <button class="filter-btn" data-filter="video">Video</button>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div class="owner-badge" id="ownerBadge">
+        <div class="owner-badge-dot"></div>
+        <span>Mode Owner</span>
+      </div>
+      <div class="gallery-filters">
+        <button class="filter-btn active" data-filter="all">Semua</button>
+        <button class="filter-btn" data-filter="foto">Foto</button>
+        <button class="filter-btn" data-filter="video">Video</button>
+      </div>
     </div>
-  </div>
-
-  <div class="storage-bar fade-in-up">
-    <span class="storage-label">Tersimpan</span>
-    <div class="storage-track"><div class="storage-fill" id="storageBar" style="width:0%"></div></div>
-    <span class="storage-count" id="storageCount">0 item</span>
   </div>
 
   <div class="gallery-grid" id="galleryGrid">
-    <div class="empty-state" id="emptyState" style="column-span: all;">
-      Belum ada kenangan tersimpan.<br>Mulai tambahkan foto atau video pertamamu.
-    </div>
+    <div class="skeleton" style="height:200px"></div>
+    <div class="skeleton" style="height:280px"></div>
+    <div class="skeleton" style="height:160px"></div>
+    <div class="skeleton" style="height:240px"></div>
+    <div class="skeleton" style="height:180px"></div>
+    <div class="skeleton" style="height:220px"></div>
   </div>
 
-  <div class="upload-zone fade-in-up" id="uploadZone">
+  <div class="upload-zone" id="uploadZone">
     <input type="file" id="fileInput" accept="image/*,video/*" multiple>
-
-    <div class="upload-actions">
-      <button class="btn-drive" id="driveBtn">
-        <svg viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
-          <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
-          <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/>
-          <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
-          <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
-          <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
-          <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
-        </svg>
-        Import dari Google Drive
-      </button>
-      <div class="drive-badge" id="driveBadge">
-        <div class="drive-badge-dot"></div>
-        <span id="driveBadgeText">Google Drive terhubung</span>
-        <button id="driveDisconnectBtn" title="Putus & reset koneksi Drive" style="background:none;border:none;cursor:pointer;color:var(--rose-light);font-size:11px;letter-spacing:1px;margin-left:4px;padding:0;text-decoration:underline;font-family:'Jost',sans-serif;">reset</button>
-      </div>
-    </div>
-
-    <p class="upload-divider">atau</p>
-
     <div class="upload-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--gold)">
-        <path d="M12 16V4m0 0L8 8m4-4l4 4M20 20H4"/>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M12 16V4m0 0L8 8m4-4l4 4M20 20H4"/></svg>
     </div>
-    <p class="upload-text">Upload dari perangkat</p>
+    <p class="upload-text">Tambahkan kenangan baru</p>
     <p class="upload-sub">Foto atau video · Klik atau seret ke sini</p>
   </div>
-
-<!-- DRIVE SETUP MODAL -->
-<div class="modal-overlay" id="driveModal">
-  <div class="modal-box">
-    <button class="modal-close" id="driveModalClose">✕</button>
-    <h2 class="modal-title">Import dari <em>Google Drive</em></h2>
-    <p class="modal-desc">Untuk terhubung ke Google Drive, masukkan API Key dan Client ID dari Google Cloud Console. Setup ini hanya perlu dilakukan sekali — tersimpan otomatis di browser.</p>
-
-    <div class="modal-step">
-      <div class="modal-step-num">1</div>
-      <div class="modal-step-text">
-        Buka <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>, buat project baru atau pilih yang sudah ada.
-      </div>
-    </div>
-    <div class="modal-step">
-      <div class="modal-step-num">2</div>
-      <div class="modal-step-text">
-        Aktifkan <code>Google Drive API</code> dan <code>Google Picker API</code> di menu <em>APIs & Services → Library</em>.
-      </div>
-    </div>
-    <div class="modal-step">
-      <div class="modal-step-num">3</div>
-      <div class="modal-step-text">
-        Buat <code>API Key</code> di <em>Credentials</em>, lalu buat <code>OAuth 2.0 Client ID</code> (tipe: Web Application). Tambahkan URL website ini ke <em>Authorized JavaScript Origins</em>.
-      </div>
-    </div>
-    <div class="modal-step">
-      <div class="modal-step-num">4</div>
-      <div class="modal-step-text">
-        Salin kedua nilai di bawah lalu klik <strong>Hubungkan</strong>. Setelah terhubung, kamu bisa pilih foto &amp; video langsung dari Drive.
-      </div>
-    </div>
-
-    <div class="modal-field">
-      <label>API Key</label>
-      <input type="text" id="driveApiKey" placeholder="AIzaSy...">
-    </div>
-    <div class="modal-field">
-      <label>OAuth Client ID</label>
-      <input type="text" id="driveClientId" placeholder="xxxxx.apps.googleusercontent.com">
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-modal-primary" id="driveConnectBtn">Hubungkan Drive</button>
-      <button class="btn-modal-secondary" id="driveModalCancel">Batal</button>
-      <button class="btn-modal-secondary" id="driveResetBtn" style="border-color:#c4866a;color:#c4866a;" title="Hapus semua config Drive tersimpan">↺ Reset</button>
-    </div>
+  <div class="upload-progress" id="uploadProgress">
+    <div class="upload-progress-bar" id="uploadProgressBar"></div>
   </div>
-</div>
 </section>
 
 <!-- LETTER -->
@@ -1377,31 +1488,27 @@
     <h2 class="section-title">Jejak <em>Waktu</em></h2>
   </div>
   <div class="timeline-inner" id="timelineInner">
-    <!-- Timeline items rendered by JS -->
+    <div style="text-align:center;padding:40px;color:var(--rose-light);font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic">Memuat momen…</div>
   </div>
 </section>
 
-<!-- ADD MOMENT -->
-<section class="add-moment-section">
+<!-- ADD MOMENT — owner only -->
+<section class="add-moment-section" id="addMomentSection">
   <div class="add-moment-inner fade-in-up">
     <p class="section-label">Tuliskan</p>
     <h2 class="section-title">Tambah <em>Momen</em></h2>
-
     <div class="field-group" style="margin-top:40px">
-      <label class="field-label" for="momentDate">Tanggal</label>
+      <label class="field-label">Tanggal</label>
       <input class="field-input" type="date" id="momentDate">
     </div>
-
     <div class="field-group">
-      <label class="field-label" for="momentTitle">Judul Momen</label>
+      <label class="field-label">Judul Momen</label>
       <input class="field-input" type="text" id="momentTitle" placeholder="Hari pertama kita…">
     </div>
-
     <div class="field-group">
-      <label class="field-label" for="momentNote">Catatan</label>
+      <label class="field-label">Catatan</label>
       <textarea class="field-textarea" id="momentNote" placeholder="Ceritakan sedikit tentang momen ini…"></textarea>
     </div>
-
     <button class="btn-submit" id="addMomentBtn">Simpan Momen</button>
   </div>
 </section>
@@ -1409,7 +1516,7 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-symbol">♡</div>
-  <p class="footer-names">Sinta & Damar</p>
+  <p class="footer-names">Sinta &amp; Damar</p>
   <p class="footer-year">Selalu dan selamanya</p>
 </footer>
 
@@ -1417,7 +1524,7 @@
 <div class="lightbox" id="lightbox">
   <div class="lightbox-content">
     <button class="lightbox-close" id="lightboxClose">✕</button>
-    <img id="lightboxImg" src="" style="display:none">
+    <img id="lightboxImg" src="" style="display:none" alt="">
     <video id="lightboxVideo" src="" controls style="display:none"></video>
     <p class="lightbox-caption" id="lightboxCaption"></p>
   </div>
@@ -1426,699 +1533,440 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script>
-  // ══════════════════════════════════════════════════
-  // STORAGE LAYER — Google Drive sebagai database utama
-  // Fallback ke localStorage jika Drive belum terhubung
-  // ══════════════════════════════════════════════════
+<!-- OWNER LOGIN MODAL -->
+<div class="modal-overlay" id="ownerModal">
+  <div class="modal-box">
+    <button class="modal-close-btn" id="ownerModalClose">✕</button>
+    <h2 class="modal-title-text">Login <em>Owner</em></h2>
+    <p class="modal-desc-text">Masukkan password untuk mengakses mode pengelola. Hanya kamu yang bisa upload atau hapus foto &amp; video.</p>
+    <div class="modal-field-wrap">
+      <label>Password</label>
+      <input type="password" id="ownerPassword" placeholder="••••••••" autocomplete="current-password">
+      <p class="modal-error-msg" id="ownerError">Password salah. Coba lagi.</p>
+    </div>
+    <button class="btn-modal-full" id="ownerLoginBtn">Masuk sebagai Owner</button>
+  </div>
+</div>
 
-  const DRIVE_KEY      = 'sinta_damar_drive_config';
-  const LOCAL_GALLERY  = 'sinta_damar_gallery';
-  const LOCAL_TIMELINE = 'sinta_damar_timeline';
-  const DRIVE_DATA_FILENAME = 'sinta-damar-kenangan.json';
+<!-- SETUP MODAL -->
+<div class="modal-overlay" id="setupModal">
+  <div class="modal-box wide">
+    <button class="modal-close-btn" id="setupModalClose">✕</button>
+    <h2 class="modal-title-text">Setup <em>Supabase</em></h2>
+    <p class="modal-desc-text">Ikuti langkah berikut agar foto &amp; video tersimpan online — bisa dilihat dari perangkat apapun tanpa login.</p>
+    <div class="setup-step"><div class="setup-num">1</div><div class="setup-text">Buat akun gratis di <a href="https://supabase.com" target="_blank">supabase.com</a> → klik <strong>New Project</strong>.</div></div>
+    <div class="setup-step"><div class="setup-num">2</div><div class="setup-text">Tunggu project siap → buka <strong>Project Settings → API</strong> → copy <code>Project URL</code> dan <code>anon public key</code>.</div></div>
+    <div class="setup-step"><div class="setup-num">3</div><div class="setup-text">Buka <strong>SQL Editor</strong> → salin perintah SQL dari komentar di atas file HTML ini → klik <strong>Run</strong>.</div></div>
+    <div class="setup-step"><div class="setup-num">4</div><div class="setup-text">Edit file HTML ini → cari <code>CONFIG</code> di baris paling atas → isi <code>SUPABASE_URL</code> dan <code>SUPABASE_ANON</code> → simpan &amp; upload ulang ke GitHub.</div></div>
+    <div class="setup-note">✅ <strong>Guest (siapapun)</strong> bisa melihat semua foto &amp; video tanpa login, dari perangkat apapun.<br>🔐 <strong>Owner (Damar)</strong> login dengan password untuk upload &amp; hapus konten.</div>
+    <button class="btn-modal-full" id="setupDoneBtn">Mengerti</button>
+  </div>
+</div>
 
-  let driveConfig = {};  // Reset — isi via modal
+<!-- OWNER FLOAT -->
+<div class="owner-float">
+  <button class="btn-owner-logout" id="btnOwnerLogout">
+    <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+    Keluar Owner
+  </button>
+  <button class="btn-owner-login" id="btnOwnerLogin">
+    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    Login Owner
+  </button>
+</div>
 
-  let driveAccessToken = null;
-  let driveDataFileId  = null;   // ID file JSON di Drive
-  let driveReady       = false;  // token & fileId sudah siap
-
-  // ── LOCAL FALLBACK ──
-  function localLoadGallery() {
-    try { return JSON.parse(localStorage.getItem(LOCAL_GALLERY)) || []; } catch { return []; }
-  }
-  function localSaveGallery(items) {
-    try { localStorage.setItem(LOCAL_GALLERY, JSON.stringify(items)); } catch(e) {}
-  }
-  function localLoadTimeline() {
-    try {
-      return JSON.parse(localStorage.getItem(LOCAL_TIMELINE)) || [
-        { date: 'Awal cerita',    title: 'Hari pertama kita bertemu', note: 'Semuanya dimulai dari sini.' },
-        { date: 'Perjalanan kita',title: 'Momen-momen berharga',      note: 'Yang membuat kita semakin dekat.' }
-      ];
-    } catch { return []; }
-  }
-  function localSaveTimeline(items) {
-    try { localStorage.setItem(LOCAL_TIMELINE, JSON.stringify(items)); } catch(e) {}
-  }
-
-  // ── DRIVE SAVE (menulis ulang file JSON) ──
-  async function driveSaveData(gallery, timeline) {
-    if (!driveReady) return;
-    const payload = JSON.stringify({ gallery, timeline, updated: new Date().toISOString() });
-    const blob    = new Blob([payload], { type: 'application/json' });
-
-    if (driveDataFileId) {
-      // Update existing file
-      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveDataFileId}?uploadType=media`, {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${driveAccessToken}`, 'Content-Type': 'application/json' },
-        body: payload
-      });
-    } else {
-      // Create new file in Drive root
-      const meta = JSON.stringify({ name: DRIVE_DATA_FILENAME, mimeType: 'application/json' });
-      const form = new FormData();
-      form.append('metadata', new Blob([meta], { type: 'application/json' }));
-      form.append('file', blob);
-      const res  = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${driveAccessToken}` },
-        body: form
-      });
-      const json = await res.json();
-      driveDataFileId = json.id;
-      localStorage.setItem('sinta_damar_drive_file_id', driveDataFileId);
-    }
-  }
-
-  // ── DRIVE LOAD (baca file JSON dari Drive) ──
-  async function driveLoadData() {
-    if (!driveAccessToken) return null;
-    // Cari file berdasarkan nama
-    let fileId = localStorage.getItem('sinta_damar_drive_file_id') || null;
-
-    if (!fileId) {
-      const q   = encodeURIComponent(`name='${DRIVE_DATA_FILENAME}' and trashed=false`);
-      const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`, {
-        headers: { Authorization: `Bearer ${driveAccessToken}` }
-      });
-      const json = await res.json();
-      if (json.files && json.files.length > 0) {
-        fileId = json.files[0].id;
-        localStorage.setItem('sinta_damar_drive_file_id', fileId);
-      }
-    }
-
-    if (!fileId) return null;
-    driveDataFileId = fileId;
-
-    const res  = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
-      headers: { Authorization: `Bearer ${driveAccessToken}` }
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  }
-
-  // ── UNIFIED SAVE ──
-  function saveGallery(items) {
-    localSaveGallery(items);
-    if (driveReady) driveSaveData(items, timelineItems).catch(console.error);
-  }
-
-  function saveTimeline(items) {
-    localSaveTimeline(items);
-    if (driveReady) driveSaveData(galleryItems, items).catch(console.error);
-  }
-
-  // ── GALLERY RENDER ──
-  let currentFilter = 'all';
-  let galleryItems  = localLoadGallery();
-  let timelineItems = localLoadTimeline();
-
-  function renderGallery() {
-    const grid       = document.getElementById('galleryGrid');
-    const emptyState = document.getElementById('emptyState');
-    const filtered   = currentFilter === 'all' ? galleryItems
-                     : galleryItems.filter(i => i.type === currentFilter);
-
-    [...grid.querySelectorAll('.gallery-item')].forEach(el => el.remove());
-
-    if (filtered.length === 0) {
-      emptyState.style.display = 'block';
-    } else {
-      emptyState.style.display = 'none';
-      filtered.forEach((item, idx) => grid.appendChild(createGalleryElement(item, idx)));
-    }
-    updateStorageBar();
-  }
-
-  function createGalleryElement(item, idx) {
-    const div = document.createElement('div');
-    div.className   = 'gallery-item';
-    div.dataset.idx = idx;
-
-    if (item.type === 'foto') {
-      div.innerHTML = `
-        <img src="${item.src}" alt="${item.caption || ''}" loading="lazy">
-        <div class="gallery-item-overlay"><span class="gallery-item-caption">${item.caption || ''}</span></div>
-        <div class="gallery-item-type">
-          <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-        </div>`;
-    } else if (item.driveEmbed) {
-      const thumbStyle = item.thumb
-        ? `background:url('${item.thumb}') center/cover no-repeat;min-height:180px;`
-        : 'background:var(--charcoal);min-height:180px;';
-      div.innerHTML = `
-        <div style="${thumbStyle}width:100%;display:block;"></div>
-        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-        <div class="gallery-item-overlay"><span class="gallery-item-caption">${item.caption || ''}</span></div>
-        <div class="gallery-item-type">
-          <svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-        </div>`;
-    } else {
-      div.innerHTML = `
-        <video src="${item.src}" muted preload="metadata" style="max-height:260px;object-fit:cover;width:100%"></video>
-        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-        <div class="gallery-item-overlay"><span class="gallery-item-caption">${item.caption || ''}</span></div>
-        <div class="gallery-item-type">
-          <svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-        </div>`;
-    }
-
-    div.addEventListener('click', () => openLightbox(item));
-    return div;
-  }
-
-  function updateStorageBar() {
-    const count = galleryItems.length;
-    document.getElementById('storageBar').style.width = Math.min((count/200)*100,100) + '%';
-    document.getElementById('storageCount').textContent = count + ' item';
-  }
-
-  // ── LIGHTBOX ──
-  function openLightbox(item) {
-    const lb  = document.getElementById('lightbox');
-    const img = document.getElementById('lightboxImg');
-    const vid = document.getElementById('lightboxVideo');
-    const cap = document.getElementById('lightboxCaption');
-    const existingIframe = lb.querySelector('.drive-iframe');
-    if (existingIframe) existingIframe.remove();
-
-    if (item.type === 'foto') {
-      img.src = item.src; img.style.display = 'block';
-      vid.style.display = 'none'; vid.pause();
-    } else if (item.driveEmbed) {
-      img.style.display = 'none'; vid.style.display = 'none';
-      const iframe = document.createElement('iframe');
-      iframe.className = 'drive-iframe';
-      iframe.src = item.src;
-      iframe.style.cssText = 'width:80vw;height:70vh;border:none;border-radius:3px;';
-      iframe.allow = 'autoplay';
-      lb.querySelector('.lightbox-content').insertBefore(iframe, cap);
-    } else {
-      vid.src = item.src; vid.style.display = 'block'; img.style.display = 'none';
-    }
-    cap.textContent = item.caption || '';
-    lb.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeLightbox() {
-    const lb  = document.getElementById('lightbox');
-    const vid = document.getElementById('lightboxVideo');
-    vid.pause();
-    const iframe = lb.querySelector('.drive-iframe');
-    if (iframe) iframe.remove();
-    lb.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-  document.getElementById('lightbox').addEventListener('click', function(e) {
-    if (e.target === this) closeLightbox();
-  });
-
-  // ── FILE UPLOAD (lokal) ──
-  const uploadZone = document.getElementById('uploadZone');
-  const fileInput  = document.getElementById('fileInput');
-
-  uploadZone.addEventListener('click', () => fileInput.click());
-  uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
-  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-  uploadZone.addEventListener('drop', (e) => { e.preventDefault(); uploadZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
-  fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
-
-  function handleFiles(files) {
-    const arr = [...files].filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
-    if (!arr.length) return;
-    let done = 0;
-    arr.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const caption = prompt(`Caption untuk "${file.name}"?
-(boleh kosong)`) || '';
-        galleryItems.unshift({
-          src: e.target.result,
-          type: file.type.startsWith('image/') ? 'foto' : 'video',
-          caption, name: file.name,
-          date: new Date().toISOString()
-        });
-        done++;
-        if (done === arr.length) {
-          saveGallery(galleryItems);
-          renderGallery();
-          showToast('Kenangan berhasil ditambahkan ♡');
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  // ── FILTERS ──
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      currentFilter = this.dataset.filter;
-      renderGallery();
-    });
-  });
-
-  // ── TIMELINE ──
-  function renderTimeline() {
-    const inner = document.getElementById('timelineInner');
-    inner.innerHTML = timelineItems.map(item => `
-      <div class="timeline-item fade-in-up">
-        <div class="timeline-date">${item.date}</div>
-        <div class="timeline-line"><div class="timeline-dot"></div></div>
-        <div class="timeline-content"><h3>${item.title}</h3><p>${item.note}</p></div>
-      </div>`).join('');
-    observeFadeElements();
-  }
-
-  // ── ADD MOMENT ──
-  document.getElementById('addMomentBtn').addEventListener('click', () => {
-    const date  = document.getElementById('momentDate').value;
-    const title = document.getElementById('momentTitle').value.trim();
-    const note  = document.getElementById('momentNote').value.trim();
-    if (!title) { showToast('Tuliskan judul momen terlebih dahulu.'); return; }
-    const dateLabel = date
-      ? new Date(date).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })
-      : 'Tak bertanggal';
-    timelineItems.unshift({ date: dateLabel, title, note: note || '—' });
-    saveTimeline(timelineItems);
-    renderTimeline();
-    document.getElementById('momentDate').value  = '';
-    document.getElementById('momentTitle').value = '';
-    document.getElementById('momentNote').value  = '';
-    showToast('Momen berhasil ditambahkan ♡');
-  });
-
-  // ── TOAST ──
-  let toastTimer;
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
-  }
-
-  // ── INTERSECTION OBSERVER ──
-  function observeFadeElements() {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
-      });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
-  }
-
-  // ══════════════════════════════════════════════════
-  // GOOGLE DRIVE — Auth + Picker + Sync
-  // ══════════════════════════════════════════════════
-
-  function saveDriveConfig(cfg) {
-    driveConfig = cfg;
-    localStorage.setItem(DRIVE_KEY, JSON.stringify(cfg));
-  }
-
-  function setBadge(text, visible) {
-    const badge = document.getElementById('driveBadge');
-    document.getElementById('driveBadgeText').textContent = text;
-    badge.classList.toggle('visible', visible);
-  }
-
-  function checkDriveConnected() {
-    if (driveConfig.apiKey && driveConfig.clientId) {
-      setBadge('Google Drive terhubung', true);
-      return true;
-    }
-    return false;
-  }
-
-  // Open modal atau langsung sync+picker jika sudah ada config
-  document.getElementById('driveBtn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (driveConfig.apiKey && driveConfig.clientId) {
-      initDriveAndSync();
-    } else {
-      document.getElementById('driveApiKey').value   = '';
-      document.getElementById('driveClientId').value = '';
-      document.getElementById('driveModal').classList.add('active');
-    }
-  });
-
-  // ── RESET DRIVE CONFIG ──
-  function resetDriveConfig() {
-    localStorage.removeItem('sinta_damar_drive_config');
-    localStorage.removeItem('sinta_damar_drive_file_id');
-    driveConfig       = {};
-    driveAccessToken  = null;
-    driveDataFileId   = null;
-    driveReady        = false;
-    document.getElementById('driveBadge').classList.remove('visible');
-    document.getElementById('driveApiKey').value   = '';
-    document.getElementById('driveClientId').value = '';
-    showToast('Koneksi Drive direset. Silakan hubungkan ulang.');
-    document.getElementById('driveModal').classList.remove('active');
-    // Buka modal langsung agar user bisa input ulang
-    setTimeout(() => document.getElementById('driveModal').classList.add('active'), 400);
-  }
-
-  document.getElementById('driveResetBtn').addEventListener('click', resetDriveConfig);
-  document.getElementById('driveDisconnectBtn').addEventListener('click', resetDriveConfig);
-
-  document.getElementById('driveModalClose').addEventListener('click',  () => document.getElementById('driveModal').classList.remove('active'));
-  document.getElementById('driveModalCancel').addEventListener('click', () => document.getElementById('driveModal').classList.remove('active'));
-  document.getElementById('driveModal').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
-
-  document.getElementById('driveConnectBtn').addEventListener('click', () => {
-    const apiKey   = document.getElementById('driveApiKey').value.trim();
-    const clientId = document.getElementById('driveClientId').value.trim();
-    if (!apiKey || !clientId) { showToast('Masukkan API Key dan Client ID terlebih dahulu.'); return; }
-    saveDriveConfig({ apiKey, clientId });
-    document.getElementById('driveModal').classList.remove('active');
-    checkDriveConnected();
-    initDriveAndSync();
-  });
-
-  function loadGapiScript(cb) {
-    if (window.gapi) { cb(); return; }
-    const s = document.createElement('script'); s.src = 'https://apis.google.com/js/api.js'; s.onload = cb; document.head.appendChild(s);
-  }
-  function loadGsiScript(cb) {
-    if (window.google && window.google.accounts) { cb(); return; }
-    const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.onload = cb; document.head.appendChild(s);
-  }
-
-  // Minta token → load data dari Drive → render → buka picker
-  function initDriveAndSync(openPickerAfter = true) {
-    showToast('Menghubungkan ke Google Drive…');
-    loadGapiScript(() => {
-      gapi.load('picker', () => {
-        loadGsiScript(() => {
-          const client = google.accounts.oauth2.initTokenClient({
-            client_id: driveConfig.clientId,
-            scope: [
-              'https://www.googleapis.com/auth/drive.file',
-              'https://www.googleapis.com/auth/drive.readonly'
-            ].join(' '),
-            callback: async (resp) => {
-              if (resp.error) { showToast('Gagal login ke Google. Coba lagi.'); return; }
-              driveAccessToken = resp.access_token;
-              driveReady = true;
-              setBadge('Drive terhubung — memuat data…', true);
-
-              // Coba load data tersimpan di Drive
-              try {
-                const data = await driveLoadData();
-                if (data) {
-                  // Merge: Drive lebih prioritas (data lebih baru)
-                  galleryItems  = data.gallery  || localLoadGallery();
-                  timelineItems = data.timeline || localLoadTimeline();
-                  localSaveGallery(galleryItems);
-                  localSaveTimeline(timelineItems);
-                  renderGallery();
-                  renderTimeline();
-                  setBadge('Drive terhubung ✓ Data dimuat', true);
-                  showToast('Data berhasil dimuat dari Google Drive ♡');
-                } else {
-                  // Tidak ada file di Drive — upload data lokal ke Drive
-                  setBadge('Drive terhubung — menyimpan data…', true);
-                  await driveSaveData(galleryItems, timelineItems);
-                  setBadge('Google Drive terhubung ✓', true);
-                  showToast('Data lokal berhasil disinkronkan ke Drive ♡');
-                }
-              } catch(err) {
-                console.error(err);
-                showToast('Gagal memuat data dari Drive.');
-              }
-
-              if (openPickerAfter) openDrivePicker(driveAccessToken);
-            }
-          });
-          client.requestAccessToken({ prompt: '' });
-        });
-      });
-    });
-  }
-
-  // Auto-sync saat load jika config sudah ada (tanpa buka picker)
-  function autoSyncDrive() {
-    if (!driveConfig.apiKey || !driveConfig.clientId) return;
-    showToast('Menyinkronkan data dari Google Drive…');
-    loadGapiScript(() => {
-      gapi.load('picker', () => {
-        loadGsiScript(() => {
-          const client = google.accounts.oauth2.initTokenClient({
-            client_id: driveConfig.clientId,
-            scope: [
-              'https://www.googleapis.com/auth/drive.file',
-              'https://www.googleapis.com/auth/drive.readonly'
-            ].join(' '),
-            callback: async (resp) => {
-              if (resp.error) { console.warn('Auto-sync: token gagal'); return; }
-              driveAccessToken = resp.access_token;
-              driveReady = true;
-              try {
-                const data = await driveLoadData();
-                if (data) {
-                  galleryItems  = data.gallery  || localLoadGallery();
-                  timelineItems = data.timeline || localLoadTimeline();
-                  localSaveGallery(galleryItems);
-                  localSaveTimeline(timelineItems);
-                  renderGallery();
-                  renderTimeline();
-                  setBadge('Google Drive terhubung ✓', true);
-                  showToast('Data tersinkron dari Google Drive ♡');
-                }
-              } catch(e) { console.error('Auto-sync error', e); }
-            }
-          });
-          // prompt:'none' → tidak minta login ulang jika sudah ada sesi
-          client.requestAccessToken({ prompt: 'none' });
-        });
-      });
-    });
-  }
-
-  function openDrivePicker(token) {
-    const view = new google.picker.View(google.picker.ViewId.DOCS);
-    view.setMimeTypes('image/png,image/jpeg,image/jpg,image/gif,image/webp,video/mp4,video/quicktime,video/x-msvideo,video/webm,video/3gpp');
-    const picker = new google.picker.PickerBuilder()
-      .setTitle('Pilih foto atau video — Sinta & Damar')
-      .addView(view)
-      .addView(new google.picker.DocsUploadView())
-      .setOAuthToken(token)
-      .setDeveloperKey(driveConfig.apiKey)
-      .setCallback(pickerCallback)
-      .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
-      .build();
-    picker.setVisible(true);
-  }
-
-  function pickerCallback(data) {
-    if (data.action !== google.picker.Action.PICKED) return;
-    const docs = data[google.picker.Response.DOCUMENTS];
-    if (!docs || !docs.length) return;
-    showToast(`Memuat ${docs.length} file dari Drive…`);
-    let loaded = 0;
-    docs.forEach(doc => {
-      const fileId  = doc[google.picker.Document.ID];
-      const name    = doc[google.picker.Document.NAME] || '';
-      const mime    = doc[google.picker.Document.MIME_TYPE] || '';
-      const isImage = mime.startsWith('image/');
-      const isVideo = mime.startsWith('video/');
-      if (!isImage && !isVideo) { loaded++; checkDone(); return; }
-
-      if (isImage) {
-        fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
-          headers: { Authorization: `Bearer ${driveAccessToken}` }
-        })
-        .then(r => r.blob())
-        .then(blob => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            galleryItems.unshift({ src: e.target.result, type: 'foto', caption: name.replace(/\.[^.]+$/, ''), name, date: new Date().toISOString(), source: 'drive' });
-            loaded++; checkDone();
-          };
-          reader.readAsDataURL(blob);
-        })
-        .catch(() => { loaded++; checkDone(); });
-      } else {
-        const thumbUrl = doc[google.picker.Document.THUMBNAILS] ? doc[google.picker.Document.THUMBNAILS][0].url : '';
-        galleryItems.unshift({ src: `https://drive.google.com/file/d/${fileId}/preview`, thumb: thumbUrl, type: 'video', caption: name.replace(/\.[^.]+$/, ''), name, date: new Date().toISOString(), source: 'drive', driveEmbed: true, fileId });
-        loaded++; checkDone();
-      }
-
-      function checkDone() {
-        if (loaded === docs.length) {
-          saveGallery(galleryItems);
-          renderGallery();
-          showToast('File dari Google Drive berhasil ditambahkan ♡');
-        }
-      }
-    });
-  }
-
-  // ── INIT ──
-  // Bersihkan config Drive lama agar user bisa input ulang yang fresh
-  (function clearOldConfig() {
-    const saved = localStorage.getItem('sinta_damar_drive_config');
-    if (saved) {
-      try {
-        const cfg = JSON.parse(saved);
-        // Jika ada config tersimpan, load ke driveConfig
-        if (cfg && cfg.apiKey && cfg.clientId) {
-          driveConfig = cfg;
-        }
-      } catch(e) {
-        localStorage.removeItem('sinta_damar_drive_config');
-        localStorage.removeItem('sinta_damar_drive_file_id');
-      }
-    }
-  })();
-
-  renderGallery();
-  renderTimeline();
-  observeFadeElements();
-  if (checkDriveConnected()) {
-    // Auto-sync data dari Drive saat halaman dibuka
-    setTimeout(autoSyncDrive, 1200);
-  }
-</script>
-
-
-
-
-
-<!-- WELCOME + MUSIC SCREEN -->
+<!-- MUSIC WELCOME -->
 <div class="music-welcome" id="musicWelcome">
   <div class="music-welcome-inner">
-    <div class="music-welcome-symbol">♡</div>
+    <span class="music-heart">♡</span>
     <h2 class="music-welcome-title">Untuk <em>Sinta</em></h2>
     <p class="music-welcome-sub">dari Damar, dengan sepenuh hati</p>
-    <button class="music-welcome-btn" id="musicStartBtn">
+    <button class="music-start-btn" id="musicStartBtn">
       <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       Buka &amp; Putar Musik
     </button>
-    <br>
-    <button class="music-skip" id="musicSkipBtn">Lewati musik</button>
+    <button class="music-skip-btn" id="musicSkipBtn">Lewati musik</button>
   </div>
 </div>
 
-<!-- FLOATING MINI PLAYER -->
+<!-- MUSIC MINI PLAYER -->
 <div class="music-mini" id="musicMini">
-  <div class="music-mini-icon">
-    <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
+  <div class="music-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg></div>
+  <div class="mini-bars">
+    <div class="mini-bar"></div><div class="mini-bar"></div><div class="mini-bar"></div>
+    <div class="mini-bar"></div><div class="mini-bar"></div>
   </div>
-  <div class="music-mini-bars" id="miniBars">
-    <div class="music-mini-bar"></div>
-    <div class="music-mini-bar"></div>
-    <div class="music-mini-bar"></div>
-    <div class="music-mini-bar"></div>
-    <div class="music-mini-bar"></div>
-  </div>
-  <span class="music-mini-label">Lagu Kita</span>
-  <button class="music-mini-ctrl" id="miniPlayPause" title="Play/Pause">
-    <svg id="miniIconPause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-    <svg id="miniIconPlay"  viewBox="0 0 24 24" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+  <span class="mini-label">Lagu Kita</span>
+  <button class="mini-ctrl" id="miniPlayPause">
+    <svg id="miniPause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    <svg id="miniPlay"  viewBox="0 0 24 24" style="display:none"><path d="M8 5v14l11-7z"/></svg>
   </button>
-  <button class="music-mini-ctrl" id="miniOpenYT" title="Buka di YouTube">
+  <button class="mini-ctrl" id="miniYT" title="Buka YouTube">
     <svg viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6zm11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
   </button>
 </div>
-
-<!-- HIDDEN YOUTUBE IFRAME -->
-<div style="position:fixed;width:1px;height:1px;overflow:hidden;bottom:0;left:0;opacity:0;pointer-events:none;">
-  <div id="ytPlayer"></div>
-</div>
+<div style="position:fixed;width:1px;height:1px;overflow:hidden;bottom:0;left:0;opacity:0;pointer-events:none;"><div id="ytPlayer"></div></div>
 
 <script>
+// ════════════════════════════════════════════════
+// SUPABASE HELPERS
+// ════════════════════════════════════════════════
+const CONFIGURED = CONFIG.SUPABASE_URL.startsWith('https://');
+const H = {
+  'apikey': CONFIG.SUPABASE_ANON,
+  'Authorization': 'Bearer ' + CONFIG.SUPABASE_ANON,
+  'Content-Type': 'application/json'
+};
+
+async function dbSelect(table) {
+  const r = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/${table}?order=created_at.desc`, { headers: H });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function dbInsert(table, data) {
+  const r = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/${table}`, {
+    method:'POST', headers:{...H,'Prefer':'return=representation'}, body:JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function dbDelete(table, id) {
+  const r = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, { method:'DELETE', headers:H });
+  if (!r.ok) throw new Error(await r.text());
+}
+async function storageUpload(path, file, onProg) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${CONFIG.SUPABASE_URL}/storage/v1/object/media/${path}`);
+    xhr.setRequestHeader('apikey', CONFIG.SUPABASE_ANON);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + CONFIG.SUPABASE_ANON);
+    xhr.upload.onprogress = e => { if(e.lengthComputable && onProg) onProg(e.loaded/e.total*100); };
+    xhr.onload = () => xhr.status < 300
+      ? resolve(`${CONFIG.SUPABASE_URL}/storage/v1/object/public/media/${path}`)
+      : reject(xhr.responseText);
+    xhr.onerror = reject;
+    xhr.send(file);
+  });
+}
+async function storageDelete(path) {
+  await fetch(`${CONFIG.SUPABASE_URL}/storage/v1/object/media/${path}`, {
+    method:'DELETE', headers:H
+  });
+}
+
+// ════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════
+let galleryItems = [], timelineItems = [], currentFilter = 'all', isOwner = false;
+
+// ════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════
+let _tt;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ════════════════════════════════════════════════
+// OWNER MODE
+// ════════════════════════════════════════════════
+function setOwner(val) {
+  isOwner = val;
+  document.body.classList.toggle('owner-mode', val);
+  document.getElementById('ownerBadge').classList.toggle('visible', val);
+  document.getElementById('addMomentSection').classList.toggle('owner-visible', val);
+  sessionStorage.setItem('sd_owner', val ? '1' : '');
+}
+if (sessionStorage.getItem('sd_owner') === '1') setOwner(true);
+
+document.getElementById('btnOwnerLogin').onclick = () => {
+  document.getElementById('ownerPassword').value = '';
+  document.getElementById('ownerError').style.display = 'none';
+  document.getElementById('ownerModal').classList.add('active');
+  setTimeout(() => document.getElementById('ownerPassword').focus(), 100);
+};
+document.getElementById('btnOwnerLogout').onclick = () => { setOwner(false); toast('Keluar dari mode owner.'); };
+document.getElementById('ownerModalClose').onclick = () => document.getElementById('ownerModal').classList.remove('active');
+document.getElementById('ownerModal').onclick = function(e) { if(e.target===this) this.classList.remove('active'); };
+document.getElementById('ownerLoginBtn').onclick = doLogin;
+document.getElementById('ownerPassword').onkeydown = e => { if(e.key==='Enter') doLogin(); };
+
+function doLogin() {
+  if (document.getElementById('ownerPassword').value === CONFIG.OWNER_PASSWORD) {
+    document.getElementById('ownerModal').classList.remove('active');
+    setOwner(true); toast('Selamat datang, Damar ♡');
+  } else {
+    document.getElementById('ownerError').style.display = 'block';
+    document.getElementById('ownerPassword').value = '';
+    document.getElementById('ownerPassword').focus();
+  }
+}
+
+// ════════════════════════════════════════════════
+// GALLERY
+// ════════════════════════════════════════════════
+async function loadGallery() {
+  const grid = document.getElementById('galleryGrid');
+  if (!CONFIGURED) {
+    grid.innerHTML = '<div class="empty-state">Supabase belum dikonfigurasi.<br>Klik "Lihat Panduan Setup" di atas untuk memulai.</div>';
+    return;
+  }
+  try {
+    galleryItems = await dbSelect('gallery');
+    renderGallery();
+  } catch(e) {
+    grid.innerHTML = '<div class="empty-state">Gagal memuat galeri.<br>Periksa konfigurasi Supabase.</div>';
+  }
+}
+
+function renderGallery() {
+  const grid = document.getElementById('galleryGrid');
+  const list = currentFilter === 'all' ? galleryItems : galleryItems.filter(i => i.type === currentFilter);
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty-state">Belum ada kenangan tersimpan.</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  list.forEach(item => grid.appendChild(makeCard(item)));
+}
+
+function makeCard(item) {
+  const d = document.createElement('div');
+  d.className = 'gallery-item';
+  const isImg = item.type === 'foto';
+  const media = isImg
+    ? `<img src="${item.url}" alt="${item.caption||''}" loading="lazy">`
+    : `<video src="${item.url}" muted preload="metadata" style="max-height:260px;object-fit:cover;width:100%"></video>
+       <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
+  const typeIcon = isImg
+    ? `<svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`
+    : `<svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>`;
+  d.innerHTML = `${media}
+    <div class="gallery-overlay">
+      <span class="gallery-caption-text">${item.caption||''}</span>
+      <button class="btn-delete-item" title="Hapus"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+    </div>
+    <div class="gallery-item-type">${typeIcon}</div>`;
+
+  d.addEventListener('click', e => { if(!e.target.closest('.btn-delete-item')) openLB(item); });
+  d.querySelector('.btn-delete-item').addEventListener('click', async e => {
+    e.stopPropagation();
+    if (!isOwner || !confirm('Hapus kenangan ini?')) return;
+    try {
+      await dbDelete('gallery', item.id);
+      const seg = item.url.split('/public/media/')[1];
+      if (seg) await storageDelete(seg);
+      galleryItems = galleryItems.filter(i => i.id !== item.id);
+      renderGallery(); toast('Dihapus ♡');
+    } catch(e) { toast('Gagal menghapus.'); }
+  });
+  return d;
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', function() {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  this.classList.add('active'); currentFilter = this.dataset.filter; renderGallery();
+}));
+
+// ════════════════════════════════════════════════
+// UPLOAD
+// ════════════════════════════════════════════════
+const uz = document.getElementById('uploadZone');
+const fi = document.getElementById('fileInput');
+uz.addEventListener('click', () => { if(isOwner) fi.click(); });
+uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('dragover'); });
+uz.addEventListener('dragleave', () => uz.classList.remove('dragover'));
+uz.addEventListener('drop', e => { e.preventDefault(); uz.classList.remove('dragover'); if(isOwner) handleUp(e.dataTransfer.files); });
+fi.addEventListener('change', e => { if(isOwner) handleUp(e.target.files); fi.value=''; });
+
+async function handleUp(files) {
+  if (!CONFIGURED) { toast('Setup Supabase dulu ya.'); return; }
+  const arr = [...files].filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+  if (!arr.length) return;
+  const prog = document.getElementById('uploadProgress');
+  const bar  = document.getElementById('uploadProgressBar');
+  prog.classList.add('visible'); toast(`Mengunggah ${arr.length} file…`);
+  let done = 0;
+  for (const f of arr) {
+    try {
+      const caption = prompt(`Caption untuk "${f.name}"?
+(boleh kosong)`) || '';
+      const ext = f.name.split('.').pop().toLowerCase();
+      const path = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+      const url = await storageUpload(path, f, pct => {
+        bar.style.width = ((done/arr.length) + (pct/100/arr.length))*100 + '%';
+      });
+      const [row] = await dbInsert('gallery', { type: f.type.startsWith('image/') ? 'foto' : 'video', url, caption });
+      galleryItems.unshift(row);
+      done++;
+      bar.style.width = (done/arr.length*100) + '%';
+    } catch(e) { console.error(e); toast('Gagal upload: ' + f.name); done++; }
+  }
+  renderGallery(); toast('Berhasil ditambahkan ♡');
+  setTimeout(() => { prog.classList.remove('visible'); bar.style.width='0%'; }, 1500);
+}
+
+// ════════════════════════════════════════════════
+// LIGHTBOX
+// ════════════════════════════════════════════════
+function openLB(item) {
+  const img = document.getElementById('lightboxImg');
+  const vid = document.getElementById('lightboxVideo');
+  if (item.type==='foto') {
+    img.src=item.url; img.style.display='block'; vid.style.display='none'; vid.pause();
+  } else {
+    vid.src=item.url; vid.style.display='block'; img.style.display='none';
+  }
+  document.getElementById('lightboxCaption').textContent = item.caption||'';
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeLB() {
+  document.getElementById('lightboxVideo').pause();
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow='';
+}
+document.getElementById('lightboxClose').onclick = closeLB;
+document.getElementById('lightbox').onclick = function(e) { if(e.target===this) closeLB(); };
+
+// ════════════════════════════════════════════════
+// TIMELINE
+// ════════════════════════════════════════════════
+async function loadTimeline() {
+  if (!CONFIGURED) { renderTimeline([
+    {id:'a',date_label:'Awal cerita',title:'Hari pertama kita bertemu',note:'Semuanya dimulai dari sini.'},
+    {id:'b',date_label:'Perjalanan kita',title:'Momen-momen berharga',note:'Yang membuat kita semakin dekat.'}
+  ]); return; }
+  try { timelineItems = await dbSelect('moments'); renderTimeline(timelineItems); }
+  catch(e) { renderTimeline([]); }
+}
+
+function renderTimeline(items) {
+  timelineItems = items || timelineItems;
+  const inner = document.getElementById('timelineInner');
+  if (!timelineItems.length) {
+    inner.innerHTML = '<div style="text-align:center;padding:40px;color:var(--rose-light);font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic">Belum ada momen. Login sebagai owner untuk menambahkan.</div>';
+    return;
+  }
+  inner.innerHTML = timelineItems.map(m => `
+    <div class="timeline-item fade-in-up">
+      <div class="timeline-date">${m.date_label}</div>
+      <div class="timeline-line"><div class="timeline-dot"></div></div>
+      <div class="timeline-content">
+        <button class="btn-delete-moment" data-id="${m.id}">✕</button>
+        <h3>${m.title}</h3><p>${m.note}</p>
+      </div>
+    </div>`).join('');
+
+  inner.querySelectorAll('.btn-delete-moment').forEach(btn => btn.addEventListener('click', async () => {
+    if (!isOwner || !confirm('Hapus momen ini?')) return;
+    const id = btn.dataset.id;
+    try {
+      if (CONFIGURED) await dbDelete('moments', id);
+      timelineItems = timelineItems.filter(i => i.id !== id);
+      renderTimeline(timelineItems); toast('Momen dihapus.');
+    } catch(e) { toast('Gagal menghapus.'); }
+  }));
+  observeFade();
+}
+
+document.getElementById('addMomentBtn').addEventListener('click', async () => {
+  if (!isOwner) return;
+  const date  = document.getElementById('momentDate').value;
+  const title = document.getElementById('momentTitle').value.trim();
+  const note  = document.getElementById('momentNote').value.trim();
+  if (!title) { toast('Tuliskan judul momen terlebih dahulu.'); return; }
+  const date_label = date
+    ? new Date(date).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
+    : 'Tak bertanggal';
+  try {
+    let row;
+    if (CONFIGURED) { [row] = await dbInsert('moments', {date_label, title, note:note||'—'}); }
+    else { row = {id:Date.now()+'', date_label, title, note:note||'—'}; }
+    timelineItems.unshift(row); renderTimeline(timelineItems);
+    document.getElementById('momentDate').value='';
+    document.getElementById('momentTitle').value='';
+    document.getElementById('momentNote').value='';
+    toast('Momen berhasil ditambahkan ♡');
+  } catch(e) { toast('Gagal menyimpan.'); }
+});
+
+// ════════════════════════════════════════════════
+// INTERSECTION OBSERVER
+// ════════════════════════════════════════════════
+function observeFade() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);} });
+  }, {threshold:0.1});
+  document.querySelectorAll('.fade-in-up:not(.visible)').forEach(el => obs.observe(el));
+}
+
+// ════════════════════════════════════════════════
+// SETUP MODAL
+// ════════════════════════════════════════════════
+document.getElementById('btnShowSetup').onclick = () => document.getElementById('setupModal').classList.add('active');
+document.getElementById('setupModalClose').onclick = () => document.getElementById('setupModal').classList.remove('active');
+document.getElementById('setupDoneBtn').onclick = () => document.getElementById('setupModal').classList.remove('active');
+document.getElementById('setupModal').onclick = function(e) { if(e.target===this) this.classList.remove('active'); };
+
+// ════════════════════════════════════════════════
+// MUSIC
+// ════════════════════════════════════════════════
 (function(){
-  const VIDEO_ID  = '6iGj0NohNi4';
-  const YT_URL    = 'https://www.youtube.com/watch?v=6iGj0NohNi4';
-  let player, isPlaying = false, ytReady = false;
+  const VID='6iGj0NohNi4', URL_YT='https://www.youtube.com/watch?v=6iGj0NohNi4';
+  let player, playing=false, ready=false;
+  const welcome=document.getElementById('musicWelcome'), mini=document.getElementById('musicMini');
 
-  const welcome      = document.getElementById('musicWelcome');
-  const startBtn     = document.getElementById('musicStartBtn');
-  const skipBtn      = document.getElementById('musicSkipBtn');
-  const mini         = document.getElementById('musicMini');
-  const miniBars     = document.getElementById('miniBars');
-  const miniPlayPause= document.getElementById('miniPlayPause');
-  const miniIconPause= document.getElementById('miniIconPause');
-  const miniIconPlay = document.getElementById('miniIconPlay');
-  const miniOpenYT   = document.getElementById('miniOpenYT');
-
-  function dismissWelcome() {
+  function dismiss(){
     welcome.classList.add('hidden');
-    setTimeout(() => welcome.style.display = 'none', 700);
-    mini.classList.add('visible');
+    setTimeout(()=>welcome.style.display='none',700);
+    mini.classList.add('on');
+  }
+  function setPlay(v){
+    playing=v;
+    document.getElementById('miniPause').style.display=v?'block':'none';
+    document.getElementById('miniPlay').style.display=v?'none':'block';
+    document.querySelectorAll('.mini-bar').forEach(b=>b.style.animationPlayState=v?'running':'paused');
   }
 
-  function setPlaying(val) {
-    isPlaying = val;
-    miniIconPause.style.display = val ? 'block' : 'none';
-    miniIconPlay.style.display  = val ? 'none'  : 'block';
-    [...document.querySelectorAll('.music-mini-bar')].forEach(b =>
-      b.style.animationPlayState = val ? 'running' : 'paused'
-    );
-  }
-
-  // Load YT API
-  const s = document.createElement('script');
-  s.src = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(s);
-
-  window.onYouTubeIframeAPIReady = function() {
-    player = new YT.Player('ytPlayer', {
-      width: '1', height: '1',
-      videoId: VIDEO_ID,
-      playerVars: {
-        autoplay: 0, loop: 1, playlist: VIDEO_ID,
-        controls: 0, mute: 0, playsinline: 1
-      },
-      events: {
-        onReady: function(e) {
-          ytReady = true;
-          e.target.setVolume(70);
-        },
-        onStateChange: function(e) {
-          if (e.data === YT.PlayerState.PLAYING) setPlaying(true);
-          if (e.data === YT.PlayerState.PAUSED)  setPlaying(false);
-          if (e.data === YT.PlayerState.ENDED)    e.target.playVideo();
+  const s=document.createElement('script'); s.src='https://www.youtube.com/iframe_api'; document.head.appendChild(s);
+  window.onYouTubeIframeAPIReady=function(){
+    player=new YT.Player('ytPlayer',{
+      width:'1',height:'1',videoId:VID,
+      playerVars:{autoplay:0,loop:1,playlist:VID,controls:0,mute:0,playsinline:1},
+      events:{
+        onReady:e=>{ready=true;e.target.setVolume(70);},
+        onStateChange:e=>{
+          if(e.data===YT.PlayerState.PLAYING)setPlay(true);
+          if(e.data===YT.PlayerState.PAUSED)setPlay(false);
+          if(e.data===YT.PlayerState.ENDED)e.target.playVideo();
         }
       }
     });
   };
 
-  // START — user gesture triggers playback (bypasses browser autoplay block)
-  startBtn.addEventListener('click', function() {
-    dismissWelcome();
-    if (ytReady) {
-      player.playVideo();
-    } else {
-      // YT not ready yet — wait then play
-      const iv = setInterval(() => {
-        if (ytReady) { clearInterval(iv); player.playVideo(); }
-      }, 200);
-    }
-  });
-
-  skipBtn.addEventListener('click', dismissWelcome);
-
-  miniPlayPause.addEventListener('click', function() {
-    if (!ytReady) { window.open(YT_URL, '_blank'); return; }
-    if (isPlaying) player.pauseVideo();
-    else           player.playVideo();
-  });
-
-  miniOpenYT.addEventListener('click', function() {
-    window.open(YT_URL, '_blank');
-  });
+  document.getElementById('musicStartBtn').onclick=()=>{
+    dismiss();
+    if(ready)player.playVideo();
+    else{const iv=setInterval(()=>{if(ready){clearInterval(iv);player.playVideo();}},200);}
+  };
+  document.getElementById('musicSkipBtn').onclick=dismiss;
+  document.getElementById('miniPlayPause').onclick=()=>{
+    if(!ready){window.open(URL_YT,'_blank');return;}
+    playing?player.pauseVideo():player.playVideo();
+  };
+  document.getElementById('miniYT').onclick=()=>window.open(URL_YT,'_blank');
 })();
-</script>
 
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+// Supabase sudah dikonfigurasi
+loadGallery();
+loadTimeline();
+observeFade();
+</script>
 </body>
 </html>
