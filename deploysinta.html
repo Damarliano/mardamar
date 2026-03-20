@@ -515,18 +515,19 @@ function renderGallery() {
     var isVideo = item.type === 'video';
     var isGD    = !!item.gdrive_url;
     var cap     = esc(item.caption || '');
-    var delBtn  = isOwner ? '<button class="delete-btn" onclick="deleteMedia(event,'' + item.id + '','' + (item.filename||'') + '')">×</button>' : '';
-    var badge   = isVideo ? '<span class="video-badge">▶ video</span>' : '';
+    var fn      = item.filename || '';
+    var delBtn  = isOwner ? '<button class="delete-btn" onclick="deleteMedia(event,\'' + item.id + '\',\'' + fn + '\')">\u00D7</button>' : '';
+    var badge   = isVideo ? '<span class="video-badge">\u25B6 video</span>' : '';
     var overlay = '<div class="gallery-item-overlay"><div class="item-meta"><strong>' + cap + '</strong></div></div>';
     if (isGD && isVideo)
-      return '<div class="gallery-item" onclick="openLightbox('' + url + '','video-gdrive','' + cap + '')">'
+      return '<div class="gallery-item" onclick="openLightbox(\'' + url + '\',\'video-gdrive\',\'' + cap + '\')">'
            + '<iframe src="' + url + '" style="width:100%;aspect-ratio:16/9;border:none;pointer-events:none" allowfullscreen></iframe>'
            + badge + overlay + delBtn + '</div>';
     if (isVideo)
-      return '<div class="gallery-item" onclick="openLightbox('' + url + '','video','' + cap + '')">'
+      return '<div class="gallery-item" onclick="openLightbox(\'' + url + '\',\'video\',\'' + cap + '\')">'
            + '<video src="' + url + '" muted loop autoplay playsinline style="aspect-ratio:16/9"></video>'
            + badge + overlay + delBtn + '</div>';
-    return '<div class="gallery-item" onclick="openLightbox('' + url + '','image','' + cap + '')">'
+    return '<div class="gallery-item" onclick="openLightbox(\'' + url + '\',\'image\',\'' + cap + '\')">'
          + '<img src="' + url + '" alt="' + cap + '" loading="lazy"/>'
          + overlay + delBtn + '</div>';
   }).join('');
@@ -588,7 +589,7 @@ function renderMoments() {
     var monthKey = d.toLocaleDateString('id-ID',{year:'numeric',month:'long'});
     if (monthKey !== lastMonth) { html += '<div class="month-divider">' + monthKey + '</div>'; lastMonth = monthKey; }
     var bodyId = 'mb-' + m.id;
-    var delBtn = isOwner ? '<button class="journal-delete-btn" onclick="deleteMoment('' + m.id + '')">hapus</button>' : '';
+    var delBtn = isOwner ? '<button class="journal-delete-btn" onclick="deleteMoment(\'' + m.id + '\')">hapus</button>' : '';
     var mood   = m.mood ? '<span class="journal-card-mood">' + esc(m.mood) + '</span>' : '';
     html += '<div class="journal-card">' + delBtn
           + '<div class="journal-card-header"><div>'
@@ -596,7 +597,7 @@ function renderMoments() {
           + '<div class="journal-card-title">' + esc(m.title) + '</div>'
           + '</div>' + mood + '</div>'
           + '<div class="journal-card-body clamped" id="' + bodyId + '">' + esc(m.body) + '</div>'
-          + '<button class="read-more-btn" id="rm-' + m.id + '" onclick="toggleExpand('' + m.id + '')">Baca selengkapnya ↓</button>'
+          + '<button class="read-more-btn" id="rm-' + m.id + '" onclick="toggleExpand(\'' + m.id + '\')">Baca selengkapnya \u2193</button>'
           + '</div>';
   });
   list.innerHTML = html;
