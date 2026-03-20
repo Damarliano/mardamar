@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Damar untuk Sinta ♡</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --cream: #faf7f2; --warm: #f0e8dc; --blush: #e8c9b8;
+    --rose: #c9897a; --deep: #7a3f34; --ink: #2a1f1a;
+    --mist: #8c7b72; --gold: #c9a96e; --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--cream); color: var(--ink); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; opacity: 0.4; }
+  .hero { min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; position: relative; text-align: center; background: linear-gradient(160deg, var(--cream) 0%, var(--warm) 60%, var(--blush) 100%); overflow: hidden; }
+  .petal { position: absolute; border-radius: 50% 0 50% 0; opacity: 0.15; pointer-events: none; }
+  .petal-1 { width: 320px; height: 320px; background: var(--rose); top: -80px; right: -80px; transform: rotate(30deg); }
+  .petal-2 { width: 200px; height: 200px; background: var(--gold); bottom: 60px; left: -60px; transform: rotate(-20deg); }
+  .petal-3 { width: 140px; height: 140px; background: var(--deep); top: 40%; right: 8%; transform: rotate(50deg); }
+  .hero-label { font-family: 'DM Sans', sans-serif; font-size: 0.68rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--mist); margin-bottom: 1.4rem; animation: fadeUp 1s ease both; }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 9vw, 7rem); font-weight: 300; line-height: 1.05; color: var(--ink); animation: fadeUp 1s 0.15s ease both; }
+  .hero-title em { font-style: italic; color: var(--rose); }
+  .hero-sub { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1rem, 2.5vw, 1.35rem); color: var(--mist); margin-top: 1rem; max-width: 520px; line-height: 1.7; animation: fadeUp 1s 0.3s ease both; }
+  .divider { width: 60px; height: 1px; background: var(--gold); margin: 2rem auto; animation: fadeUp 1s 0.45s ease both; }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeUp 1s 0.6s ease both; }
+  .btn { padding: 0.75rem 2rem; border-radius: 2px; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; outline: none; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .btn-primary { background: var(--deep); color: var(--cream); }
+  .btn-primary:hover { background: var(--ink); transform: translateY(-2px); }
+  .btn-ghost { background: transparent; color: var(--deep); border: 1px solid var(--blush); }
+  .btn-ghost:hover { border-color: var(--rose); background: var(--warm); }
+  .btn-small { padding: 0.45rem 1.2rem; font-size: 0.72rem; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; padding: 1.1rem 2rem; display: flex; align-items: center; justify-content: space-between; background: rgba(250,247,242,0.88); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(201,137,122,0.15); }
+  .nav-brand { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 400; color: var(--ink); text-decoration: none; cursor: pointer; }
+  .nav-brand span { color: var(--rose); font-style: italic; }
+  .nav-right { display: flex; align-items: center; gap: 0.8rem; }
+  .nav-tabs { display: flex; gap: 0.2rem; }
+  .nav-tab { padding: 0.35rem 0.9rem; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mist); background: none; border: none; cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+  .nav-tab:hover, .nav-tab.active { color: var(--deep); background: var(--warm); }
+  .user-chip { font-size: 0.72rem; color: var(--mist); padding: 0.28rem 0.8rem; border: 1px solid var(--blush); border-radius: 20px; display: none; }
+  .owner-chip { background: var(--warm); color: var(--deep); border-color: var(--rose); }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(42,31,26,0.6); backdrop-filter: blur(6px); z-index: 600; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+  .modal { background: var(--cream); border: 1px solid var(--blush); border-radius: 4px; padding: 2.5rem 2rem; width: 100%; max-width: 400px; transform: translateY(16px); transition: transform 0.3s ease; position: relative; }
+  .modal-overlay.active .modal { transform: translateY(0); }
+  .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 400; margin-bottom: 0.3rem; }
+  .modal > p { font-size: 0.8rem; color: var(--mist); margin-bottom: 1.5rem; }
+  .field { margin-bottom: 1.2rem; }
+  .field label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mist); display: block; margin-bottom: 0.4rem; }
+  .field input, .field textarea { width: 100%; padding: 0.7rem 1rem; background: var(--white); border: 1px solid var(--blush); border-radius: 2px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--ink); outline: none; transition: border-color 0.2s; resize: vertical; }
+  .field input:focus, .field textarea:focus { border-color: var(--rose); }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.3rem; color: var(--mist); cursor: pointer; line-height: 1; }
+  .modal-close:hover { color: var(--rose); }
+  .error-msg { font-size: 0.78rem; color: var(--rose); margin-bottom: 1rem; }
+  .section { max-width: 1200px; margin: 0 auto; padding: 6rem 2rem 4rem; }
+  .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 300; line-height: 1.1; }
+  .section-title em { font-style: italic; color: var(--rose); }
+  .section-sub { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.95rem; color: var(--mist); margin-top: 0.3rem; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .upload-area { border: 1.5px dashed var(--blush); border-radius: 4px; padding: 2.5rem 2rem; text-align: center; background: var(--warm); margin-bottom: 2rem; cursor: pointer; transition: all 0.3s; position: relative; }
+  .upload-area:hover, .upload-area.dragover { border-color: var(--rose); background: #f5ede6; }
+  .upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-icon { font-size: 2.2rem; margin-bottom: 0.7rem; }
+  .upload-area h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 0.3rem; }
+  .upload-area p { font-size: 0.78rem; color: var(--mist); }
+  .gdrive-section { background: var(--white); border: 1px solid var(--blush); border-radius: 4px; padding: 1.4rem; margin-bottom: 2.5rem; }
+  .gdrive-section h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 400; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; }
+  .gdrive-row { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+  .gdrive-row input, .gdrive-row select { flex: 1; min-width: 180px; padding: 0.6rem 0.9rem; border: 1px solid var(--blush); border-radius: 2px; font-family: 'DM Sans', sans-serif; font-size: 0.84rem; color: var(--ink); background: var(--cream); outline: none; transition: border-color 0.2s; }
+  .gdrive-row input:focus, .gdrive-row select:focus { border-color: var(--rose); }
+  .gdrive-hint { font-size: 0.73rem; color: var(--mist); margin-top: 0.5rem; }
+  .upload-progress { background: var(--warm); border: 1px solid var(--blush); border-radius: 4px; padding: 1rem 1.2rem; margin-bottom: 1.5rem; display: none; }
+  .upload-progress.active { display: block; }
+  .progress-bar-wrap { background: var(--blush); border-radius: 20px; height: 3px; margin-top: 0.5rem; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--rose); border-radius: 20px; transition: width 0.3s; }
+  .progress-text { font-size: 0.77rem; color: var(--mist); }
+  .gallery-grid { columns: 2; column-gap: 1rem; }
+  @media (min-width: 640px) { .gallery-grid { columns: 3; } }
+  @media (min-width: 1024px) { .gallery-grid { columns: 4; } }
+  .gallery-item { break-inside: avoid; margin-bottom: 1rem; position: relative; border-radius: 3px; overflow: hidden; cursor: pointer; background: var(--warm); animation: fadeIn 0.5s ease both; }
+  .gallery-item img, .gallery-item video { width: 100%; display: block; object-fit: cover; transition: transform 0.5s ease; }
+  .gallery-item:hover img, .gallery-item:hover video { transform: scale(1.04); }
+  .gallery-item-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(42,31,26,0.55) 0%, transparent 55%); opacity: 0; transition: opacity 0.3s; display: flex; align-items: flex-end; padding: 0.8rem; }
+  .gallery-item:hover .gallery-item-overlay { opacity: 1; }
+  .item-meta { color: var(--cream); font-size: 0.73rem; line-height: 1.4; }
+  .item-meta strong { font-weight: 500; font-size: 0.78rem; }
+  .delete-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(42,31,26,0.7); color: var(--cream); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 0.78rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
+  .gallery-item:hover .delete-btn { opacity: 1; }
+  .delete-btn:hover { background: var(--rose); }
+  .video-badge { position: absolute; top: 0.5rem; left: 0.5rem; background: rgba(42,31,26,0.7); color: var(--cream); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.18rem 0.45rem; border-radius: 2px; }
+  .journal-write-area { background: var(--white); border: 1px solid var(--blush); border-radius: 4px; padding: 1.8rem; margin-bottom: 3rem; }
+  .journal-write-area h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 1.2rem; color: var(--ink); }
+  .journal-inputs { display: flex; flex-direction: column; gap: 0.9rem; }
+  .journal-inputs input[type=text], .journal-inputs input[type=date], .journal-inputs textarea { width: 100%; padding: 0.7rem 1rem; background: var(--cream); border: 1px solid var(--blush); border-radius: 2px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--ink); outline: none; transition: border-color 0.2s; resize: vertical; }
+  .journal-inputs input:focus, .journal-inputs textarea:focus { border-color: var(--rose); }
+  .journal-inputs textarea { min-height: 130px; line-height: 1.7; }
+  .journal-row { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+  .journal-row > * { flex: 1; min-width: 160px; }
+  .mood-picker { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .mood-btn { padding: 0.35rem 0.9rem; border: 1px solid var(--blush); border-radius: 20px; background: none; font-size: 0.78rem; color: var(--mist); cursor: pointer; transition: all 0.2s; }
+  .mood-btn:hover, .mood-btn.selected { background: var(--warm); border-color: var(--rose); color: var(--deep); }
+  .journal-list { display: flex; flex-direction: column; gap: 1.5rem; }
+  .journal-card { background: var(--white); border: 1px solid var(--blush); border-radius: 4px; padding: 1.6rem 1.8rem; position: relative; animation: fadeIn 0.4s ease both; transition: box-shadow 0.3s; }
+  .journal-card:hover { box-shadow: 0 4px 24px rgba(201,137,122,0.1); }
+  .journal-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.9rem; gap: 1rem; flex-wrap: wrap; }
+  .journal-card-date { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mist); }
+  .journal-card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; color: var(--ink); margin-top: 0.2rem; line-height: 1.3; }
+  .journal-card-mood { font-size: 0.72rem; padding: 0.22rem 0.7rem; background: var(--warm); border: 1px solid var(--blush); border-radius: 20px; color: var(--deep); white-space: nowrap; }
+  .journal-card-body { font-size: 0.88rem; color: var(--mist); line-height: 1.85; white-space: pre-wrap; }
+  .journal-card-body.clamped { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .read-more-btn { background: none; border: none; font-size: 0.75rem; color: var(--rose); cursor: pointer; margin-top: 0.5rem; letter-spacing: 0.05em; padding: 0; font-family: 'DM Sans', sans-serif; }
+  .read-more-btn:hover { color: var(--deep); }
+  .journal-delete-btn { position: absolute; top: 1.2rem; right: 1.2rem; background: none; border: none; font-size: 0.73rem; color: var(--blush); cursor: pointer; opacity: 0; transition: opacity 0.2s; font-family: 'DM Sans', sans-serif; padding: 0.2rem 0.5rem; border-radius: 2px; }
+  .journal-card:hover .journal-delete-btn { opacity: 1; }
+  .journal-delete-btn:hover { color: var(--rose); background: var(--warm); }
+  .month-divider { display: flex; align-items: center; gap: 1rem; color: var(--mist); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; margin: 1rem 0 0.5rem; }
+  .month-divider::before, .month-divider::after { content: ''; flex: 1; height: 1px; background: var(--blush); }
+  .empty-state { text-align: center; padding: 4rem 2rem; color: var(--mist); }
+  .empty-state .big { font-size: 2.8rem; margin-bottom: 0.8rem; }
+  .empty-state h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; margin-bottom: 0.4rem; color: var(--ink); }
+  .empty-state p { font-size: 0.82rem; }
+  .lightbox { position: fixed; inset: 0; background: rgba(10,6,4,0.92); z-index: 700; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .lightbox.active { opacity: 1; pointer-events: all; }
+  .lightbox img, .lightbox video { max-width: 90vw; max-height: 85vh; border-radius: 3px; object-fit: contain; }
+  .lightbox-close { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; color: var(--cream); font-size: 1.8rem; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; }
+  .lightbox-close:hover { opacity: 1; }
+  .lightbox-caption { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); color: var(--blush); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1rem; text-align: center; max-width: 80vw; }
+  footer { text-align: center; padding: 3rem 2rem; font-size: 0.77rem; color: var(--mist); border-top: 1px solid var(--warm); }
+  footer strong { color: var(--rose); font-weight: 400; font-style: italic; }
+  .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(1rem); background: var(--ink); color: var(--cream); padding: 0.75rem 1.5rem; border-radius: 3px; font-size: 0.8rem; z-index: 800; opacity: 0; transition: all 0.3s ease; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { background: var(--deep); }
+  .toast.error { background: #8b2c2c; }
+  .setup-screen { position: fixed; inset: 0; background: var(--cream); z-index: 1000; align-items: center; justify-content: center; padding: 2rem; flex-direction: column; gap: 1rem; display: none; }
+  .setup-screen.show { display: flex; }
+  .setup-box { background: var(--white); border: 1px solid var(--blush); border-radius: 4px; padding: 2.5rem 2rem; width: 100%; max-width: 460px; }
+  .setup-box h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 400; margin-bottom: 0.4rem; }
+  .setup-box > p { font-size: 0.8rem; color: var(--mist); margin-bottom: 1.5rem; }
+  .loading-spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (max-width: 480px) { nav { padding: 0.9rem 1rem; } .nav-tabs { display: none; } .section { padding: 5rem 1rem 3rem; } .hero-actions { flex-direction: column; align-items: center; } .journal-card { padding: 1.2rem; } }
+
+  /* === MUSIC PLAYER === */
+  #musicBtn {
+    position: fixed;
+    bottom: 1.8rem;
+    right: 1.8rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--deep);
+    border: none;
+    cursor: pointer;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(122,63,52,0.35);
+    transition: all 0.3s ease;
+    color: var(--cream);
+    font-size: 1.1rem;
+  }
+  #musicBtn:hover { background: var(--ink); transform: scale(1.08); }
+  #musicBtn.playing { animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 4px 20px rgba(122,63,52,0.35); }
+    50% { box-shadow: 0 4px 28px rgba(122,63,52,0.6); }
+  }
+  #ytPlayer { display: none; }
+</style>
+</head>
+<body>
+
+<!-- MUSIC PLAYER -->
+<button id="musicBtn" title="Putar / Pause musik" onclick="toggleMusic()">♪</button>
+<div id="ytPlayer">
+  <iframe id="ytIframe"
+    src="https://www.youtube.com/embed/bzRMneypG04?enablejsapi=1&autoplay=0&loop=1&playlist=bzRMneypG04&controls=0&mute=0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen>
+  </iframe>
+</div>
+
+<!-- SETUP -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-box">
+    <h2>Konfigurasi Supabase</h2>
+    <p>Masukkan kredensial Supabase project kamu untuk memulai.</p>
+    <div class="field"><label>Supabase URL</label><input type="text" id="cfgUrl" placeholder="https://xxxxx.supabase.co"/></div>
+    <div class="field"><label>Supabase Anon Key</label><input type="text" id="cfgKey" placeholder="eyJhbGciOiJIUzI1NiIs..."/></div>
+    <div class="field"><label>Owner Email</label><input type="email" id="cfgOwner" placeholder="damar@email.com"/></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="saveConfig()">Simpan & Mulai</button>
+    <p style="margin-top:1rem;font-size:0.7rem;color:var(--mist)">Pastikan bucket <code style="background:rgba(0,0,0,0.05);padding:0.1rem 0.3rem;border-radius:2px">media</code> dan tabel <code style="background:rgba(0,0,0,0.05);padding:0.1rem 0.3rem;border-radius:2px">media_items</code> + <code style="background:rgba(0,0,0,0.05);padding:0.1rem 0.3rem;border-radius:2px">moments</code> sudah dibuat di Supabase.</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand" onclick="goHero()">damar<span> untuk </span>sinta</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tab-gallery" onclick="showPage('gallery')">Galeri</button>
+    <button class="nav-tab" id="tab-moments" onclick="showPage('moments')">Momen</button>
+  </div>
+  <div class="nav-right">
+    <span class="user-chip" id="userChip"></span>
+    <button class="btn btn-ghost btn-small" id="authBtn" onclick="toggleAuth()">Masuk</button>
+    <button class="btn btn-ghost btn-small" id="logoutBtn" style="display:none" onclick="doLogout()">Keluar</button>
+    <button class="btn btn-ghost btn-small" id="setupBtn" style="display:none" onclick="document.getElementById('setupScreen').classList.add('show')">⚙</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="heroSection">
+  <div class="petal petal-1"></div>
+  <div class="petal petal-2"></div>
+  <div class="petal petal-3"></div>
+  <p class="hero-label">d a m a r &nbsp;·&nbsp; u n t u k &nbsp;·&nbsp; s i n t a</p>
+  <h1 class="hero-title">dalam <em>diam</em>,<br>aku selalu memilihmu</h1>
+  <p class="hero-sub">karena waktu bersamamu adalah satu-satunya<br>yang ingin kuingat</p>
+  <div class="divider"></div>
+  <div class="hero-actions">
+    <button class="btn btn-primary" onclick="showPage('gallery');scrollToContent()">Lihat Galeri ↓</button>
+    <button class="btn btn-ghost" onclick="showPage('moments');scrollToContent()">Baca Momen ↓</button>
+  </div>
+</section>
+
+<!-- PAGE: GALLERY -->
+<div class="page active" id="page-gallery">
+  <div class="section">
+    <div id="ownerTools" style="display:none">
+      <div class="section-header">
+        <div>
+          <div style="font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--mist);margin-bottom:0.4rem">Owner · Panel Upload</div>
+          <h2 class="section-title">Tambah <em>Kenangan</em></h2>
+          <p class="section-sub">setiap foto menyimpan perasaan yang tak sempat terucap</p>
+        </div>
+      </div>
+      <div class="upload-area" id="dropZone">
+        <input type="file" id="fileInput" multiple accept="image/*,video/*" onchange="handleFileUpload(event)"/>
+        <div class="upload-icon">📷</div>
+        <h3>Upload Foto atau Video</h3>
+        <p>Seret & lepas, atau klik untuk memilih · JPG, PNG, MP4, MOV</p>
+      </div>
+      <div class="gdrive-section">
+        <h4>
+          <svg width="16" height="16" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L26.6 53H0c0 1.55.4 3.1 1.2 4.5l5.4 9.35z" fill="#0066da"/><path d="M43.65 25L30.75 2.5c-1.35.8-2.5 1.9-3.3 3.3l-25.2 43.6A9.06 9.06 0 000 53h26.6l17.05-28z" fill="#00ac47"/><path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H60.7L73.55 76.8z" fill="#ea4335"/><path d="M43.65 25L56.55 2.5C55.2 1.7 53.65 1.25 52 1.25H35.3c-1.65 0-3.2.45-4.55 1.25L43.65 25z" fill="#00832d"/><path d="M60.7 53H26.6L13.75 76.8c1.35.8 2.9 1.2 4.55 1.2h50.7c1.65 0 3.2-.45 4.55-1.2L60.7 53z" fill="#2684fc"/><path d="M73.4 26.5L60.05 5.8c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25l17.05 28h26.55c0-1.55-.4-3.1-1.2-4.5l-12.65-22z" fill="#ffba00"/></svg>
+          Import dari Google Drive
+        </h4>
+        <div class="gdrive-row">
+          <input type="text" id="gdriveUrl" placeholder="Paste link Google Drive (share publik)"/>
+          <select id="gdriveType"><option value="image">Foto</option><option value="video">Video</option></select>
+          <button class="btn btn-primary btn-small" onclick="importGDrive()">Import</button>
+        </div>
+        <p class="gdrive-hint">💡 Pastikan file sudah di-share "Anyone with the link can view" sebelum import.</p>
+      </div>
+      <div class="upload-progress" id="uploadProgress">
+        <div class="progress-text" id="progressText">Mengupload...</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div id="guestGalleryHeader">
+      <div class="section-header">
+        <div>
+          <div style="font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--mist);margin-bottom:0.4rem">Galeri</div>
+          <h2 class="section-title">momen <em>kita</em></h2>
+          <p class="section-sub">beberapa hal tidak perlu diucapkan — cukup dirasakan</p>
+        </div>
+      </div>
+    </div>
+    <div id="galleryGrid" class="gallery-grid"></div>
+    <div id="emptyGallery" class="empty-state" style="display:none">
+      <div class="big">🌸</div>
+      <h3>Galeri masih kosong</h3>
+      <p>Masuk sebagai owner untuk mulai menambahkan kenangan</p>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: MOMENTS -->
+<div class="page" id="page-moments">
+  <div class="section">
+    <div id="ownerMomentTools" style="display:none">
+      <div class="section-header">
+        <div>
+          <div style="font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--mist);margin-bottom:0.4rem">Owner · Tulis Momen</div>
+          <h2 class="section-title">cerita <em>hari ini</em></h2>
+          <p class="section-sub">aku tidak mencarimu. aku menemukanmu, dan itu berbeda</p>
+        </div>
+      </div>
+      <div class="journal-write-area">
+        <h3>✍ Tulis momen baru</h3>
+        <div class="journal-inputs">
+          <div class="journal-row">
+            <input type="text" id="momentTitle" placeholder="Judul momen... (misal: Hujan di Minggu sore)"/>
+            <input type="date" id="momentDate"/>
+          </div>
+          <textarea id="momentBody" placeholder="Ceritakan apa yang kamu rasakan hari ini...&#10;&#10;Tidak perlu sempurna — cukup jujur."></textarea>
+          <div>
+            <div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);margin-bottom:0.5rem">Suasana hati</div>
+            <div class="mood-picker" id="moodPicker">
+              <button class="mood-btn" onclick="selectMood(this,'🌤 Tenang')">🌤 Tenang</button>
+              <button class="mood-btn" onclick="selectMood(this,'🌸 Bahagia')">🌸 Bahagia</button>
+              <button class="mood-btn" onclick="selectMood(this,'🌧 Rindu')">🌧 Rindu</button>
+              <button class="mood-btn" onclick="selectMood(this,'🔥 Bersemangat')">🔥 Bersemangat</button>
+              <button class="mood-btn" onclick="selectMood(this,'🌙 Syahdu')">🌙 Syahdu</button>
+              <button class="mood-btn" onclick="selectMood(this,'💭 Nostalgia')">💭 Nostalgia</button>
+            </div>
+          </div>
+          <div><button class="btn btn-primary" onclick="saveMoment()">Simpan Momen</button></div>
+        </div>
+      </div>
+    </div>
+    <div id="guestMomentsHeader">
+      <div class="section-header">
+        <div>
+          <div style="font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--mist);margin-bottom:0.4rem">Jurnal</div>
+          <h2 class="section-title">catatan <em>hati</em></h2>
+          <p class="section-sub">rumah bukanlah tempat, melainkan namamu</p>
+        </div>
+      </div>
+    </div>
+    <div id="momentsList" class="journal-list"></div>
+    <div id="emptyMoments" class="empty-state" style="display:none">
+      <div class="big">🌙</div>
+      <h3>Belum ada catatan</h3>
+      <p>Masuk sebagai owner untuk mulai menulis momen</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  untuk sinta — <strong>yang mengubah hari biasa menjadi alasan untuk pulang</strong><br/>
+  <span style="font-size:0.7rem;opacity:0.6;display:block;margin-top:0.3rem">dari damar, yang belajar mencintai dengan tenang</span>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuthModal()">×</button>
+    <h2>selamat datang</h2>
+    <p>masuk untuk mengelola galeri & catatan momen</p>
+    <div class="error-msg" id="authError" style="display:none"></div>
+    <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="email@kamu.com" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" id="loginBtn" onclick="doLogin()">Masuk</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <div id="lightboxContent"></div>
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<script>
+// === STATE ===
+var SUPABASE_URL = localStorage.getItem('ds_url') || 'https://pdobqtuoobelrhdpoghw.supabase.co';
+var SUPABASE_KEY = localStorage.getItem('ds_key') || 'sb_publishable_-oAb6I_ZZupfRTjpp0aNXg_xLof2XYV';
+var OWNER_EMAIL  = localStorage.getItem('ds_owner') || '';
+// Rename _sb agar tidak bentrok dengan window.supabase dari CDN
+var _sb = null, currentUser = null, isOwner = false;
+var mediaItems = [], moments = [], selectedMood = '';
+
+// === CONFIG ===
+function saveConfig() {
+  var url = document.getElementById('cfgUrl').value.trim();
+  var key = document.getElementById('cfgKey').value.trim();
+  var own = document.getElementById('cfgOwner').value.trim();
+  if (!url||!key||!own){alert('Semua field wajib diisi');return;}
+  localStorage.setItem('ds_url',url);
+  localStorage.setItem('ds_key',key);
+  localStorage.setItem('ds_owner',own);
+  SUPABASE_URL=url; SUPABASE_KEY=key; OWNER_EMAIL=own;
+  document.getElementById('setupScreen').classList.remove('show');
+  initSupabase();
+  toast('Konfigurasi disimpan!','success');
+}
+
+function initSupabase() {
+  if (!SUPABASE_URL||!SUPABASE_KEY) return; // diam saja, tidak popup setup
+  _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  checkSession();
+}
+
+// === AUTH ===
+async function checkSession() {
+  var res = await _sb.auth.getSession();
+  if (res.data.session) setUser(res.data.session.user);
+  loadMedia();
+  loadMoments();
+}
+
+function setUser(user) {
+  currentUser = user;
+  isOwner = user && user.email === OWNER_EMAIL;
+  var chip = document.getElementById('userChip');
+  chip.textContent = isOwner ? '👑 Owner' : 'Tamu';
+  chip.className = 'user-chip' + (isOwner ? ' owner-chip' : '');
+  chip.style.display = '';
+  document.getElementById('authBtn').style.display = 'none';
+  document.getElementById('logoutBtn').style.display = '';
+  document.getElementById('setupBtn').style.display = isOwner ? '' : 'none';
+  document.getElementById('ownerTools').style.display = isOwner ? 'block' : 'none';
+  document.getElementById('ownerMomentTools').style.display = isOwner ? 'block' : 'none';
+}
+
+function toggleAuth() {
+  if (currentUser) return;
+  document.getElementById('authModal').classList.add('active');
+  setTimeout(function(){ document.getElementById('loginEmail').focus(); }, 100);
+}
+
+function closeAuthModal() {
+  document.getElementById('authModal').classList.remove('active');
+}
+
+async function doLogin() {
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass  = document.getElementById('loginPass').value;
+  if (!email||!pass) return;
+  var btn = document.getElementById('loginBtn');
+  btn.innerHTML = '<span class="loading-spinner"></span> Masuk...';
+  btn.disabled = true;
+  var res = await _sb.auth.signInWithPassword({email: email, password: pass});
+  btn.innerHTML = 'Masuk';
+  btn.disabled = false;
+  if (res.error) {
+    document.getElementById('authError').textContent = 'Email atau password salah.';
+    document.getElementById('authError').style.display = '';
+    return;
+  }
+  setUser(res.data.user);
+  closeAuthModal();
+  toast('Selamat datang kembali, Damar 🌸', 'success');
+}
+
+async function doLogout() {
+  await _sb.auth.signOut();
+  currentUser = null; isOwner = false;
+  document.getElementById('userChip').style.display = 'none';
+  document.getElementById('authBtn').style.display = '';
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('setupBtn').style.display = 'none';
+  document.getElementById('ownerTools').style.display = 'none';
+  document.getElementById('ownerMomentTools').style.display = 'none';
+}
+
+// === NAVIGASI ===
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('heroSection').style.display = 'none';
+}
+
+function goHero() {
+  document.getElementById('heroSection').style.display = '';
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('page-gallery').classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('tab-gallery').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function scrollToContent() {
+  document.getElementById('heroSection').style.display = 'none';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// === UPLOAD ===
+function handleFileUpload(e) { handleFiles(e.target.files); }
+
+async function handleFiles(files) {
+  if (!isOwner) { toast('Hanya owner yang bisa upload','error'); return; }
+  var arr = Array.from(files);
+  showProgress('Menyiapkan...', 0);
+  for (var i=0; i<arr.length; i++) {
+    showProgress('Mengupload ' + arr[i].name + '...', Math.round((i/arr.length)*100));
+    await uploadFile(arr[i]);
+  }
+  showProgress('Selesai!', 100);
+  setTimeout(function(){ document.getElementById('uploadProgress').classList.remove('active'); }, 1500);
+  loadMedia();
+  toast(arr.length + ' file berhasil diupload 🌸', 'success');
+}
+
+async function uploadFile(file) {
+  var ext  = file.name.split('.').pop();
+  var name = Date.now() + '_' + Math.random().toString(36).slice(2) + '.' + ext;
+  var type = file.type.startsWith('video') ? 'video' : 'image';
+  var r = await _sb.storage.from('media').upload(name, file, {cacheControl:'3600'});
+  if (r.error) { toast('Gagal upload: ' + r.error.message, 'error'); return; }
+  await _sb.from('media_items').insert({filename:name, type:type, caption:file.name.replace(/\.[^.]+$/, '')});
+}
+
+function showProgress(text, pct) {
+  document.getElementById('uploadProgress').classList.add('active');
+  document.getElementById('progressText').textContent = text;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+async function importGDrive() {
+  if (!isOwner) return;
+  var rawUrl = document.getElementById('gdriveUrl').value.trim();
+  var type   = document.getElementById('gdriveType').value;
+  if (!rawUrl) { toast('Masukkan link Google Drive','error'); return; }
+  var embedUrl = rawUrl;
+  var m = rawUrl.match(/\/d\/([\w-]+)|id=([\w-]+)/);
+  if (m) {
+    var fid = m[1]||m[2];
+    embedUrl = type==='image'
+      ? 'https://drive.google.com/uc?export=view&id=' + fid
+      : 'https://drive.google.com/file/d/' + fid + '/preview';
+  }
+  var r = await _sb.from('media_items').insert({filename:null, gdrive_url:embedUrl, type:type, caption:'Dari Google Drive'});
+  if (r.error) { toast('Gagal import: ' + r.error.message, 'error'); return; }
+  document.getElementById('gdriveUrl').value = '';
+  loadMedia();
+  toast('Berhasil import dari Google Drive 🌸', 'success');
+}
+
+// === GALERI ===
+async function loadMedia() {
+  if (!_sb) { mediaItems = []; renderGallery(); return; }
+  var r = await _sb.from('media_items').select('*').order('created_at',{ascending:false});
+  mediaItems = r.data || [];
+  renderGallery();
+}
+
+function getPublicUrl(filename) {
+  var r = _sb.storage.from('media').getPublicUrl(filename);
+  return r.data.publicUrl;
+}
+
+function renderGallery() {
+  var grid  = document.getElementById('galleryGrid');
+  var empty = document.getElementById('emptyGallery');
+  if (!mediaItems.length) { grid.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  grid.innerHTML = mediaItems.map(function(item) {
+    var url     = item.gdrive_url || (item.filename ? getPublicUrl(item.filename) : '');
+    var isVideo = item.type === 'video';
+    var isGD    = !!item.gdrive_url;
+    var cap     = esc(item.caption || '');
+    var fn      = item.filename || '';
+    var delBtn  = isOwner ? '<button class="delete-btn" onclick="deleteMedia(event,\'' + item.id + '\',\'' + fn + '\')">\u00D7</button>' : '';
+    var badge   = isVideo ? '<span class="video-badge">\u25B6 video</span>' : '';
+    var overlay = '<div class="gallery-item-overlay"><div class="item-meta"><strong>' + cap + '</strong></div></div>';
+    if (isGD && isVideo)
+      return '<div class="gallery-item" onclick="openLightbox(\'' + url + '\',\'video-gdrive\',\'' + cap + '\')">'
+           + '<iframe src="' + url + '" style="width:100%;aspect-ratio:16/9;border:none;pointer-events:none" allowfullscreen></iframe>'
+           + badge + overlay + delBtn + '</div>';
+    if (isVideo)
+      return '<div class="gallery-item" onclick="openLightbox(\'' + url + '\',\'video\',\'' + cap + '\')">'
+           + '<video src="' + url + '" muted loop autoplay playsinline style="aspect-ratio:16/9"></video>'
+           + badge + overlay + delBtn + '</div>';
+    return '<div class="gallery-item" onclick="openLightbox(\'' + url + '\',\'image\',\'' + cap + '\')">'
+         + '<img src="' + url + '" alt="' + cap + '" loading="lazy"/>'
+         + overlay + delBtn + '</div>';
+  }).join('');
+}
+
+async function deleteMedia(e, id, filename) {
+  e.stopPropagation();
+  if (!isOwner || !confirm('Hapus foto/video ini?')) return;
+  if (filename) await _sb.storage.from('media').remove([filename]);
+  await _sb.from('media_items').delete().eq('id', id);
+  loadMedia();
+  toast('Dihapus', 'success');
+}
+
+// === MOMEN ===
+function selectMood(btn, mood) {
+  document.querySelectorAll('.mood-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  selectedMood = mood;
+}
+
+async function saveMoment() {
+  if (!isOwner) return;
+  var title = document.getElementById('momentTitle').value.trim();
+  var body  = document.getElementById('momentBody').value.trim();
+  var date  = document.getElementById('momentDate').value;
+  if (!title||!body) { toast('Judul dan cerita tidak boleh kosong','error'); return; }
+  var r = await _sb.from('moments').insert({
+    title: title, body: body,
+    mood: selectedMood || null,
+    moment_date: date || new Date().toISOString().split('T')[0]
+  });
+  if (r.error) { toast('Gagal menyimpan: ' + r.error.message, 'error'); return; }
+  document.getElementById('momentTitle').value = '';
+  document.getElementById('momentBody').value  = '';
+  document.getElementById('momentDate').value  = new Date().toISOString().split('T')[0];
+  document.querySelectorAll('.mood-btn').forEach(function(b){ b.classList.remove('selected'); });
+  selectedMood = '';
+  loadMoments();
+  toast('Momen tersimpan 🌸', 'success');
+}
+
+async function loadMoments() {
+  if (!_sb) { moments = []; renderMoments(); return; }
+  var r = await _sb.from('moments').select('*').order('moment_date',{ascending:false});
+  moments = r.data || [];
+  renderMoments();
+}
+
+function renderMoments() {
+  var list  = document.getElementById('momentsList');
+  var empty = document.getElementById('emptyMoments');
+  if (!moments.length) { list.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  var lastMonth = '', html = '';
+  moments.forEach(function(m) {
+    var d        = new Date(m.moment_date + 'T00:00:00');
+    var dateStr  = d.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    var monthKey = d.toLocaleDateString('id-ID',{year:'numeric',month:'long'});
+    if (monthKey !== lastMonth) { html += '<div class="month-divider">' + monthKey + '</div>'; lastMonth = monthKey; }
+    var bodyId = 'mb-' + m.id;
+    var delBtn = isOwner ? '<button class="journal-delete-btn" onclick="deleteMoment(\'' + m.id + '\')">hapus</button>' : '';
+    var mood   = m.mood ? '<span class="journal-card-mood">' + esc(m.mood) + '</span>' : '';
+    html += '<div class="journal-card">' + delBtn
+          + '<div class="journal-card-header"><div>'
+          + '<div class="journal-card-date">' + dateStr + '</div>'
+          + '<div class="journal-card-title">' + esc(m.title) + '</div>'
+          + '</div>' + mood + '</div>'
+          + '<div class="journal-card-body clamped" id="' + bodyId + '">' + esc(m.body) + '</div>'
+          + '<button class="read-more-btn" id="rm-' + m.id + '" onclick="toggleExpand(\'' + m.id + '\')">Baca selengkapnya \u2193</button>'
+          + '</div>';
+  });
+  list.innerHTML = html;
+}
+
+function toggleExpand(id) {
+  var body = document.getElementById('mb-' + id);
+  var btn  = document.getElementById('rm-' + id);
+  if (body.classList.contains('clamped')) {
+    body.classList.remove('clamped'); btn.textContent = 'Sembunyikan ↑';
+  } else {
+    body.classList.add('clamped'); btn.textContent = 'Baca selengkapnya ↓';
+  }
+}
+
+async function deleteMoment(id) {
+  if (!isOwner || !confirm('Hapus momen ini?')) return;
+  await _sb.from('moments').delete().eq('id', id);
+  loadMoments();
+  toast('Momen dihapus', 'success');
+}
+
+// === LIGHTBOX ===
+function openLightbox(url, type, caption) {
+  var cnt = document.getElementById('lightboxContent');
+  document.getElementById('lightboxCaption').textContent = caption || '';
+  if (type === 'image')
+    cnt.innerHTML = '<img src="' + url + '" alt="' + caption + '"/>';
+  else if (type === 'video')
+    cnt.innerHTML = '<video src="' + url + '" controls autoplay style="max-width:90vw;max-height:80vh"></video>';
+  else if (type === 'video-gdrive')
+    cnt.innerHTML = '<iframe src="' + url + '" style="width:80vw;height:80vh;border:none" allowfullscreen></iframe>';
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightbox') && !e.target.classList.contains('lightbox-close')) return;
+  document.getElementById('lightbox').classList.remove('active');
+  document.getElementById('lightboxContent').innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeLightbox({target: document.getElementById('lightbox')});
+});
+
+// === UTILS ===
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg, type) {
+  type = type || '';
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(function(){ el.className = 'toast'; }, 3000);
+}
+
+
+// === MUSIC PLAYER ===
+var _musicPlaying = false;
+var _ytReady = false;
+var _ytPlayer = null;
+
+function onYouTubeIframeAPIReady() {
+  _ytPlayer = new YT.Player('ytIframe', {
+    events: {
+      'onReady': function(e) {
+        _ytReady = true;
+        // Autoplay saat siap (browser memerlukan interaksi dulu)
+        tryAutoplay();
+      },
+      'onStateChange': function(e) {
+        if (e.data === YT.PlayerState.ENDED) {
+          _ytPlayer.playVideo(); // loop manual
+        }
+      }
+    }
+  });
+}
+
+function tryAutoplay() {
+  if (!_ytReady || !_ytPlayer) return;
+  try {
+    _ytPlayer.playVideo();
+    _musicPlaying = true;
+    document.getElementById('musicBtn').classList.add('playing');
+    document.getElementById('musicBtn').textContent = '♫';
+  } catch(e) {}
+}
+
+function toggleMusic() {
+  if (!_ytReady || !_ytPlayer) return;
+  if (_musicPlaying) {
+    _ytPlayer.pauseVideo();
+    _musicPlaying = false;
+    document.getElementById('musicBtn').classList.remove('playing');
+    document.getElementById('musicBtn').textContent = '♪';
+  } else {
+    _ytPlayer.playVideo();
+    _musicPlaying = true;
+    document.getElementById('musicBtn').classList.add('playing');
+    document.getElementById('musicBtn').textContent = '♫';
+  }
+}
+
+// Load YouTube IFrame API
+(function() {
+  var tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+})();
+
+// Fallback: autoplay saat user pertama kali klik/sentuh halaman
+document.addEventListener('click', function autoplayOnce() {
+  tryAutoplay();
+  document.removeEventListener('click', autoplayOnce);
+}, {once: true});
+
+// === INIT ===
+window.addEventListener('DOMContentLoaded', function() {
+  // Set tanggal hari ini di form momen
+  document.getElementById('momentDate').value = new Date().toISOString().split('T')[0];
+
+  // Setup drag-drop
+  var dz = document.getElementById('dropZone');
+  if (dz) {
+    dz.addEventListener('dragover', function(e){ e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', function(){ dz.classList.remove('dragover'); });
+    dz.addEventListener('drop', function(e){ e.preventDefault(); dz.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+  }
+
+  // Langsung tampilkan website, TIDAK pernah auto-popup setup
+  if (SUPABASE_URL && SUPABASE_KEY) {
+    initSupabase(); // ada konfigurasi tersimpan, connect langsung
+  } else {
+    // Belum dikonfigurasi: tampilkan website kosong
+    // Tombol ⚙ tetap bisa diklik dari navbar untuk konfigurasi pertama kali
+    document.getElementById('setupBtn').style.display = '';
+    loadMedia();
+    loadMoments();
+  }
+});
+</script>
+</body>
+</html>
