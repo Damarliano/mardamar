@@ -80,7 +80,7 @@ create policy "Delete media"   on storage.objects for delete using (bucket_id = 
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
     pointer-events: none;
-    z-index: 9999;
+    z-index: 100;
     opacity: 0.6;
   }
 
@@ -1136,7 +1136,7 @@ create policy "Delete media"   on storage.objects for delete using (bucket_id = 
   .music-welcome {
     position: fixed;
     inset: 0;
-    z-index: 9000;
+    z-index: 10000;
     background: rgba(20,17,14,0.92);
     backdrop-filter: blur(10px);
     display: flex;
@@ -1333,7 +1333,7 @@ create policy "Delete media"   on storage.objects for delete using (bucket_id = 
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 /* Modal shared */
-.modal-overlay{position:fixed;inset:0;background:rgba(20,17,14,.88);z-index:3000;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px)}
+.modal-overlay{position:fixed;inset:0;background:rgba(20,17,14,.88);z-index:10001;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px)}
 .modal-overlay.active{display:flex}
 .modal-box{background:var(--warm-white);max-width:460px;width:100%;border-radius:4px;padding:48px;position:relative}
 .modal-box.wide{max-width:560px}
