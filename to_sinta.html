@@ -144,7 +144,7 @@
   @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes spin { to { transform: rotate(360deg); } }
-  @media (max-width: 480px) { nav { padding: 0.9rem 1rem; } .nav-tabs { display: none; } .section { padding: 5rem 1rem 3rem; } .hero-actions { flex-direction: column; align-items: center; } .journal-card { padding: 1.2rem; } }
+  @media (max-width: 480px) { nav { padding: 0.9rem 1rem; } .nav-tabs { display: flex; } .nav-tab { padding: 0.28rem 0.6rem; font-size: 0.65rem; } .section { padding: 5rem 1rem 3rem; } .hero-actions { flex-direction: column; align-items: center; } .journal-card { padding: 1.2rem; } }
 
   /* === MUSIC PLAYER === */
   #musicBtn {
@@ -366,7 +366,7 @@
 // === STATE ===
 var SUPABASE_URL = localStorage.getItem('ds_url') || 'https://pdobqtuoobelrhdpoghw.supabase.co';
 var SUPABASE_KEY = localStorage.getItem('ds_key') || 'sb_publishable_-oAb6I_ZZupfRTjpp0aNXg_xLof2XYV';
-var OWNER_EMAIL  = localStorage.getItem('ds_owner') || '';
+var OWNER_EMAIL  = localStorage.getItem('ds_owner') || 'pradjayahya17@gmail.com';
 // Rename _sb agar tidak bentrok dengan window.supabase dari CDN
 var _sb = null, currentUser = null, isOwner = false;
 var mediaItems = [], moments = [], selectedMood = '';
@@ -402,6 +402,12 @@ async function checkSession() {
 
 function setUser(user) {
   currentUser = user;
+  // Jika OWNER_EMAIL belum tersimpan di device ini (misal buka dari ponsel baru),
+  // otomatis simpan email user yang login sebagai owner agar panel upload muncul.
+  if (user && !OWNER_EMAIL) {
+    OWNER_EMAIL = user.email;
+    localStorage.setItem('ds_owner', OWNER_EMAIL);
+  }
   isOwner = user && user.email === OWNER_EMAIL;
   var chip = document.getElementById('userChip');
   chip.textContent = isOwner ? '👑 Owner' : 'Tamu';
