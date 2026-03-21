@@ -408,7 +408,8 @@ function setUser(user) {
     OWNER_EMAIL = user.email;
     localStorage.setItem('ds_owner', OWNER_EMAIL);
   }
-  isOwner = user && user.email === OWNER_EMAIL;
+  var OWNER_EMAILS = ['pradjayahya17@gmail.com', 'sinta@gmail.com'];
+  isOwner = user && (OWNER_EMAILS.indexOf(user.email) !== -1 || user.email === OWNER_EMAIL);
   var chip = document.getElementById('userChip');
   chip.textContent = isOwner ? '👑 Owner' : 'Tamu';
   chip.className = 'user-chip' + (isOwner ? ' owner-chip' : '');
