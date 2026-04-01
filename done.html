@@ -1060,7 +1060,7 @@
 <!-- Momen Panel -->
 <div id="momen-panel">
   <div class="momen-panel-title">✦ Tulis Momen</div>
-  <div class="momen-panel-sub">Simpan momen spesialmu — bisa dibagikan ke siapapun lewat link</div>
+  <div class="momen-panel-sub">Momen tersimpan di cloud — tampil sama di semua perangkat secara otomatis</div>
 
   <div class="momen-field">
     <label class="momen-label">Pilih Ikon</label>
@@ -1089,15 +1089,7 @@
 
   <div class="momen-panel-divider"></div>
   <button class="momen-submit-btn" id="momen-submit">✦ &nbsp; Simpan Momen</button>
-
-  <div class="momen-share-box" id="momen-share-box">
-    <span class="momen-share-label">✦ Link untuk dibagikan</span>
-    <div class="momen-share-row">
-      <span class="momen-share-url" id="momen-share-url"></span>
-      <button class="momen-copy-btn" id="momen-copy-btn">Salin</button>
-    </div>
-    <p class="momen-share-note">Bagikan link ini agar semua momen tampil sama persis di perangkat manapun yang membukanya.</p>
-  </div>
+  <div class="drive-status" id="momen-status" style="margin-top:12px; text-align:center; font-size:0.65rem; min-height:16px;"></div>
 </div>
 
 <!-- Drive Panel -->
@@ -1442,112 +1434,104 @@
     setTimeout(() => { driveStatus.textContent = ''; }, 3500);
   }
 
-  // ══ MOMEN SYSTEM ══
-  // Data tersimpan di URL hash sebagai base64 JSON — bisa dibagikan ke siapapun
+  // ══ MOMEN SYSTEM — Firebase Firestore ══
+</script>
 
-  const MOMEN_KEY = 'momen_data';
-  let momentList = [];
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-  // ── Encode / Decode ──
-  function encodeData(arr) {
-    try { return btoa(unescape(encodeURIComponent(JSON.stringify(arr)))); }
-    catch(e) { return ''; }
-  }
-  function decodeData(str) {
-    try { return JSON.parse(decodeURIComponent(escape(atob(str)))); }
-    catch(e) { return null; }
-  }
+  // ── Firebase Config ──
+  const firebaseConfig = {
+    apiKey: "AIzaSyA_7_ANEFFDXQwrZrzd8lVWoBWKb1j0pLE",
+    authDomain: "wanda-7a55e.firebaseapp.com",
+    projectId: "wanda-7a55e",
+    storageBucket: "wanda-7a55e.firebasestorage.app",
+    messagingSenderId: "132789673606",
+    appId: "1:132789673606:web:faf7eb9b8159d934807b07"
+  };
 
-  // ── Build share URL ──
-  function buildShareUrl(arr) {
-    const base = window.location.href.split('#')[0].split('?')[0];
-    return base + '?momen=' + encodeURIComponent(encodeData(arr));
-  }
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+  const COL = 'momen_wanda';
 
-  // ── Load from URL param first, else localStorage ──
-  function loadMomen() {
-    const params = new URLSearchParams(window.location.search);
-    const raw = params.get('momen');
-    if (raw) {
-      const decoded = decodeData(decodeURIComponent(raw));
-      if (decoded && Array.isArray(decoded)) {
-        momentList = decoded;
-        // Sync to localStorage so edits persist locally too
-        try { localStorage.setItem(MOMEN_KEY, JSON.stringify(momentList)); } catch(e){}
-        return;
-      }
-    }
-    try {
-      const stored = localStorage.getItem(MOMEN_KEY);
-      if (stored) momentList = JSON.parse(stored) || [];
-    } catch(e) {}
-  }
-
-  function saveMomen() {
-    try { localStorage.setItem(MOMEN_KEY, JSON.stringify(momentList)); } catch(e){}
-  }
-
-  // ── Render ──
-  function renderMomen() {
-    const section = document.getElementById('momen-section');
-    const grid = document.getElementById('momen-grid');
-    if (momentList.length === 0) {
-      section.classList.add('hidden');
-      grid.innerHTML = `<div class="momen-empty"><span class="momen-empty-icon">🌸</span><p class="momen-empty-text">Belum ada momen yang ditulis.<br>Klik ✎ di pojok kanan atas untuk mulai menulis.</p></div>`;
-      return;
-    }
-    section.classList.remove('hidden');
-    grid.innerHTML = momentList.map((m, i) => `
-      <div class="momen-card reveal">
-        <span class="momen-card-date">${m.date}</span>
-        <span class="momen-card-emoji">${m.emoji}</span>
-        <div class="momen-card-judul">${escHtml(m.judul)}</div>
-        <div class="momen-card-isi">${escHtml(m.isi)}</div>
-        <button class="momen-card-delete" data-idx="${i}" title="Hapus momen ini">✕</button>
-      </div>
-    `).join('');
-
-    // Re-attach scroll reveal for new cards
-    grid.querySelectorAll('.reveal').forEach(el => {
-      new IntersectionObserver((entries, obs) => {
-        entries.forEach(e => {
-          if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('visible'),80); obs.unobserve(e.target); }
-        });
-      }, {threshold:0.1}).observe(el);
-    });
-
-    // Delete buttons
-    grid.querySelectorAll('.momen-card-delete').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const idx = parseInt(btn.dataset.idx);
-        momentList.splice(idx, 1);
-        saveMomen();
-        renderMomen();
-        updateShareBox();
-      });
-    });
-  }
-
+  // ── Helpers ──
   function escHtml(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function updateShareBox() {
-    const box = document.getElementById('momen-share-box');
-    const urlEl = document.getElementById('momen-share-url');
-    if (momentList.length > 0) {
-      const url = buildShareUrl(momentList);
-      box.classList.add('show');
-      urlEl.textContent = url;
-      urlEl.title = url;
-    } else {
-      box.classList.remove('show');
-    }
+  function showMomenStatus(msg, color) {
+    const el = document.getElementById('momen-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.color = color || 'var(--gold)';
+    setTimeout(() => { el.textContent = ''; }, 3000);
   }
 
+  // ── Render ──
+  function renderMomen(docs) {
+    const section = document.getElementById('momen-section');
+    const grid    = document.getElementById('momen-grid');
+
+    if (!docs || docs.length === 0) {
+      section.classList.add('hidden');
+      grid.innerHTML = `<div class="momen-empty">
+        <span class="momen-empty-icon">🌸</span>
+        <p class="momen-empty-text">Belum ada momen yang ditulis.<br>Klik ✎ di pojok kanan atas untuk mulai menulis.</p>
+      </div>`;
+      return;
+    }
+
+    section.classList.remove('hidden');
+    grid.innerHTML = docs.map(d => {
+      const m = d.data;
+      return `
+        <div class="momen-card reveal">
+          <span class="momen-card-date">${escHtml(m.date || '')}</span>
+          <span class="momen-card-emoji">${m.emoji || '🌸'}</span>
+          <div class="momen-card-judul">${escHtml(m.judul || '')}</div>
+          <div class="momen-card-isi">${escHtml(m.isi || '')}</div>
+          <button class="momen-card-delete" data-id="${d.id}" title="Hapus momen ini">✕</button>
+        </div>`;
+    }).join('');
+
+    // Scroll reveal
+    grid.querySelectorAll('.reveal').forEach(el => {
+      new IntersectionObserver((entries, obs) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), 80); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1 }).observe(el);
+    });
+
+    // Delete
+    grid.querySelectorAll('.momen-card-delete').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        try {
+          await deleteDoc(doc(db, COL, id));
+        } catch(err) {
+          showMomenStatus('Gagal menghapus 🌸', '#c97b6e');
+        }
+      });
+    });
+  }
+
+  // ── Real-time listener ──
+  const q = query(collection(db, COL), orderBy('createdAt', 'desc'));
+  onSnapshot(q, (snapshot) => {
+    const docs = snapshot.docs.map(d => ({ id: d.id, data: d.data() }));
+    renderMomen(docs);
+  }, (err) => {
+    console.error('Firestore error:', err);
+    showMomenStatus('Koneksi gagal, coba refresh 🌸', '#c97b6e');
+  });
+
   // ── Panel toggle ──
-  const momenBtn = document.getElementById('momen-btn');
+  const momenBtn   = document.getElementById('momen-btn');
   const momenPanel = document.getElementById('momen-panel');
   let momenPanelOpen = false;
 
@@ -1555,13 +1539,10 @@
     momenPanelOpen = !momenPanelOpen;
     momenPanel.classList.toggle('open', momenPanelOpen);
     momenBtn.classList.toggle('active', momenPanelOpen);
-    // Close drive panel if open
-    if (momenPanelOpen && panelOpen) {
-      panelOpen = false;
-      drivePanel.classList.remove('open');
-      settingsBtn.style.transform = '';
-      settingsBtn.style.borderColor = '';
-      settingsBtn.style.color = '';
+    // Tutup drive panel jika terbuka
+    const dp = document.getElementById('drive-panel');
+    if (momenPanelOpen && dp.classList.contains('open')) {
+      dp.classList.remove('open');
     }
   });
 
@@ -1576,56 +1557,45 @@
   });
 
   // ── Submit ──
-  document.getElementById('momen-submit').addEventListener('click', () => {
+  document.getElementById('momen-submit').addEventListener('click', async () => {
     const judul = document.getElementById('momen-judul').value.trim();
-    const isi = document.getElementById('momen-isi').value.trim();
+    const isi   = document.getElementById('momen-isi').value.trim();
+
     if (!judul || !isi) {
-      // Shake effect
       const panel = document.getElementById('momen-panel');
-      panel.style.animation = 'none';
       panel.style.transform = 'translateX(-6px)';
       setTimeout(() => { panel.style.transform = 'translateX(6px)'; }, 80);
       setTimeout(() => { panel.style.transform = ''; }, 160);
+      showMomenStatus('Isi judul dan cerita dulu ya 🌸', '#c97b6e');
       return;
     }
-    const now = new Date();
-    const date = now.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
-    momentList.unshift({ emoji: selectedEmoji, judul, isi, date });
-    saveMomen();
-    renderMomen();
-    updateShareBox();
-    document.getElementById('momen-judul').value = '';
-    document.getElementById('momen-isi').value = '';
-    // Scroll to section
-    document.getElementById('momen-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
 
-  // ── Copy link ──
-  document.getElementById('momen-copy-btn').addEventListener('click', () => {
-    const url = buildShareUrl(momentList);
-    navigator.clipboard.writeText(url).then(() => {
-      const btn = document.getElementById('momen-copy-btn');
-      btn.textContent = 'Tersalin ✦';
-      btn.style.color = '#8a9e7a';
-      setTimeout(() => { btn.textContent = 'Salin'; btn.style.color = ''; }, 2500);
-    }).catch(() => {
-      // Fallback
-      const ta = document.createElement('textarea');
-      ta.value = url;
-      ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select(); document.execCommand('copy');
-      document.body.removeChild(ta);
-      const btn = document.getElementById('momen-copy-btn');
-      btn.textContent = 'Tersalin ✦';
-      setTimeout(() => { btn.textContent = 'Salin'; }, 2500);
-    });
-  });
+    const submitBtn = document.getElementById('momen-submit');
+    submitBtn.textContent = '✦  Menyimpan…';
+    submitBtn.disabled = true;
 
-  // ── Init ──
-  loadMomen();
-  renderMomen();
-  updateShareBox();
+    try {
+      const now = new Date();
+      const date = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+      await addDoc(collection(db, COL), {
+        emoji: selectedEmoji,
+        judul,
+        isi,
+        date,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById('momen-judul').value = '';
+      document.getElementById('momen-isi').value   = '';
+      showMomenStatus('Momen tersimpan ✦', '#8a9e7a');
+      document.getElementById('momen-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (err) {
+      console.error(err);
+      showMomenStatus('Gagal menyimpan, coba lagi 🌸', '#c97b6e');
+    } finally {
+      submitBtn.textContent = '✦ \u00A0 Simpan Momen';
+      submitBtn.disabled = false;
+    }
+  });
 </script>
 </body>
 </html>
