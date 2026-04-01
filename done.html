@@ -563,6 +563,123 @@
 
   #yt-frame { position: fixed; top: -9999px; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
+  /* ── Pesan Perpisahan ── */
+  #pesan {
+    max-width: 860px;
+    padding: 100px 24px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .pesan-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 52px;
+  }
+  .pesan-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(201,169,110,0.12);
+    border-radius: 18px;
+    padding: 32px 22px 28px;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: left;
+  }
+  .pesan-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,169,110,0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+  .pesan-card:hover {
+    border-color: rgba(201,169,110,0.35);
+    transform: translateY(-6px);
+    background: rgba(255,255,255,0.04);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(201,169,110,0.1);
+  }
+  .pesan-card:hover::before { opacity: 1; }
+  .pesan-card-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 3.5rem;
+    line-height: 1;
+    color: rgba(201,169,110,0.12);
+    position: absolute;
+    top: 12px; right: 18px;
+    font-weight: 300;
+    transition: color 0.5s ease;
+    pointer-events: none;
+  }
+  .pesan-card:hover .pesan-card-num { color: rgba(201,169,110,0.22); }
+  .pesan-icon {
+    font-size: 1.4rem;
+    display: block;
+    margin-bottom: 14px;
+  }
+  .pesan-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+    line-height: 1.75;
+    color: #ddd0c8;
+    font-weight: 300;
+    position: relative;
+    z-index: 1;
+  }
+  .pesan-text em { color: var(--blush); font-style: normal; }
+  .pesan-from {
+    margin-top: 14px;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(201,169,110,0.5);
+  }
+  /* Highlight card — kartu tengah lebih besar */
+  .pesan-card.featured {
+    grid-row: span 1;
+    background: rgba(139,94,106,0.12);
+    border-color: rgba(201,169,110,0.22);
+  }
+  .pesan-card.featured:hover {
+    background: rgba(139,94,106,0.2);
+  }
+  /* Full width bottom card */
+  .pesan-card.wide {
+    grid-column: span 3;
+    text-align: center;
+    padding: 40px 48px;
+  }
+  .pesan-card.wide .pesan-text {
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+    max-width: 580px;
+    margin: 0 auto;
+  }
+  .pesan-card.wide .pesan-from { text-align: center; }
+  /* Floating quote mark inside wide card */
+  .pesan-card.wide::after {
+    content: '"';
+    position: absolute;
+    bottom: -10px; right: 20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 7rem;
+    color: rgba(201,169,110,0.06);
+    font-style: italic;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  @media (max-width: 600px) {
+    .pesan-grid { grid-template-columns: 1fr; }
+    .pesan-card.wide { grid-column: span 1; padding: 32px 20px; }
+  }
+
   @media (max-width: 600px) {
     .memory-grid { grid-template-columns: 1fr; }
     #letter { padding-left: 20px; }
@@ -729,6 +846,66 @@
   <div class="quote-mark reveal">"</div>
   <p class="quote-text reveal">Orang-orang yang baik tidak benar-benar pergi — mereka berubah menjadi bagian dari siapa kita hari ini.</p>
   <p class="quote-author reveal">— Damar, untuk Wanda</p>
+</section>
+
+<!-- ══ PESAN PERPISAHAN ══ -->
+<section id="pesan">
+  <div class="ornament reveal">
+    <div class="ornament-line"></div><div class="ornament-diamond"></div><div class="ornament-line"></div>
+  </div>
+  <span class="section-label reveal">— Kata-kata untuk dibawa pergi</span>
+
+  <div class="pesan-grid">
+
+    <div class="pesan-card reveal">
+      <div class="pesan-card-num">01</div>
+      <span class="pesan-icon">🌸</span>
+      <p class="pesan-text">Pergi bukan berarti hilang. Kamu akan selalu ada — dalam setiap hal kecil yang <em>mengingatkanku tentangmu.</em></p>
+      <div class="pesan-from">dari Damar</div>
+    </div>
+
+    <div class="pesan-card featured reveal">
+      <div class="pesan-card-num">02</div>
+      <span class="pesan-icon">🕯️</span>
+      <p class="pesan-text">Seperti cahaya lilin yang padam, hangatnya tak pernah benar-benar pergi — ia <em>meresap ke dalam ruangan</em> dan bertahan lebih lama dari nyalanya.</p>
+      <div class="pesan-from">dari Damar</div>
+    </div>
+
+    <div class="pesan-card reveal">
+      <div class="pesan-card-num">03</div>
+      <span class="pesan-icon">🌙</span>
+      <p class="pesan-text">Malam-malam yang pernah kita lalui bersama kini menjadi bintang — <em>selalu ada di atas sana,</em> menunggu kita memandang langit yang sama.</p>
+      <div class="pesan-from">dari Damar</div>
+    </div>
+
+    <div class="pesan-card reveal">
+      <div class="pesan-card-num">04</div>
+      <span class="pesan-icon">🍃</span>
+      <p class="pesan-text">Terima kasih sudah menjadi bagian dari cerita ini. <em>Kamu menulis bab yang paling indah</em> tanpa pernah sadar kamu sedang melakukannya.</p>
+      <div class="pesan-from">dari Damar</div>
+    </div>
+
+    <div class="pesan-card reveal">
+      <div class="pesan-card-num">05</div>
+      <span class="pesan-icon">🎀</span>
+      <p class="pesan-text">Ada jiwa-jiwa yang datang bukan untuk tinggal selamanya, tapi untuk <em>mengubah segalanya</em> — dan kamu adalah salah satunya.</p>
+      <div class="pesan-from">dari Damar</div>
+    </div>
+
+    <div class="pesan-card reveal">
+      <div class="pesan-card-num">06</div>
+      <span class="pesan-icon">✨</span>
+      <p class="pesan-text">Jarak hanya mengubah tempat, bukan rasa. Di mana pun kamu berada, <em>doaku selalu menyertaimu</em> — diam-diam, tulus, dan tanpa syarat.</p>
+      <div class="pesan-from">dari Damar</div>
+    </div>
+
+    <div class="pesan-card wide reveal">
+      <span class="pesan-icon" style="text-align:center; display:block;">💌</span>
+      <p class="pesan-text">Sampai jumpa, Wanda — bukan di ujung perjalanan, tapi di titik mana pun yang membuat hidupmu <em>paling bersinar.</em> Terima kasih sudah ada. Terima kasih sudah menjadi kamu.</p>
+      <div class="pesan-from">— Damar, dengan sepenuh hati</div>
+    </div>
+
+  </div>
 </section>
 
 <!-- ══ FAREWELL ══ -->
