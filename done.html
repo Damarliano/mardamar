@@ -985,6 +985,379 @@
     #letter { padding-left: 20px; }
     #drive-panel { width: calc(100vw - 56px); }
   }
+
+  /* ── Admin Login Modal ── */
+  #admin-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    background: rgba(20,10,18,0.85);
+    backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  #admin-modal.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .admin-modal-box {
+    background: rgba(28,16,24,0.98);
+    border: 1px solid rgba(201,169,110,0.28);
+    border-radius: 24px;
+    padding: 40px 36px 36px;
+    width: min(380px, calc(100vw - 48px));
+    box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(201,169,110,0.08);
+    position: relative;
+  }
+  .admin-modal-close {
+    position: absolute;
+    top: 16px; right: 18px;
+    background: transparent;
+    border: none;
+    color: rgba(201,169,110,0.4);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 4px 8px;
+  }
+  .admin-modal-close:hover { color: var(--gold); }
+  .admin-modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .admin-modal-sub {
+    font-size: 0.63rem;
+    letter-spacing: 0.05em;
+    color: #5a3f4a;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+  .admin-field { margin-bottom: 14px; }
+  .admin-label {
+    display: block;
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(201,169,110,0.55);
+    margin-bottom: 6px;
+  }
+  .admin-input {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,169,110,0.22);
+    border-radius: 12px;
+    padding: 11px 14px;
+    color: var(--cream);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .admin-input::placeholder { color: #3a2830; }
+  .admin-input:focus { border-color: rgba(201,169,110,0.55); }
+  .admin-login-btn {
+    width: 100%;
+    margin-top: 22px;
+    padding: 13px;
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--gold);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .admin-login-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(201,169,110,0.15), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .admin-login-btn:hover::before { opacity: 1; }
+  .admin-login-btn:disabled { opacity: 0.5; cursor: default; }
+  .admin-err {
+    margin-top: 12px;
+    font-size: 0.65rem;
+    color: #c97b6e;
+    text-align: center;
+    min-height: 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+  }
+
+  /* ── Admin badge on momen-btn & settings-btn ── */
+  .admin-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--deep2);
+    display: none;
+  }
+  .admin-active .admin-badge { display: block; }
+  #momen-btn, #settings-btn { position: fixed; }
+  #momen-btn-wrap, #settings-btn-wrap {
+    position: fixed;
+    z-index: 9999;
+  }
+  #momen-btn-wrap { top: 28px; right: 28px; }
+  #settings-btn-wrap { bottom: 28px; left: 28px; }
+
+  /* ── Admin bar indicator ── */
+  #admin-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 9997;
+    height: 3px;
+    background: linear-gradient(to right, var(--mauve), var(--gold), var(--rose));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  }
+  #admin-bar.show { transform: scaleX(1); }
+
+  /* Admin logout pill */
+  #admin-pill {
+    position: fixed;
+    top: 14px; left: 50%;
+    transform: translateX(-50%) translateY(-60px);
+    z-index: 9999;
+    background: rgba(28,16,24,0.95);
+    border: 1px solid rgba(201,169,110,0.3);
+    border-radius: 60px;
+    padding: 7px 18px 7px 14px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: rgba(201,169,110,0.8);
+    backdrop-filter: blur(12px);
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    white-space: nowrap;
+  }
+  #admin-pill.show { transform: translateX(-50%) translateY(0); }
+  #admin-pill-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); animation: heartbeat 2s ease-in-out infinite; flex-shrink: 0; }
+  #admin-logout-btn {
+    background: transparent;
+    border: 1px solid rgba(201,123,110,0.3);
+    border-radius: 30px;
+    padding: 3px 10px;
+    color: rgba(201,123,110,0.7);
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 4px;
+  }
+  #admin-logout-btn:hover { border-color: var(--rose); color: var(--rose); }
+
+  /* ── Media Gallery Section ── */
+  #media-section {
+    max-width: 900px;
+    padding: 100px 24px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  #media-section.hidden { display: none; }
+
+  .media-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 48px;
+    background: rgba(201,169,110,0.08);
+    border: 1px solid rgba(201,169,110,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .media-item {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: rgba(42,29,38,0.8);
+    cursor: pointer;
+  }
+  .media-item img,
+  .media-item video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease, filter 0.4s ease;
+    filter: saturate(0.7) brightness(0.85);
+    display: block;
+  }
+  .media-item:hover img,
+  .media-item:hover video {
+    transform: scale(1.07);
+    filter: saturate(1.05) brightness(1);
+  }
+  .media-item-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(42,29,38,0.7) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .media-item:hover .media-item-overlay { opacity: 1; }
+  .media-item-type {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(42,29,38,0.75);
+    border: 1px solid rgba(201,169,110,0.25);
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    color: rgba(201,169,110,0.8);
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+  }
+  .media-item-delete {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,123,110,0.4);
+    background: rgba(42,29,38,0.8);
+    color: rgba(201,123,110,0.6);
+    font-size: 0.65rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+  }
+  .media-item:hover .media-item-delete { opacity: 1; }
+  .media-item-delete:hover { border-color: var(--rose); color: var(--rose); background: rgba(201,123,110,0.15); }
+
+  /* Upload zone — admin only */
+  #media-upload-zone {
+    display: none;
+    margin-top: 24px;
+    border: 1px dashed rgba(201,169,110,0.3);
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  #media-upload-zone.admin-visible { display: block; }
+  #media-upload-zone:hover, #media-upload-zone.dragover {
+    border-color: var(--gold);
+    background: rgba(201,169,110,0.05);
+  }
+  #media-upload-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  }
+  .upload-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 10px;
+    opacity: 0.4;
+  }
+  .upload-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: #7a5a64;
+    line-height: 1.6;
+  }
+  .upload-text strong { color: var(--gold); font-weight: 300; }
+  .upload-sub {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: #4a3040;
+    margin-top: 8px;
+  }
+
+  /* Upload progress */
+  .upload-progress-bar {
+    width: 100%;
+    height: 2px;
+    background: rgba(201,169,110,0.15);
+    border-radius: 2px;
+    margin-top: 16px;
+    overflow: hidden;
+    display: none;
+  }
+  .upload-progress-bar.active { display: block; }
+  .upload-progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--mauve), var(--gold));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  /* Media lightbox */
+  #media-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(10,6,9,0.93);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(12px);
+  }
+  #media-lightbox.open { opacity: 1; pointer-events: all; }
+  #media-lightbox img, #media-lightbox video {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 8px;
+    object-fit: contain;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.8);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 20px; right: 24px;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: rgba(42,29,38,0.85);
+    border: 1px solid rgba(201,169,110,0.3);
+    color: var(--gold);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+  }
+  .lightbox-close:hover { background: rgba(201,169,110,0.15); }
+
+  #media-status {
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+    color: var(--gold);
+    text-align: center;
+    min-height: 20px;
+    margin-top: 14px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    transition: color 0.3s;
+  }
+
+  @media (max-width: 600px) {
+    .media-grid { grid-template-columns: repeat(2, 1fr); }
+    #admin-pill { font-size: 0.55rem; padding: 6px 12px 6px 10px; }
+  }
 </style>
 </head>
 <body>
@@ -1051,16 +1424,70 @@
 <!-- Music Button -->
 <button id="music-btn" title="Play / Pause">♪</button>
 
+<!-- Admin bar -->
+<div id="admin-bar"></div>
+
+<!-- Admin pill -->
+<div id="admin-pill">
+  <div id="admin-pill-dot"></div>
+  <span>Mode Admin Aktif</span>
+  <button id="admin-logout-btn">Keluar</button>
+</div>
+
+<!-- Admin Login Modal -->
+<div id="admin-modal">
+  <div class="admin-modal-box">
+    <button class="admin-modal-close" id="admin-modal-close">✕</button>
+    <div class="admin-modal-title">✦ Login Admin</div>
+    <div class="admin-modal-sub">Hanya admin yang dapat menambah atau menghapus konten</div>
+    <div class="admin-field">
+      <label class="admin-label">Email</label>
+      <input class="admin-input" id="admin-email" type="email" placeholder="admin@email.com" autocomplete="username">
+    </div>
+    <div class="admin-field">
+      <label class="admin-label">Password</label>
+      <input class="admin-input" id="admin-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="admin-login-btn" id="admin-login-btn">✦ &nbsp; Masuk sebagai Admin</button>
+    <div class="admin-err" id="admin-err"></div>
+  </div>
+</div>
+
+<!-- Media Lightbox -->
+<div id="media-lightbox">
+  <button class="lightbox-close" id="lightbox-close">✕</button>
+  <div id="lightbox-content"></div>
+</div>
+
 <!-- Settings Button -->
-<button id="settings-btn" title="Ganti Foto">⚙</button>
+<div id="settings-btn-wrap" style="position:fixed;bottom:28px;left:28px;z-index:9999;">
+  <button id="settings-btn" title="Ganti Foto / Login Admin" style="position:relative;">⚙</button>
+  <div class="admin-badge" id="settings-badge"></div>
+</div>
 
 <!-- Momen Button -->
-<button id="momen-btn" title="Tulis Momen">✎</button>
+<div id="momen-btn-wrap" style="position:fixed;top:28px;right:28px;z-index:9999;">
+  <button id="momen-btn" title="Tulis Momen" style="position:relative;">✎</button>
+  <div class="admin-badge" id="momen-badge"></div>
+</div>
 
 <!-- Momen Panel -->
 <div id="momen-panel">
   <div class="momen-panel-title">✦ Tulis Momen</div>
-  <div class="momen-panel-sub">Momen tersimpan di cloud — tampil sama di semua perangkat secara otomatis</div>
+  <div class="momen-panel-sub" id="momen-panel-sub">Momen tersimpan di cloud — tampil sama di semua perangkat secara otomatis</div>
+
+  <!-- Login prompt for non-admin -->
+  <div id="momen-login-prompt" style="display:none; text-align:center; padding:24px 0;">
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:#7a5a64;line-height:1.7;margin-bottom:18px;">
+      Hanya admin yang dapat<br>menambah atau menghapus momen.
+    </div>
+    <button id="momen-goto-login" style="padding:10px 24px;border:1px solid rgba(201,169,110,0.35);border-radius:10px;background:transparent;color:rgba(201,169,110,0.7);font-family:'Jost',sans-serif;font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;cursor:pointer;transition:all 0.3s ease;">
+      ✦ Login Admin
+    </button>
+  </div>
+
+  <!-- Admin-only form -->
+  <div id="momen-form-fields">
 
   <div class="momen-field">
     <label class="momen-label">Pilih Ikon</label>
@@ -1089,6 +1516,8 @@
 
   <div class="momen-panel-divider"></div>
   <button class="momen-submit-btn" id="momen-submit">✦ &nbsp; Simpan Momen</button>
+
+  </div><!-- end momen-form-fields -->
   <div class="drive-status" id="momen-status" style="margin-top:12px; text-align:center; font-size:0.65rem; min-height:16px;"></div>
 </div>
 
@@ -1097,6 +1526,18 @@
   <div class="drive-panel-title">✦ Google Drive</div>
   <div class="drive-panel-sub">Ganti foto kenangan dengan ID file dari Google Drive kamu</div>
 
+  <!-- Login prompt for non-admin -->
+  <div id="drive-login-prompt" style="display:none; text-align:center; padding:20px 0 8px;">
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.95rem;color:#7a5a64;line-height:1.7;margin-bottom:16px;">
+      Hanya admin yang dapat<br>mengubah foto kenangan.
+    </div>
+    <button id="drive-goto-login" style="padding:10px 24px;border:1px solid rgba(201,169,110,0.35);border-radius:10px;background:transparent;color:rgba(201,169,110,0.7);font-family:'Jost',sans-serif;font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;cursor:pointer;">
+      ✦ Login Admin
+    </button>
+  </div>
+
+  <!-- Admin-only drive form -->
+  <div id="drive-form-fields">
   <div class="drive-input-group">
     <label class="drive-input-label">Pilih Kartu Kenangan</label>
     <select class="drive-select" id="card-select">
@@ -1118,6 +1559,7 @@
 
   <button class="drive-btn" id="apply-drive-btn">✦ Terapkan Foto</button>
   <button class="drive-btn-reset" id="reset-drive-btn">↩ Kembalikan Semua ke Semula</button>
+  </div><!-- end drive-form-fields -->
   <div class="drive-status" id="drive-status"></div>
 </div>
 
@@ -1184,6 +1626,28 @@
   <div class="quote-mark reveal">"</div>
   <p class="quote-text reveal">Orang-orang yang baik tidak benar-benar pergi — mereka berubah menjadi bagian dari siapa kita hari ini.</p>
   <p class="quote-author reveal">— Damar, untuk Wanda</p>
+</section>
+
+<!-- ══ GALERI MEDIA ══ -->
+<section id="media-section" class="hidden">
+  <div class="ornament reveal">
+    <div class="ornament-line"></div><div class="ornament-diamond"></div><div class="ornament-line"></div>
+  </div>
+  <span class="section-label reveal">— Foto & Video kenangan kita</span>
+
+  <div class="media-grid reveal" id="media-grid"></div>
+
+  <!-- Upload zone (admin only) -->
+  <div id="media-upload-zone">
+    <input type="file" id="media-file-input" accept="image/*,video/*" multiple>
+    <span class="upload-icon">✦</span>
+    <div class="upload-text">Seret file ke sini atau <strong>klik untuk memilih</strong></div>
+    <div class="upload-sub">foto (jpg, png, webp) · video (mp4, mov) · maks. 20mb per file</div>
+    <div class="upload-progress-bar" id="upload-progress-bar">
+      <div class="upload-progress-fill" id="upload-progress-fill"></div>
+    </div>
+  </div>
+  <div id="media-status"></div>
 </section>
 
 <!-- ══ MOMEN KITA ══ -->
@@ -1312,10 +1776,7 @@
       videoId: VIDEO_ID,
       playerVars: { autoplay:0, loop:1, playlist:VIDEO_ID, controls:0, disablekb:1, fs:0, rel:0, modestbranding:1 },
       events: {
-        onReady: function(e) {
-          playerReady = true;
-          e.target.setVolume(45);
-        },
+        onReady: function(e) { playerReady = true; e.target.setVolume(45); },
         onStateChange: function(e) {
           if(e.data === YT.PlayerState.PLAYING) {
             isPlaying = true; musicBtn.classList.add('playing'); musicBtn.innerHTML = '♫';
@@ -1330,21 +1791,14 @@
   // Intro overlay
   const overlay = document.getElementById('intro-overlay');
   const openBtn = overlay.querySelector('.intro-btn');
-
   function startExperience() {
     overlay.classList.add('hide');
     setTimeout(()=>overlay.style.display='none', 950);
-    const tryPlay = () => {
-      if(playerReady) { player.playVideo(); }
-      else { setTimeout(tryPlay, 300); }
-    };
+    const tryPlay = () => { if(playerReady) { player.playVideo(); } else { setTimeout(tryPlay, 300); } };
     tryPlay();
   }
-
   openBtn.addEventListener('click', function(e) { e.stopPropagation(); startExperience(); });
   overlay.addEventListener('click', startExperience);
-
-  // Tombol play/pause
   musicBtn.addEventListener('click', function() {
     if(!player || !playerReady) return;
     isPlaying ? player.pauseVideo() : player.playVideo();
@@ -1359,27 +1813,15 @@
     '1oh2_CgE2EigiUlGIOPP7oj2VEyw5suxZ',
     '1kI6yexk6e-xAfdWe8T-LnituviGkYYoz'
   ];
-
   let currentIds = [...defaultIds];
 
   function extractDriveId(input) {
     input = input.trim();
-    // If it's already a bare ID (no slashes or google.com)
     if (/^[A-Za-z0-9_\-]{10,}$/.test(input)) return input;
-    // Extract from URL patterns
-    const patterns = [
-      /\/d\/([A-Za-z0-9_\-]+)/,
-      /id=([A-Za-z0-9_\-]+)/,
-      /open\?id=([A-Za-z0-9_\-]+)/,
-      /thumbnail\?id=([A-Za-z0-9_\-]+)/
-    ];
-    for (const p of patterns) {
-      const m = input.match(p);
-      if (m) return m[1];
-    }
+    const patterns = [/\/d\/([A-Za-z0-9_\-]+)/,/id=([A-Za-z0-9_\-]+)/,/open\?id=([A-Za-z0-9_\-]+)/,/thumbnail\?id=([A-Za-z0-9_\-]+)/];
+    for (const p of patterns) { const m = input.match(p); if (m) return m[1]; }
     return null;
   }
-
   function applyId(cardIdx, fileId) {
     const imgs = document.querySelectorAll('.memory-photo img');
     if (!imgs[cardIdx]) return false;
@@ -1389,52 +1831,39 @@
   }
 
   const settingsBtn = document.getElementById('settings-btn');
-  const drivePanel = document.getElementById('drive-panel');
-  const applyBtn = document.getElementById('apply-drive-btn');
-  const resetBtn = document.getElementById('reset-drive-btn');
-  const driveInput = document.getElementById('drive-id-input');
-  const cardSelect = document.getElementById('card-select');
+  const drivePanel  = document.getElementById('drive-panel');
   const driveStatus = document.getElementById('drive-status');
-
   let panelOpen = false;
-  settingsBtn.addEventListener('click', () => {
+
+  // settings-btn click is handled in the Firebase module script (admin check first)
+  // This function is called from there when admin is confirmed
+  window._toggleDrivePanel = function() {
     panelOpen = !panelOpen;
     drivePanel.classList.toggle('open', panelOpen);
-    settingsBtn.style.transform = panelOpen ? 'scale(1.08) rotate(60deg)' : '';
+    settingsBtn.style.transform   = panelOpen ? 'scale(1.08) rotate(60deg)' : '';
     settingsBtn.style.borderColor = panelOpen ? 'var(--gold)' : '';
-    settingsBtn.style.color = panelOpen ? 'var(--gold)' : '';
-  });
+    settingsBtn.style.color       = panelOpen ? 'var(--gold)' : '';
+  };
 
-  applyBtn.addEventListener('click', () => {
-    const raw = driveInput.value;
-    const idx = parseInt(cardSelect.value);
-    if (!raw) {
-      showStatus('Masukkan ID atau link dulu ya ✦', '#c97b6e');
-      return;
-    }
+  document.getElementById('apply-drive-btn').addEventListener('click', () => {
+    const raw = document.getElementById('drive-id-input').value;
+    const idx = parseInt(document.getElementById('card-select').value);
+    if (!raw) { showDriveStatus('Masukkan ID atau link dulu ya ✦', '#c97b6e'); return; }
     const id = extractDriveId(raw);
-    if (!id) {
-      showStatus('Format tidak dikenali, coba lagi 🌸', '#c97b6e');
-      return;
-    }
+    if (!id) { showDriveStatus('Format tidak dikenali, coba lagi 🌸', '#c97b6e'); return; }
     applyId(idx, id);
-    showStatus('Foto berhasil diganti ✦', '#8a9e7a');
-    driveInput.value = '';
+    showDriveStatus('Foto berhasil diganti ✦', '#8a9e7a');
+    document.getElementById('drive-id-input').value = '';
   });
-
-  resetBtn.addEventListener('click', () => {
+  document.getElementById('reset-drive-btn').addEventListener('click', () => {
     defaultIds.forEach((id, i) => applyId(i, id));
     currentIds = [...defaultIds];
-    showStatus('Semua foto kembali ke semula ✦', '#c9a96e');
+    showDriveStatus('Semua foto kembali ke semula ✦', '#c9a96e');
   });
-
-  function showStatus(msg, color) {
-    driveStatus.textContent = msg;
-    driveStatus.style.color = color;
+  function showDriveStatus(msg, color) {
+    driveStatus.textContent = msg; driveStatus.style.color = color;
     setTimeout(() => { driveStatus.textContent = ''; }, 3500);
   }
-
-  // ══ MOMEN SYSTEM — Firebase Firestore ══
 </script>
 
 <!-- Firebase SDK -->
@@ -1442,6 +1871,10 @@
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
 
   // ── Firebase Config ──
   const firebaseConfig = {
@@ -1453,24 +1886,143 @@
     appId: "1:132789673606:web:faf7eb9b8159d934807b07"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
-  const COL = 'momen_wanda';
+  const app     = initializeApp(firebaseConfig);
+  const db      = getFirestore(app);
+  const auth    = getAuth(app);
+  const storage = getStorage(app);
+  const COL_MOMEN = 'momen_wanda';
+  const COL_MEDIA = 'media_wanda';
 
-  // ── Helpers ──
-  function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  // ════════════════════════════════════════
+  // ── ADMIN AUTH SYSTEM ──
+  // ════════════════════════════════════════
+  let currentUser = null;
+  let isAdmin = false;
+
+  function setAdminUI(admin) {
+    isAdmin = admin;
+    // Top bar + pill
+    document.getElementById('admin-bar').classList.toggle('show', admin);
+    document.getElementById('admin-pill').classList.toggle('show', admin);
+    // Badges on buttons
+    document.getElementById('momen-badge').style.display    = admin ? 'block' : 'none';
+    document.getElementById('settings-badge').style.display = admin ? 'block' : 'none';
+    // Momen panel — show/hide form vs prompt
+    document.getElementById('momen-form-fields').style.display    = admin ? '' : 'none';
+    document.getElementById('momen-login-prompt').style.display   = admin ? 'none' : 'block';
+    // Drive panel — show/hide form vs prompt
+    document.getElementById('drive-form-fields').style.display    = admin ? '' : 'none';
+    document.getElementById('drive-login-prompt').style.display   = admin ? 'none' : 'block';
+    // Media delete buttons & upload zone
+    document.querySelectorAll('.media-item-delete').forEach(b => b.style.display = admin ? '' : 'none');
+    document.getElementById('media-upload-zone').classList.toggle('admin-visible', admin);
+    // Momen card delete buttons
+    document.querySelectorAll('.momen-card-delete').forEach(b => b.style.display = admin ? '' : 'none');
   }
 
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    setAdminUI(!!user);
+  });
+
+  // ── Admin Modal ──
+  const adminModal     = document.getElementById('admin-modal');
+  const adminModalClose = document.getElementById('admin-modal-close');
+  const adminLoginBtn  = document.getElementById('admin-login-btn');
+  const adminErr       = document.getElementById('admin-err');
+
+  function openAdminModal() {
+    adminModal.classList.add('open');
+    document.getElementById('admin-email').focus();
+    adminErr.textContent = '';
+  }
+  function closeAdminModal() {
+    adminModal.classList.remove('open');
+  }
+
+  adminModalClose.addEventListener('click', closeAdminModal);
+  adminModal.addEventListener('click', (e) => { if (e.target === adminModal) closeAdminModal(); });
+
+  // Settings btn → if not admin, open login modal; if admin, toggle drive panel
+  document.getElementById('settings-btn').addEventListener('click', () => {
+    if (!isAdmin) { openAdminModal(); return; }
+    window._toggleDrivePanel();
+  });
+
+  // Login prompts inside panels
+  document.getElementById('momen-goto-login').addEventListener('click', () => {
+    document.getElementById('momen-panel').classList.remove('open');
+    document.getElementById('momen-btn').classList.remove('active');
+    openAdminModal();
+  });
+  document.getElementById('drive-goto-login').addEventListener('click', () => {
+    document.getElementById('drive-panel').classList.remove('open');
+    openAdminModal();
+  });
+
+  // Login submit
+  adminLoginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('admin-email').value.trim();
+    const pass  = document.getElementById('admin-pass').value;
+    if (!email || !pass) { adminErr.textContent = 'Isi email dan password dulu ✦'; return; }
+    adminLoginBtn.disabled = true;
+    adminLoginBtn.textContent = '✦   Masuk…';
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      closeAdminModal();
+      document.getElementById('admin-email').value = '';
+      document.getElementById('admin-pass').value  = '';
+    } catch(err) {
+      let msg = 'Email atau password salah 🌸';
+      if (err.code === 'auth/too-many-requests') msg = 'Terlalu banyak percobaan, coba lagi nanti';
+      adminErr.textContent = msg;
+    } finally {
+      adminLoginBtn.disabled = false;
+      adminLoginBtn.textContent = '✦   Masuk sebagai Admin';
+    }
+  });
+
+  // Enter key on password
+  document.getElementById('admin-pass').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') adminLoginBtn.click();
+  });
+
+  // Logout
+  document.getElementById('admin-logout-btn').addEventListener('click', async () => {
+    await signOut(auth);
+  });
+
+
+  // ════════════════════════════════════════
+  // ── HELPERS ──
+  // ════════════════════════════════════════
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
   function showMomenStatus(msg, color) {
     const el = document.getElementById('momen-status');
     if (!el) return;
-    el.textContent = msg;
-    el.style.color = color || 'var(--gold)';
+    el.textContent = msg; el.style.color = color || 'var(--gold)';
     setTimeout(() => { el.textContent = ''; }, 3000);
   }
+  function showMediaStatus(msg, color) {
+    const el = document.getElementById('media-status');
+    if (!el) return;
+    el.textContent = msg; el.style.color = color || 'var(--gold)';
+    setTimeout(() => { el.textContent = ''; }, 4000);
+  }
+  function revealEl(el) {
+    new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), 80); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.1 }).observe(el);
+  }
 
-  // ── Render ──
+
+  // ════════════════════════════════════════
+  // ── MOMEN SYSTEM ──
+  // ════════════════════════════════════════
   function renderMomen(docs) {
     const section = document.getElementById('momen-section');
     const grid    = document.getElementById('momen-grid');
@@ -1493,44 +2045,28 @@
           <span class="momen-card-emoji">${m.emoji || '🌸'}</span>
           <div class="momen-card-judul">${escHtml(m.judul || '')}</div>
           <div class="momen-card-isi">${escHtml(m.isi || '')}</div>
-          <button class="momen-card-delete" data-id="${d.id}" title="Hapus momen ini">✕</button>
+          <button class="momen-card-delete" data-id="${d.id}" title="Hapus momen ini" style="${isAdmin ? '' : 'display:none'}">✕</button>
         </div>`;
     }).join('');
 
-    // Scroll reveal
-    grid.querySelectorAll('.reveal').forEach(el => {
-      new IntersectionObserver((entries, obs) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), 80); obs.unobserve(e.target); }
-        });
-      }, { threshold: 0.1 }).observe(el);
-    });
+    grid.querySelectorAll('.reveal').forEach(revealEl);
 
-    // Delete
     grid.querySelectorAll('.momen-card-delete').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        const id = btn.dataset.id;
-        try {
-          await deleteDoc(doc(db, COL, id));
-        } catch(err) {
-          showMomenStatus('Gagal menghapus 🌸', '#c97b6e');
-        }
+        if (!isAdmin) return;
+        try { await deleteDoc(doc(db, COL_MOMEN, btn.dataset.id)); }
+        catch(err) { showMomenStatus('Gagal menghapus 🌸', '#c97b6e'); }
       });
     });
   }
 
-  // ── Real-time listener ──
-  const q = query(collection(db, COL), orderBy('createdAt', 'desc'));
-  onSnapshot(q, (snapshot) => {
-    const docs = snapshot.docs.map(d => ({ id: d.id, data: d.data() }));
-    renderMomen(docs);
-  }, (err) => {
-    console.error('Firestore error:', err);
-    showMomenStatus('Koneksi gagal, coba refresh 🌸', '#c97b6e');
-  });
+  const qMomen = query(collection(db, COL_MOMEN), orderBy('createdAt', 'desc'));
+  onSnapshot(qMomen, (snapshot) => {
+    renderMomen(snapshot.docs.map(d => ({ id: d.id, data: d.data() })));
+  }, (err) => { showMomenStatus('Koneksi gagal, coba refresh 🌸', '#c97b6e'); });
 
-  // ── Panel toggle ──
+  // Panel toggle (momen)
   const momenBtn   = document.getElementById('momen-btn');
   const momenPanel = document.getElementById('momen-panel');
   let momenPanelOpen = false;
@@ -1539,14 +2075,11 @@
     momenPanelOpen = !momenPanelOpen;
     momenPanel.classList.toggle('open', momenPanelOpen);
     momenBtn.classList.toggle('active', momenPanelOpen);
-    // Tutup drive panel jika terbuka
     const dp = document.getElementById('drive-panel');
-    if (momenPanelOpen && dp.classList.contains('open')) {
-      dp.classList.remove('open');
-    }
+    if (momenPanelOpen && dp.classList.contains('open')) dp.classList.remove('open');
   });
 
-  // ── Emoji selector ──
+  // Emoji selector
   let selectedEmoji = '🌸';
   document.getElementById('emoji-row').addEventListener('click', (e) => {
     const opt = e.target.closest('.momen-emoji-opt');
@@ -1556,46 +2089,201 @@
     selectedEmoji = opt.dataset.emoji;
   });
 
-  // ── Submit ──
+  // Submit momen
   document.getElementById('momen-submit').addEventListener('click', async () => {
+    if (!isAdmin) { showMomenStatus('Hanya admin yang bisa menyimpan 🌸', '#c97b6e'); return; }
     const judul = document.getElementById('momen-judul').value.trim();
     const isi   = document.getElementById('momen-isi').value.trim();
-
     if (!judul || !isi) {
-      const panel = document.getElementById('momen-panel');
-      panel.style.transform = 'translateX(-6px)';
-      setTimeout(() => { panel.style.transform = 'translateX(6px)'; }, 80);
-      setTimeout(() => { panel.style.transform = ''; }, 160);
+      momenPanel.style.transform = 'translateX(-6px)';
+      setTimeout(() => { momenPanel.style.transform = 'translateX(6px)'; }, 80);
+      setTimeout(() => { momenPanel.style.transform = ''; }, 160);
       showMomenStatus('Isi judul dan cerita dulu ya 🌸', '#c97b6e');
       return;
     }
-
     const submitBtn = document.getElementById('momen-submit');
-    submitBtn.textContent = '✦  Menyimpan…';
-    submitBtn.disabled = true;
-
+    submitBtn.textContent = '✦  Menyimpan…'; submitBtn.disabled = true;
     try {
-      const now = new Date();
+      const now  = new Date();
       const date = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-      await addDoc(collection(db, COL), {
-        emoji: selectedEmoji,
-        judul,
-        isi,
-        date,
-        createdAt: serverTimestamp()
-      });
+      await addDoc(collection(db, COL_MOMEN), { emoji: selectedEmoji, judul, isi, date, createdAt: serverTimestamp() });
       document.getElementById('momen-judul').value = '';
       document.getElementById('momen-isi').value   = '';
       showMomenStatus('Momen tersimpan ✦', '#8a9e7a');
       document.getElementById('momen-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } catch (err) {
-      console.error(err);
+    } catch(err) {
       showMomenStatus('Gagal menyimpan, coba lagi 🌸', '#c97b6e');
     } finally {
-      submitBtn.textContent = '✦ \u00A0 Simpan Momen';
-      submitBtn.disabled = false;
+      submitBtn.textContent = '✦ \u00A0 Simpan Momen'; submitBtn.disabled = false;
     }
   });
+
+
+  // ════════════════════════════════════════
+  // ── MEDIA GALLERY (Firebase Storage + Firestore) ──
+  // ════════════════════════════════════════
+
+  // Lightbox
+  const lightbox        = document.getElementById('media-lightbox');
+  const lightboxContent = document.getElementById('lightbox-content');
+  document.getElementById('lightbox-close').addEventListener('click', () => {
+    lightbox.classList.remove('open');
+    lightboxContent.innerHTML = '';
+  });
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) { lightbox.classList.remove('open'); lightboxContent.innerHTML = ''; }
+  });
+
+  function openLightbox(url, type) {
+    lightboxContent.innerHTML = type === 'video'
+      ? `<video src="${url}" controls autoplay style="max-width:90vw;max-height:85vh;border-radius:8px;"></video>`
+      : `<img src="${url}" alt="kenangan" style="max-width:90vw;max-height:85vh;border-radius:8px;object-fit:contain;">`;
+    lightbox.classList.add('open');
+  }
+
+  // Render media grid
+  function renderMedia(docs) {
+    const section = document.getElementById('media-section');
+    const grid    = document.getElementById('media-grid');
+
+    if (!docs || docs.length === 0) {
+      if (!isAdmin) { section.classList.add('hidden'); return; }
+      section.classList.remove('hidden');
+      grid.innerHTML = `<div style="grid-column:span 3;padding:40px 24px;text-align:center;">
+        <span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:#5a3f4a;">
+          Belum ada foto atau video yang diunggah.
+        </span>
+      </div>`;
+      return;
+    }
+
+    section.classList.remove('hidden');
+    grid.innerHTML = docs.map(d => {
+      const m    = d.data;
+      const isVid = m.type === 'video';
+      return `
+        <div class="media-item reveal" data-url="${escHtml(m.url)}" data-type="${m.type || 'image'}">
+          ${isVid
+            ? `<video src="${escHtml(m.url)}" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;filter:saturate(0.7) brightness(0.85);"></video>`
+            : `<img src="${escHtml(m.url)}" alt="kenangan" loading="lazy">`
+          }
+          <div class="media-item-overlay"></div>
+          <span class="media-item-type">${isVid ? '▶ video' : '✦ foto'}</span>
+          <button class="media-item-delete" data-id="${d.id}" data-path="${escHtml(m.storagePath || '')}"
+            title="Hapus" style="${isAdmin ? '' : 'display:none'}">✕</button>
+        </div>`;
+    }).join('');
+
+    grid.querySelectorAll('.media-item').forEach(item => {
+      revealEl(item);
+      item.addEventListener('click', (e) => {
+        if (e.target.classList.contains('media-item-delete')) return;
+        openLightbox(item.dataset.url, item.dataset.type);
+      });
+      // hover play for video
+      const vid = item.querySelector('video');
+      if (vid) {
+        item.addEventListener('mouseenter', () => vid.play().catch(()=>{}));
+        item.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; });
+      }
+    });
+
+    grid.querySelectorAll('.media-item-delete').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!isAdmin) return;
+        try {
+          if (btn.dataset.path) {
+            const storRef = ref(storage, btn.dataset.path);
+            await deleteObject(storRef).catch(() => {});
+          }
+          await deleteDoc(doc(db, COL_MEDIA, btn.dataset.id));
+          showMediaStatus('Media berhasil dihapus ✦', '#8a9e7a');
+        } catch(err) {
+          showMediaStatus('Gagal menghapus, coba lagi 🌸', '#c97b6e');
+        }
+      });
+    });
+  }
+
+  // Real-time listener for media
+  const qMedia = query(collection(db, COL_MEDIA), orderBy('createdAt', 'desc'));
+  onSnapshot(qMedia, (snapshot) => {
+    renderMedia(snapshot.docs.map(d => ({ id: d.id, data: d.data() })));
+  }, () => { showMediaStatus('Koneksi gagal, coba refresh 🌸', '#c97b6e'); });
+
+  // ── Upload ──
+  const uploadZone   = document.getElementById('media-upload-zone');
+  const fileInput    = document.getElementById('media-file-input');
+  const progressBar  = document.getElementById('upload-progress-bar');
+  const progressFill = document.getElementById('upload-progress-fill');
+
+  uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault(); uploadZone.classList.remove('dragover');
+    if (!isAdmin) return;
+    handleFiles([...e.dataTransfer.files]);
+  });
+  fileInput.addEventListener('change', () => {
+    if (!isAdmin) return;
+    handleFiles([...fileInput.files]);
+    fileInput.value = '';
+  });
+
+  async function handleFiles(files) {
+    if (!isAdmin) { showMediaStatus('Hanya admin yang bisa mengunggah 🌸', '#c97b6e'); return; }
+    const allowed = files.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+    if (allowed.length === 0) { showMediaStatus('Pilih file foto atau video ya ✦', '#c97b6e'); return; }
+
+    const maxSize = 20 * 1024 * 1024;
+    const tooBig  = allowed.filter(f => f.size > maxSize);
+    if (tooBig.length > 0) {
+      showMediaStatus(`${tooBig[0].name} terlalu besar (maks 20MB) 🌸`, '#c97b6e'); return;
+    }
+
+    progressBar.classList.add('active');
+    progressFill.style.width = '0%';
+    showMediaStatus('Mengunggah…', 'var(--gold)');
+
+    let done = 0;
+    for (const file of allowed) {
+      try {
+        const ext         = file.name.split('.').pop();
+        const storagePath = `media_wanda/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+        const storRef     = ref(storage, storagePath);
+        const uploadTask  = uploadBytesResumable(storRef, file);
+
+        await new Promise((resolve, reject) => {
+          uploadTask.on('state_changed',
+            (snap) => {
+              const pct = Math.round(((done + snap.bytesTransferred / snap.totalBytes) / allowed.length) * 100);
+              progressFill.style.width = pct + '%';
+            },
+            reject,
+            async () => {
+              const url = await getDownloadURL(uploadTask.snapshot.ref);
+              const type = file.type.startsWith('video/') ? 'video' : 'image';
+              await addDoc(collection(db, COL_MEDIA), {
+                url, storagePath, type,
+                name: file.name,
+                createdAt: serverTimestamp()
+              });
+              done++;
+              progressFill.style.width = Math.round((done / allowed.length) * 100) + '%';
+              resolve();
+            }
+          );
+        });
+      } catch(err) {
+        showMediaStatus('Gagal mengunggah ' + file.name + ' 🌸', '#c97b6e');
+      }
+    }
+
+    progressFill.style.width = '100%';
+    setTimeout(() => { progressBar.classList.remove('active'); progressFill.style.width = '0%'; }, 800);
+    showMediaStatus(allowed.length === 1 ? 'Berhasil diunggah ✦' : `${allowed.length} file berhasil diunggah ✦`, '#8a9e7a');
+  }
 </script>
 </body>
 </html>
