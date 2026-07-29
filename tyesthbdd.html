@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Selamat Ulang Tahun</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Karla:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink-night: #241b2c;
+    --night-soft: #33273e;
+    --night-softer: #3e3049;
+    --parchment: #f5ecdb;
+    --parchment-edge: #e9dbbf;
+    --ink-brown: #3b2c24;
+    --ink-brown-soft: #6b5849;
+    --gold: #c89b5c;
+    --gold-soft: #e0be86;
+    --rose-dusk: #b5675c;
+    --lavender-mist: #a79bc0;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 50% -10%, var(--night-softer), var(--ink-night) 60%);
+    color: var(--parchment);
+    font-family: 'Karla', sans-serif;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ambient sparks */
+  .sparks { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
+  .spark {
+    position: absolute;
+    bottom: -20px;
+    width: var(--size, 5px);
+    height: var(--size, 5px);
+    border-radius: 50%;
+    background: var(--gold-soft);
+    opacity: 0;
+    filter: blur(.5px);
+    animation: floatSpark var(--duration, 10s) linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  .spark.rose { background: var(--rose-dusk); }
+  .spark.lav { background: var(--lavender-mist); }
+
+  @keyframes floatSpark {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    8% { opacity: .7; }
+    85% { opacity: .35; }
+    100% { transform: translateY(-105vh) translateX(var(--drift, 30px)); opacity: 0; }
+  }
+
+  /* intro / seal screen */
+  .intro {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    z-index: 10;
+    text-align: center;
+    padding: 24px;
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .intro.hide {
+    opacity: 0;
+    transform: translateY(-24px);
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--lavender-mist);
+    margin: 0;
+  }
+
+  .seal {
+    width: 92px;
+    height: 92px;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 35% 30%, var(--rose-dusk), #7c332c 75%);
+    box-shadow: 0 14px 28px rgba(0,0,0,.4), inset 0 2px 5px rgba(255,255,255,.18);
+    animation: sealPulse 3.2s ease-in-out infinite;
+  }
+  .seal:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 4px; }
+  .seal.cracking { animation: sealCrack .55s ease forwards; }
+
+  @keyframes sealPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
+  @keyframes sealCrack {
+    0% { transform: rotate(0) scale(1); opacity: 1; }
+    55% { transform: rotate(14deg) scale(1.08); opacity: 1; }
+    100% { transform: rotate(24deg) scale(.7); opacity: 0; }
+  }
+
+  .seal-mark { width: 40px; height: 40px; }
+
+  .tap-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: .08em;
+    color: var(--lavender-mist);
+    margin: 0;
+  }
+
+  /* backsound toggle */
+  .music-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--gold);
+    background: var(--night-soft);
+    color: var(--gold-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    z-index: 40;
+    box-shadow: 0 10px 22px rgba(0,0,0,.4);
+    transition: transform .2s ease, background .2s ease;
+  }
+  .music-toggle:hover { transform: translateY(-2px); background: var(--night-softer); }
+  .music-toggle:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 3px; }
+  .music-toggle svg { width: 19px; height: 19px; }
+  .music-toggle .icon-off { display: none; }
+  .music-toggle.muted .icon-on { display: none; }
+  .music-toggle.muted .icon-off { display: block; }
+
+  /* letter section */
+  .stage {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px 80px;
+  }
+
+  .letter {
+    width: 100%;
+    max-width: 560px;
+    background: var(--parchment);
+    color: var(--ink-brown);
+    border-radius: 6px;
+    padding: 44px 40px 38px;
+    position: relative;
+    box-shadow: 0 30px 60px rgba(0,0,0,.35), 0 2px 0 var(--parchment-edge);
+    transform: rotate(-.4deg);
+    opacity: 0;
+  }
+  .letter.open { animation: letterIn .7s ease forwards; }
+  @keyframes letterIn {
+    from { opacity: 0; transform: rotate(-.4deg) translateY(26px) scale(.98); }
+    to { opacity: 1; transform: rotate(-.4deg) translateY(0) scale(1); }
+  }
+
+  .reveal-item { opacity: 0; transform: translateY(10px); }
+  .letter.open .reveal-item { animation: lineIn .5s ease forwards; }
+  @keyframes lineIn { to { opacity: 1; transform: translateY(0); } }
+
+  .corner-mark { position: absolute; top: 18px; right: 20px; width: 46px; height: 46px; opacity: .85; }
+
+  .postmark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink-brown-soft);
+    margin: 0 0 22px;
+  }
+  .postmark::after { content: ''; flex: 1; height: 1px; background: var(--parchment-edge); }
+
+  .salutation {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(22px, 4vw, 28px);
+    margin: 0 0 6px;
+    color: var(--ink-brown);
+  }
+  .salutation .name { font-style: italic; color: var(--rose-dusk); }
+
+  .headline {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(30px, 6vw, 42px);
+    line-height: 1.1;
+    margin: 0 0 22px;
+  }
+
+  .body-text {
+    font-size: 16px;
+    line-height: 1.75;
+    margin: 0 0 16px;
+    max-width: 58ch;
+    color: var(--ink-brown);
+  }
+
+  .divider {
+    width: 52px;
+    height: 2px;
+    background: var(--gold);
+    border: none;
+    margin: 26px 0 20px;
+  }
+
+  .list-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-brown-soft);
+    margin: 0 0 12px;
+  }
+
+  .reasons { list-style: none; margin: 0 0 30px; padding: 0; }
+  .reasons li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-brown);
+  }
+  .reasons li::before {
+    content: '\2014';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+  }
+
+  .surprise-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--rose-dusk);
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    border-radius: 999px;
+    padding: 12px 22px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: background .25s ease, color .25s ease, transform .2s ease;
+  }
+  .surprise-btn:hover { background: var(--gold); color: var(--ink-night); transform: translateY(-1px); }
+  .surprise-btn:focus-visible { outline: 2px solid var(--rose-dusk); outline-offset: 3px; }
+
+  .surprise-line {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--rose-dusk);
+    margin: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity .5s ease;
+  }
+  .surprise-line.show { opacity: 1; height: auto; margin-top: 16px; }
+
+  .signoff { margin-top: 36px; }
+  .signoff .closing {
+    font-style: italic;
+    color: var(--ink-brown-soft);
+    font-size: 15px;
+    margin: 0 0 4px;
+  }
+  .signoff .from {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink-brown);
+    margin: 0;
+  }
+
+  .ps {
+    margin-top: 22px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--parchment-edge);
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-brown-soft);
+  }
+
+  @media (max-width: 480px) {
+    .letter { padding: 34px 22px 30px; }
+    .corner-mark { width: 36px; height: 36px; top: 14px; right: 14px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spark { display: none; }
+    .seal, .seal.cracking { animation: none !important; }
+    .letter, .reveal-item { animation-duration: .01ms !important; animation-delay: 0s !important; }
+    .surprise-line { transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sparks" id="sparks"></div>
+
+<!--
+  BACKSOUND
+  Taruh file musik kamu sendiri (mp3) di folder yang sama dengan file HTML ini,
+  lalu beri nama "Taylor Swift - Wi$h Li$t Lyric Video.mp3" — atau ganti nama file di "src" bawah ini
+  supaya sesuai dengan nama file musikmu.
+-->
+<audio id="bgMusic" loop preload="auto">
+  <source src="Taylor Swift - Wi$h Li$t Lyric Video.mp3" type="audio/mpeg">
+</audio>
+<button class="music-toggle muted" id="musicToggle" aria-label="Nyalakan atau matikan musik" aria-pressed="false">
+  <svg class="icon-on" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/>
+    <path d="M16.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M19 6a9 9 0 0 1 0 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>
+  <svg class="icon-off" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/>
+    <path d="M16 9l5 5M21 9l-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>
+</button>
+
+<section class="intro" id="intro">
+  <p class="eyebrow">sebuah surat kecil</p>
+  <button class="seal" id="sealBtn" aria-label="Buka surat">
+    <svg class="seal-mark" viewBox="0 0 60 60" fill="none">
+      <ellipse cx="30" cy="18" rx="6" ry="10" stroke="#e0be86" stroke-width="1.4"/>
+      <ellipse cx="30" cy="18" rx="6" ry="10" stroke="#e0be86" stroke-width="1.4" transform="rotate(72 30 30)"/>
+      <ellipse cx="30" cy="18" rx="6" ry="10" stroke="#e0be86" stroke-width="1.4" transform="rotate(144 30 30)"/>
+      <ellipse cx="30" cy="18" rx="6" ry="10" stroke="#e0be86" stroke-width="1.4" transform="rotate(216 30 30)"/>
+      <ellipse cx="30" cy="18" rx="6" ry="10" stroke="#e0be86" stroke-width="1.4" transform="rotate(288 30 30)"/>
+      <circle cx="30" cy="30" r="3.5" fill="#f5ecdb"/>
+    </svg>
+  </button>
+  <p class="tap-hint">ketuk segel untuk membuka</p>
+</section>
+
+<main class="stage">
+  <article class="letter" id="letter">
+    <svg class="corner-mark" viewBox="0 0 60 60" fill="none">
+      <ellipse cx="30" cy="20" rx="6" ry="10" stroke="#b5675c" stroke-width="1.3"/>
+      <ellipse cx="30" cy="20" rx="6" ry="10" stroke="#b5675c" stroke-width="1.3" transform="rotate(72 30 30)"/>
+      <ellipse cx="30" cy="20" rx="6" ry="10" stroke="#b5675c" stroke-width="1.3" transform="rotate(144 30 30)"/>
+      <ellipse cx="30" cy="20" rx="6" ry="10" stroke="#b5675c" stroke-width="1.3" transform="rotate(216 30 30)"/>
+      <ellipse cx="30" cy="20" rx="6" ry="10" stroke="#b5675c" stroke-width="1.3" transform="rotate(288 30 30)"/>
+      <circle cx="30" cy="30" r="3.5" fill="#c89b5c"/>
+      <path d="M30 40 Q28 48 32 56" stroke="#c89b5c" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    </svg>
+
+    <p class="postmark reveal-item">untuk kamu mah</p>
+
+    <!-- GANTI NAMA PENERIMA DI SINI -->
+    <p class="salutation reveal-item">Untuk <span class="name">Nisrina Najwa</span>,</p>
+    <h1 class="headline reveal-item">Selamat ulang tahun.</h1>
+
+    <p class="body-text reveal-item">happy birthday ya, aku ga lupa kok, walaupun hubungan kita telah selesai, bukan berarti aku tidak mengucapkan selamat kepadamu. happy birthday, my once upon a happiness. maaf aku ga bisa ungkapin ini secara langsung aku tau sejarah kisah kasih kita udah selesai, tapi aku masih boleh ucapin kamu kan? then once again, happy birthday. bahagia terus ya kamuuu semoga segala impian kamu bisa terwujud, semoga segala harapan kecil kebahagiaan kamu bisa jadi nyata. kamu kereeennn banget udah bisa sampe ke titik sejauh ini, aku bangga sama kamu. maaf ya, mungkin aku belum bisa jadi seseorang yang bisa merakit terus senyum manis kamu selagi kita masih bersama. tapi aku harap kamu jauh lebih nyaman dengan kehidupan ka sekarang. stay safe, healthy, and happy. okay If ever you need somebody, aku akan selalu ada disini. aku ga bakal kemana-mana. seperti biasanya setiap manusia bertambah usia dan beranjak dewasa aku mau doa yang terbaik meski mungkin versi terbaik dalam kamus kamu kita itu beda. ada banyak semoga yang harus kamu aminkan, tapi yang pasti the best for u.aku harap di umur kamu yang sekarang kamu bisa nentuin arah hidup kamu mau kemana, semoga kedepannya kamu di permudah apapun yang mau kamu capai, and semoga kamu di kelilingin orang orang tulus yang sayang sm kamu. I hape this day will bring u lots of happiness and fun. I'm so lucky to meet you, be a good girl, terima kasih sudah jadi kamu — untuk cara kamu menjalani hari-hari biasa dengan tenang, dan tetap perhatian meski terkadang sedang lelah sendiri.</p>
+
+    <p class="body-text reveal-item">Semoga tahun ini pelan-pelan membawa hal-hal yang kamu tunggu. Nggak perlu yang besar dan ramai, cukup yang bikin kamu merasa cukup dan tenang. Dan apa pun itu, aku ikut bangga dengan apapun itu.</p>
+
+    <hr class="divider reveal-item" />
+
+    <button class="surprise-btn reveal-item" id="surpriseBtn">satu kejutan kecil</button>
+    <p class="surprise-line" id="surpriseLine">kamu tetap jadi bagian favorit dari hari-hariku.</p>
+
+    <!-- GANTI NAMA PENGIRIM DI SINI -->
+    <div class="signoff reveal-item">
+      <p class="closing">Pengagum rahasia,</p>
+      <p class="from">Muhammad Fiero</p>
+    </div>
+
+    <p class="ps reveal-item">Noted. selamat menikmati harimu — semoga nanti kita bisa bertemu kembali dengan hal yang lebih seru.</p>
+  </article>
+</main>
+
+<script>
+  document.body.style.overflowY = 'hidden';
+
+  // backsound
+  var bgMusic = document.getElementById('bgMusic');
+  var musicToggle = document.getElementById('musicToggle');
+  bgMusic.volume = 0.55;
+
+  function startMusic() {
+    var playPromise = bgMusic.play();
+    if (playPromise !== undefined) {
+      playPromise.then(function () {
+        musicToggle.classList.remove('muted');
+        musicToggle.setAttribute('aria-pressed', 'true');
+      }).catch(function () {
+        // browser blocked autoplay before any tap; button stays in muted state
+        musicToggle.classList.add('muted');
+        musicToggle.setAttribute('aria-pressed', 'false');
+      });
+    }
+  }
+
+  // try right away in case the browser allows it
+  window.addEventListener('load', startMusic);
+
+  musicToggle.addEventListener('click', function () {
+    if (bgMusic.paused) {
+      startMusic();
+    } else {
+      bgMusic.pause();
+      musicToggle.classList.add('muted');
+      musicToggle.setAttribute('aria-pressed', 'false');
+    }
+  });
+
+  // ambient sparks
+  var sparkContainer = document.getElementById('sparks');
+  var sparkColors = ['', 'rose', 'lav'];
+  var totalSparks = 18;
+  for (var i = 0; i < totalSparks; i++) {
+    var s = document.createElement('span');
+    var colorClass = sparkColors[Math.floor(Math.random() * sparkColors.length)];
+    s.className = 'spark' + (colorClass ? ' ' + colorClass : '');
+    var size = 3 + Math.random() * 4;
+    var duration = 9 + Math.random() * 10;
+    var delay = Math.random() * 12;
+    var left = Math.random() * 100;
+    var drift = (Math.random() * 60 - 30) + 'px';
+    s.style.left = left + 'vw';
+    s.style.setProperty('--size', size + 'px');
+    s.style.setProperty('--duration', duration + 's');
+    s.style.setProperty('--delay', delay + 's');
+    s.style.setProperty('--drift', drift);
+    sparkContainer.appendChild(s);
+  }
+
+  // staggered reveal delays, independent of how many items exist
+  var revealItems = document.querySelectorAll('#letter .reveal-item');
+  revealItems.forEach(function (el, idx) {
+    el.style.animationDelay = (0.15 + idx * 0.12) + 's';
+  });
+
+  // open the letter
+  var sealBtn = document.getElementById('sealBtn');
+  var intro = document.getElementById('intro');
+  var letter = document.getElementById('letter');
+
+  sealBtn.addEventListener('click', function () {
+    startMusic();
+    sealBtn.classList.add('cracking');
+    setTimeout(function () {
+      intro.classList.add('hide');
+      letter.classList.add('open');
+      document.body.style.overflowY = 'auto';
+    }, 280);
+  });
+
+  // little surprise
+  var surpriseBtn = document.getElementById('surpriseBtn');
+  var surpriseLine = document.getElementById('surpriseLine');
+  var revealed = false;
+
+  surpriseBtn.addEventListener('click', function () {
+    if (!revealed) {
+      surpriseLine.classList.add('show');
+      revealed = true;
+    }
+    burst();
+  });
+
+  function burst() {
+    var rect = surpriseBtn.getBoundingClientRect();
+    var colors = ['#c89b5c', '#b5675c', '#e0be86'];
+    for (var i = 0; i < 14; i++) {
+      var p = document.createElement('span');
+      p.style.position = 'fixed';
+      p.style.left = (rect.left + rect.width / 2) + 'px';
+      p.style.top = rect.top + 'px';
+      p.style.width = '5px';
+      p.style.height = '5px';
+      p.style.borderRadius = '50%';
+      p.style.background = colors[i % colors.length];
+      p.style.pointerEvents = 'none';
+      p.style.zIndex = 50;
+      var angle = Math.random() * Math.PI * 2;
+      var dist = 40 + Math.random() * 60;
+      var dx = Math.cos(angle) * dist;
+      var dy = Math.sin(angle) * dist - 30;
+      (function (el, dx, dy) {
+        var anim = el.animate([
+          { transform: 'translate(0,0)', opacity: 1 },
+          { transform: 'translate(' + dx + 'px, ' + dy + 'px)', opacity: 0 }
+        ], { duration: 700 + Math.random() * 400, easing: 'ease-out' });
+      })(p, dx, dy);
+      document.body.appendChild(p);
+      setTimeout(function (el) { return function () { el.remove(); }; }(p), 1300);
+    }
+  }
+</script>
+</body>
+</html>
